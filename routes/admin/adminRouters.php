@@ -1,4 +1,5 @@
 <?php
+Route::get('/', ['uses' => 'admin\loginController@loginForm']);
 Route::get('/login', ['uses' => 'admin\loginController@loginForm']);
 Route::post('/admin/login', ['uses' => 'admin\loginController@login']);
 
@@ -21,6 +22,17 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('/modifyPositions',['uses'=>'hrController@modifyPositions']);
 
 
+    /*****************get managers list**********************/
+    Route::post('/getManagers',['uses'=>'hrController@getManagers']);
+
+    /*****************get staff Level **********************/
+    Route::post('/getStaffLevel',['uses'=>'hrController@getStaffLevel']);
+
+    /*****************get staff Level **********************/
+    Route::post('/newStaff',['uses'=>'hrController@newStaff']);
+
+    /*****************get staff info **********************/
+    Route::get('staff/{staff_id?}',['uses'=>'hrController@staff']);
 
 
 

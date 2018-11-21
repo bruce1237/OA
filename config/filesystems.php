@@ -42,6 +42,10 @@ return [
     */
 
     'disks' => [
+        'staff' =>[
+            'driver' => 'local',
+            'root' => storage_path('staff'),
+        ],
 
         'local' => [
             'driver' => 'local',
