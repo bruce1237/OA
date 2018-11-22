@@ -34,6 +34,20 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************get staff info **********************/
     Route::get('staff/{staff_id?}',['uses'=>'hrController@staff']);
 
+    /*****************delete staff info **********************/
+    Route::delete('staff/{staff_id?}',['uses'=>'hrController@delStaff']);
+
+    /*****************get staff login info **********************/
+    Route::get('getStaffLoginInfo/{staff_id?}',['uses'=>'hrController@getStaffLoginInfo']);
+
+    /*****************save/modify staff login info **********************/
+    Route::post('saveStaffLoginInfo',['uses'=>'hrController@saveStaffLoginInfo']);
+
+
+
+
+
+
 
 
 

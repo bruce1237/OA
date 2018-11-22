@@ -25,7 +25,7 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         if (Auth::guard('admin')->attempt(
-            ['email' => $request->post('email'), 'password' => $request->post('password')],
+            ['staff_no' => $request->post('staff_no'), 'password' => $request->post('password')],
                 $request->has('remember')
             )) {
             return redirect('/admin/home');

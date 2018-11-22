@@ -18,17 +18,17 @@
         <xblock>
             <button class="layui-btn layui-btn-danger" onclick="delAll()"><i class="layui-icon"></i>批量删除</button>
             </button>
-            <span class="x-right" style="line-height:40px">共有数据： 条</span>
+            <span class="x-right" style="line-height:40px">共有数据：{{$staffCount}} 条</span>
         </xblock>
         <table class="layui-table">
             <thead>
             <tr>
                 <th>
-                    <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i>
-                    </div>
+                    <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
                 </th>
                 <th>姓名</th>
                 <th>身份证</th>
+                <th>入职日期</th>
                 <th>出生日期</th>
                 <th>工作手机</th>
                 <th>工作微信</th>
@@ -42,11 +42,12 @@
             @foreach($staffList as $staff)
                 <tr>
                     <td>
-                        <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id=''><i
+                        <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{{$staff->staff_id}}'><i
                                     class="layui-icon">&#xe605;</i></div>
                     </td>
                     <td>{{$staff->staff_name}}</td>
                     <td>{{$staff->staff_id_no}}</td>
+                    <td>{{$staff->staff_join_date}}</td>
                     <td>{{$staff->staff_dob}}</td>
                     <td>{{$staff->staff_mobile_work}}</td>
                     <td>{{$staff->staff_wenxin_work}}</td>
@@ -58,7 +59,10 @@
                         <a title="查看" onclick="showStaff({{$staff->staff_id}})" href="javascript:;">
                             <i class="icon iconfont">&#xe69e;</i>
                         </a>
-                        <a title="删除" href="javascript:;">
+                        <a title="设置登录信息" onclick="showStaffLoginInfo({{$staff->staff_id}})" href="javascript:;">
+                            <i class="icon iconfont">&#xe82b;</i>
+                        </a>
+                        <a title="删除" href="javascript:;" onclick="delStaff({{$staff->staff_id}})">
                             <i class="layui-icon">&#xe640;</i>
                         </a>
                     </td>
@@ -82,7 +86,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="sellerModalTitle">添加员工</h5>
+                    <h5 class="modal-title" id="staffModalTitle">添加员工</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
@@ -139,7 +143,7 @@
                                        aria-describedby="inputGroup-sizing-sm"/>
 
                                 <select class="custom-select  custom-select-sm" id="staff_marriage">
-                                    <option value="" selected disabled>婚姻状况</option>
+                                    <option value=null selected disabled>婚姻状况</option>
                                     <option value="未婚">未婚</option>
                                     <option value="已婚">已婚</option>
                                     <option value="离异">离异</option>
@@ -169,58 +173,7 @@
                         </div>
 
                     </div>
-                    <div class="row">
-                        <div class="col-4">
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">职位</span>
-                                </div>
 
-                                <select class="custom-select  custom-select-sm" id="position_id"
-                                        onchange="getStaffLevel()">
-                                    <option selected disabled>请选择</option>
-                                    @foreach($positions as $position)
-                                        <option value="{{$position->id}}">{{$position->position_name}}</option>
-                                    @endforeach
-                                </select>
-
-                            </div>
-                        </div>
-
-                        <div class="col-4">
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">部门</span>
-                                </div>
-
-                                <select class="custom-select  custom-select-sm" id="department_id"
-                                        onchange="getManagerName()">
-                                    <option selected disabled value="null">请选择</option>
-                                    @foreach($departments as $department)
-                                        <option value="{{$department->id}}">{{$department->depart_name}}</option>
-                                    @endforeach
-                                </select>
-
-                            </div>
-                        </div>
-
-                        <div class="col-4">
-                            <div class="input-group input-group-sm mb-3">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">主管</span>
-                                </div>
-
-                                <select class="custom-select  custom-select-sm" id="staff_manager">
-                                    <option value="0" selected>无上级主管</option>
-                                    {{--@foreach($managers as $manager)--}}
-                                    {{--<option value ="{{$staff_manager->id}}">{{$staff_manager->staff_name}}</option>--}}
-                                    {{--@endforeach--}}
-                                </select>
-
-                            </div>
-                        </div>
-
-                    </div>
 
 
                     <hr/>
@@ -333,6 +286,56 @@
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">职位</span>
+                                </div>
+
+                                <select class="custom-select  custom-select-sm" id="position_id"
+                                        onchange="getStaffLevel()">
+                                    <option selected disabled value=null>请选择</option>
+                                    @foreach($positions as $position)
+                                        <option value="{{$position->id}}">{{$position->position_name}}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">部门</span>
+                                </div>
+
+                                <select class="custom-select  custom-select-sm" id="department_id"
+                                        onchange="getManagerName()">
+                                    <option selected disabled value=null>请选择</option>
+                                    @foreach($departments as $department)
+                                        <option value="{{$department->id}}">{{$department->depart_name}}</option>
+                                    @endforeach
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">主管</span>
+                                </div>
+
+                                <select class="custom-select  custom-select-sm" id="staff_manager">
+                                    <option value="0" selected>无上级主管</option>
+                                    {{--@foreach($managers as $manager)--}}
+                                    {{--<option value ="{{$staff_manager->id}}">{{$staff_manager->staff_name}}</option>--}}
+                                    {{--@endforeach--}}
+                                </select>
+
+                            </div>
+                        </div>
+
+                        <div class="col-4">
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">工资</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_salary"
@@ -341,8 +344,8 @@
                                     <span class="input-group-text" id="inputGroup-sizing-sm">.00 元</span>
                                 </div>
                             </div>
-
                         </div>
+
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
@@ -354,8 +357,6 @@
                                     <span class="input-group-text" id="inputGroup-sizing-sm">%</span>
                                 </div>
                             </div>
-
-
                         </div>
 
                         <div class="col-4">
@@ -368,12 +369,8 @@
                                     <option value="正式员工">正式员工</option>
                                 </select>
                             </div>
-
-
                         </div>
 
-                    </div>
-                    <div class="row">
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
@@ -381,11 +378,9 @@
                                 </div>
                                 <input type="text" class="form-control" id="staff_contract_no"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
-
                             </div>
-
-
                         </div>
+
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
@@ -393,10 +388,7 @@
                                 </div>
                                 <input type="date" class="form-control" id="staff_contract_start"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
-
                             </div>
-
-
                         </div>
 
                         <div class="col-4">
@@ -406,9 +398,17 @@
                                 </div>
                                 <input type="date" class="form-control" id="staff_contract_end"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
-
                             </div>
+                        </div>
 
+                        <div class="col-4">
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">入职日期</span>
+                                </div>
+                                <input type="date" class="form-control" id="staff_join_date"
+                                       aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
+                            </div>
                         </div>
 
                     </div>
@@ -508,18 +508,60 @@
 
 
                     <input type="hidden" id="staff_level"/>
+                    <input type="hidden" id="staff_id"/>
 
 
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" name="seller_id" id="seller_id" value="test"/>
-                    <button type="button" class="btn btn-danger" id="del_btn" onclick="delete_seller()">删除</button>
+                    <button type="button" class="btn btn-danger" id="del_btn" >删除</button>
                     <button type="button" class="btn btn-secondary" id="close_btn" data-dismiss="modal">关闭</button>
                     <button type="button" class="btn btn-primary" id="save_btn" onclick="add_staff()">保存修改</button>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="staffLoginInfoModal" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sellerModalTitle">OA员工登录信息</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="afterProcess"></div>
+                            <div class="input-group input-group-sm mb-12">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">登录密码</span>
+                                </div>
+                                <input type="text" class="form-control" id="staff_login_password"
+                                       aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="login_staff_id" id="login_staff_id" />
+                    <input type="hidden" name="login_staff_name" id="login_staff_name" />
+                    <input type="hidden" name="login_staff_no" id="login_staff_no" />
+                    <button type="button" class="btn btn-secondary" id="close_btn" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="save_btn" onclick="saveStaffLoginInfo()">保存修改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="modal fade" id="newDepartmentModal" tabindex="-1" role="dialog"
          aria-labelledby="mySmallModalLabel" aria-hidden="true">
@@ -735,20 +777,32 @@
     }
 
     function initStaffModel(Staff){
-        $("#staff_photo").attr('src',Staff.staff_photo);
+        if(Staff){
+            var modalTitle="修改员工信息";
+            $("#staff_photo").attr('src',"/storage/staff/photo/"+Staff.staff_photo);
 
+            $("#del_btn").attr('onclick',"delStaff("+Staff.staff_id+")");
+
+
+        }else{
+            var modalTitle="添加员工信息";
+            $("#staff_photo").attr('src',"");
+        }
+        $("#staffModalTitle").html(modalTitle);
+
+        $("#staff_id").val(Staff.staff_id);
         $("#staff_no").val(Staff.staff_no);
-        $("#staff_status").val(Staff.staff_status);
+        $("#staff_status").val(Staff.staff_status?Staff.staff_status:"正常");
         $("#staff_name").val(Staff.staff_name);
         $("#staff_no").val(Staff.staff_no);
-        $("#staff_gender").val(Staff.staff_gender);
+        $("#staff_gender").val(Staff.staff_gender?Staff.staff_gender:"女");
         $("#staff_nationality").val(Staff.staff_nationality);
-        $("#staff_marriage").val(Staff.staff_marriage);
+        $("#staff_marriage").val(Staff.staff_marriage?Staff.staff_marriage:null);
         $("#staff_dob").val(Staff.staff_dob);
         $("#staff_political").val(Staff.staff_political);
-        $("#position_id").val(Staff.position_id);
-        $("#department_id").val(Staff.department_id);
-        $("#staff_manager").val(Staff.staff_manager);
+        $("#position_id").val(Staff.position_id?Staff.position_id:null);
+        $("#department_id").val(Staff.department_id?Staff.department_id:null);
+        $("#staff_manager").val(Staff.staff_manager?Staff.staff_manager:0);
         $("#staff_id_no").val(Staff.staff_id_no);
         $("#staff_jiguan").val(Staff.staff_jiguan);
         $("#staff_mobile_private").val(Staff.staff_mobile_private);
@@ -762,18 +816,98 @@
         $("#staff_address").val(Staff.staff_address);
         $("#staff_salary").val(Staff.staff_salary);
         $("#staff_commission_rate").val(Staff.staff_commission_rate);
-        $("#staff_type").val(Staff.staff_type);
+        $("#staff_type").val(Staff.staff_type?Staff.staff_type:"试用员工");
+        $("#staff_join_date").val(Staff.staff_join_date);
         $("#staff_contract_no").val(Staff.staff_contract_no);
         $("#staff_contract_start").val(Staff.staff_contract_start);
         $("#staff_contract_end").val(Staff.staff_contract_end);
         $("#staff_edu_history").val(Staff.staff_edu_history);
         $("#staff_work_exp").val(Staff.staff_work_exp);
+        $("#staff_family_member").val(Staff.staff_family_member);
         $("#staff_achievement").val(Staff.staff_achievement);
         $("#staff_hobby").val(Staff.staff_hobby);
         $("#staff_self_assessment").val(Staff.staff_self_assessment);
         $("#staff_assessment").val(Staff.staff_assessment);
         $("#staff_level").val(Staff.staff_level);
     }
+
+    function showStaffLoginInfo(Staff){
+
+        $.ajax({
+           'url':"{{url('admin/getStaffLoginInfo')}}/"+Staff,
+           'type':'get',
+           'dataType':'json',
+           success:function(data){
+               if(data.status){
+                   $("#login_staff_id").val(data.info.staff_id);
+                   $("#login_staff_name").val(data.info.staff_name);
+                   $("#login_staff_no").val(data.info.staff_no);
+               }else{
+                   $("#login_staff_id").val('');
+                   $("#login_staff_name").val('');
+                   $("#login_staff_no").val('');
+               }
+           }
+        });
+
+        $("#staffLoginInfoModal").modal('show');
+    }
+
+    function saveStaffLoginInfo(){
+        var data = new FormData;
+        data.append('staff_id',$("#login_staff_id").val());
+        data.append('name',$("#login_staff_name").val());
+        data.append('staff_no',$("#login_staff_no").val());
+        data.append('password',$("#staff_login_password").val());
+
+
+        $.ajax({
+           'url':"{{url('admin/saveStaffLoginInfo')}}",
+           'type':'post',
+            'contentType': false,
+            'processData': false,
+           'data':data,
+           'dataType':'json',
+           success:function(data){
+               layer.msg(data.msg, {icon: 1});
+               $("#staffLoginInfoModal").modal('hide');
+           }
+        });
+    }
+
+    function delAll () {
+        var data = tableCheck.getData();
+        $.ajax({
+            'url':"{{url('admin/staff')}}",
+            'type':'delete',
+            'dataType':'json',
+            'data':{'staffIds':data},
+            success:function(data){
+                layer.msg(data.msg, {icon: 1});
+                if(data){
+                    refreshPage();
+                }
+            }
+        });
+
+    }
+
+    function delStaff(staffID) {
+        $.ajax({
+           'url':"{{url('admin/staff')}}/"+staffID,
+           'type':'delete',
+           'dataType':'json',
+           success:function(data){
+               layer.msg(data.msg, {icon: 1});
+               if(data){
+                refreshPage();
+               }
+           }
+        });
+
+
+    }
+
     function showStaff(staffID){
         if(staffID){
             $.ajax({
@@ -948,6 +1082,7 @@
     }
 
     function new_staff() {
+        // initStaffModel('');
         //初始化
         $('#staffModal').modal('show');
 
@@ -957,6 +1092,7 @@
         //get staff info
 
         var data = new FormData;
+        data.append('staff_id', $("#staff_id").val());
         data.append('upload_staff_photo', document.getElementById('upload_staff_photo').files[0]);
         data.append('staff_no', $("#staff_no").val());
         data.append('staff_status', $("#staff_status").val());
@@ -985,10 +1121,12 @@
         data.append('staff_commission_rate', $("#staff_commission_rate").val());
         data.append('staff_type', $("#staff_type").val());
         data.append('staff_contract_no', $("#staff_contract_no").val());
+        data.append('staff_join_date', $("#staff_join_date").val());
         data.append('staff_contract_start', $("#staff_contract_start").val());
         data.append('staff_contract_end', $("#staff_contract_end").val());
         data.append('staff_edu_history', $("#staff_edu_history").val());
         data.append('staff_work_exp', $("#staff_work_exp").val());
+        data.append('staff_family_member', $("#staff_family_member").val());
         data.append('staff_achievement', $("#staff_achievement").val());
         data.append('staff_hobby', $("#staff_hobby").val());
         data.append('staff_self_assessment', $("#staff_self_assessment").val());
@@ -1006,11 +1144,11 @@
                 if (data.status) {
                     var iconCode = 1;
                     $("#staffModal").modal('hide');
+                    refreshPage();
 
                 } else {
                     var iconCode = 2;
                     if (data.emptyCols) {
-
                         $.each(data.emptyCols, function (key, item) {
                             $("#" + item).addClass("is-invalid");
                         });
@@ -1018,6 +1156,7 @@
                 }
 
                 layer.msg(data.msg, {icon: iconCode});
+
             }
         });
 

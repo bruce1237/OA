@@ -25,7 +25,7 @@
     <form action="{{url('admin/login')}}" method="post" class="layui-form" >
 
         @csrf
-        <input name="email" placeholder="邮箱"  type="text" lay-verify="required" class="layui-input" >
+        <input name="staff_no" placeholder="员工编号"  type="text" lay-verify="required" class="layui-input" >
         <hr class="hr15">
         <input name="password" lay-verify="required" placeholder="密码"  type="password" class="layui-input">
         <hr class="hr15">
@@ -57,15 +57,6 @@
 
 
 <!-- 底部结束 -->
-<script>
-    //百度统计可去掉
-    var _hmt = _hmt || [];
-    (function() {
-        var hm = document.createElement("script");
-        hm.src = "https://hm.baidu.com/hm.js?b393d153aeb26b46e9431fabaf0f6190";
-        var s = document.getElementsByTagName("script")[0];
-        s.parentNode.insertBefore(hm, s);
-    })();
-</script>
+
 </body>
 </html>

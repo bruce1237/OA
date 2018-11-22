@@ -45,6 +45,7 @@ class CreateStaffTable extends Migration
             $table->decimal('staff_salary', 10, 2)->nullable()->comment('员工工资');
             $table->decimal('staff_commission_rate',6,2)->nullable()->comment('员工提成');
             $table->enum('staff_type',[0,1])->default('0')->comment('员工类型：0试用，1正式');
+            $table->date('staff_join_date')->comment('员工入职日期');
             $table->string('staff_contract_no')->nullable()->comment('员工合同编号');
             $table->date('staff_contract_start')->nullable()->comment('员工合同开始日期');
             $table->date('staff_contract_end')->nullable()->comment('员工合同结束日期');
