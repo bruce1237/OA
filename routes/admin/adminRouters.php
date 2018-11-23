@@ -43,6 +43,9 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************save/modify staff login info **********************/
     Route::post('saveStaffLoginInfo',['uses'=>'hrController@saveStaffLoginInfo']);
 
+    /*****************OA Menu Index**********************/
+    Route::get('OAMenu',['uses'=>'menuController@index']);
+
 
 
 

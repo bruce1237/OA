@@ -687,6 +687,7 @@
                                     <option value="部门经理">部门经理</option>
                                     <option value="区域经理">区域经理</option>
                                     <option value="总经理">总经理</option>
+                                    <option value="OA管理员">OA管理员</option>
 
                                 </select>
                             </div>
@@ -740,6 +741,7 @@
                                             <option value="部门经理">部门经理</option>
                                             <option value="区域经理">区域经理</option>
                                             <option value="总经理">总经理</option>
+                                            <option value="OA管理员">OA管理员</option>
 
                                         </select>
 
@@ -990,7 +992,7 @@
 
         for (i = 1; i <= maxPositionId; i++) {
             var position = $("#positionName" + i).val() + "/" + $("#positionRank" + i).val();
-            if (position !== undefined) {
+            if ($("#positionRank" + i).val()) {
                 data.append(i, position);
             }
         }

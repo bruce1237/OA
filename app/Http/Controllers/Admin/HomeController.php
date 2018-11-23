@@ -9,6 +9,7 @@ class HomeController extends Controller
 {
     //
     public function showDashboard(){
-        return view('admin/home/dashboard');
+        $a = "navbar";
+        return view('admin/home/dashboard',['a'=>$a]);
     }
 }

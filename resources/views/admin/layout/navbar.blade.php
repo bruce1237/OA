@@ -153,14 +153,14 @@
             <li>
                 <a href="javascript:;">
                     <i class="iconfont">&#xe723;</i>
-                    <cite>分类管理</cite>
+                    <cite>OA管理</cite>
                     <i class="iconfont nav_right">&#xe697;</i>
                 </a>
                 <ul class="sub-menu">
                     <li>
-                        <a _href="cate.html">
+                        <a _href="{{url('admin/OAMenu')}}">
                             <i class="iconfont">&#xe6a7;</i>
-                            <cite>多级分类</cite>
+                            <cite>菜单管理</cite>
                         </a>
                     </li >
                 </ul>

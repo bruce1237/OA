@@ -19,12 +19,13 @@ class HRController extends Controller
 
         $current = str_replace(Route::current()->action['namespace']."\\",'',Route::currentRouteAction());
         if(!in_array($current,$allowed)){
-            dump("not allowed");
+//            dump("not allowed");
 
         }
 
 
 
+//        dump(Route::current()->uri());
 //        dump(Route::current()->action['namespace']);
 //        dump(Route::currentRouteName());
 //        dump(Route::currentRouteAction());
@@ -108,8 +109,6 @@ class HRController extends Controller
     public function modifyPositions(Request $request) {
         $data['status'] = false;
         $data['msg'] = '';
-
-
         foreach ($request->post() as $key => $value) {
             $position_name = explode('/', $value);
             if ($position_name[0] == null) {
@@ -197,7 +196,7 @@ class HRController extends Controller
             $data['status'] = true;
             $data['msg'] = "员工添加成功!";
         } catch (\Exception $exception) {
-
+            $data['msg'] = $exception->getMessage();
             switch ($exception->getCode()) {
                 case 23000:
                     $data['msg'] = "员工号码已经存在!";

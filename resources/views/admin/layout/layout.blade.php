@@ -25,7 +25,7 @@
 <!-- 顶部结束 -->
 <!-- 中部开始 -->
 <!-- 左侧菜单开始 -->
-@include('admin/layout/navbar')
+@include('admin/layout/'.$a)
 <!-- <div class="x-slide_left"></div> -->
 <!-- 左侧菜单结束 -->
 <!-- 右侧主体开始 -->
