@@ -17,7 +17,7 @@ class CreateMenusTable extends Migration
             $table->increments('id');
             $table->string('menu_name')->comment('菜单名称');
             $table->integer('menu_position')->comment('菜单隶属的职位');
-            $table->integer('menu_rank')->comment('菜单序列');
+            $table->integer('rank')->default(0)->comment('菜单序列');
             $table->string('menua_icon')->comment('菜单图标');
             $table->softDeletes();
             $table->timestamps();

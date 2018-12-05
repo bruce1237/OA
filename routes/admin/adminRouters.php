@@ -6,7 +6,6 @@ Route::post('/admin/login', ['uses' => 'admin\loginController@login']);
 Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adminCheck'], function () {
 
 
-    Route::any('test',['uses'=>'logoController@test']);
 
     Route::get('home',['uses' => 'HomeController@showDashboard']);
     Route::get('/', ['uses' => 'HomeController@showDashboard']);
@@ -46,7 +45,23 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************OA Menu Index**********************/
     Route::get('OAMenu',['uses'=>'menuController@index']);
 
+    /*****************OA Menu New**********************/
+    Route::post('newMenu',['uses'=>'menuController@newMenu']);
 
+    /*****************OA Menu New**********************/
+    Route::post('MenuList',['uses'=>'menuController@menuList']);
+
+    /*****************OA Menu New**********************/
+    Route::post('getSubMenu',['uses'=>'menuController@submenuList']);
+
+    /*****************OA Menu New**********************/
+    Route::post('addSubmenu',['uses'=>'menuController@addSubmenu']);
+
+    /*****************OA Menu New**********************/
+    Route::post('menuOrder',['uses'=>'menuController@menuOrder']);
+
+    /*****************OA Menu Del**********************/
+    Route::delete('delMenu',['uses'=>'menuController@delMenu']);
 
 
 

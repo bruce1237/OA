@@ -834,6 +834,7 @@
     }
 
     function showStaffLoginInfo(Staff){
+        $("#staff_login_password").val('');
 
         $.ajax({
            'url':"{{url('admin/getStaffLoginInfo')}}/"+Staff,

@@ -1,78 +1,405 @@
 @extends('admin/layout/basic')
 
 @section('shortcut')
-    <a href="javascript:void(0);" onclick="">添加菜单</a>
-    <a href="javascript:void(0);" onclick="">添加子菜单</a>
+    <a href="javascript:void(0);" onclick="showAddMenu()">添加菜单</a>
+
 @endsection
 
 @section('content')
 
+    <div class="row">
+        <div class="col-6">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <label class="input-group-text" for="inputGroupSelect01">选择职位</label>
+                </div>
+                <select class="custom-select" id="positionSelectList" onchange="positionChanged()">
+                    <option selected disabled>请选择职位</option>
+                    @if($positions)
+                        @foreach($positions as $position)
+                            <option value="{{$position->id}}">{{$position->position_name}}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+        </div>
+    </div>
 
-    <script src="http://apps.bdimg.com/libs/jquery/1.10.2/jquery.min.js"></script>
-    <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
-
-    <ul id="sortable">
-        <li data-id="1">test 1</li>
-        <li data-id="2">test 2</li>
-        <li data-id="3">test 3</li>
-        <li data-id="4">test 4</li>
-        <li data-id="5">test 5</li>
-        <li data-id="6">test 6</li>
-    </ul>
-
-    <button onclick="abc()">submit</button>
+    <div class="clearfix" style="margin-bottom: 10px;"></div>
 
 
+    <div class="row">
+        <div class="col-4">
+            <div class="card bg-light">
+                <div class="card-header bg-secondary" id="menuTitle">
+                    请选择职位
+                </div>
+                <ul class="list-group list-group-flush bg-secondary" id="menuList">
+
+                </ul>
+            </div>
+
+
+        </div>
+        <div class="col-4">
+            <div class="card bg-light">
+                <div class="card-header bg-secondary" id="subMenuTitle">
+                    请点击左侧你要查看的菜单
+                </div>
+                <ul class="list-group list-group-flush bg-secondary" id="subMenuList">
+
+                </ul>
+            </div>
+
+        </div>
+        <div class="col-4">col3
+        </div>
+    </div>
+
+    <div class="clearfix" style="margin-bottom: 10px;"></div>
+
+
+    <div class="row">
+        <div class="col-4">
+            <div id="menuSection"></div>
+        </div>
+        <div class="col-4">
+            <div id="submenuSection">
+
+            </div>
+        </div>
+        <div class="col-4">3</div>
+    </div>
+
+<input type="hidden" id ="menuListOrder" >
+<input type="hidden" id ="subMenuListOrder" >
 
 
 
-<script>
+
+    <div class="modal fade" id="newMenu" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="sellerModalTitle">主菜单</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="afterProcess"></div>
+                            <div class="input-group input-group-sm mb-12">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">菜单名称:</span>
+                                </div>
+                                <input type="text" class="form-control" id="newMenuName"
+                                       aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
+
+                                {{--<select class="form-control" id="MenuPosition222">--}}
+                                    {{--@if($positions)--}}
+                                        {{--@foreach($positions as $position)--}}
+                                            {{--<option value="{{$position->id}}">{{$position->position_name}} </option>--}}
+                                        {{--@endforeach--}}
+                                    {{--@endif--}}
+
+                                {{--</select>--}}
+
+                            </div>
+                        </div>
+
+                    </div>
 
 
-    $(function() {
-        $( "#sortable" ).sortable();
-        $( "#sortable" ).disableSelection();
-    });
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" id ="MenuPosition" />
+                    <button type="button" class="btn btn-secondary" id="close_btn" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="save_btn" onclick="addNewMenu()">添加
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    var sort_define = '';
-    var sort_end='';
-    $('#sortable').sortable({ start:
-            function(event, ui) {
-                var sort='';
-                $(this).find('li').each(function(){
-                    var id = $(this).attr('data-id');
-                    if(sort==""){
-                        sort = id;
-                    }else{
-                        if(typeof(id)!='undefined')
-                            sort = sort+'_'+id
+    <div class="modal fade" id="newSubmenu" tabindex="-1" role="dialog"
+         aria-labelledby="mySmallModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="submenuMenuName">新建子菜单</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="afterProcess"></div>
+                            <div class="input-group input-group-sm mb-12">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">添加子菜单</span>
+                                </div>
+                                <input type="text" class="form-control" id="newSubmenuName"
+                                       aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
+                            </div>
+                        </div>
+
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <input type="hidden" name="menuName" id="menuName" value="test"/>
+                    <input type="hidden" name="menuId" id="menuId" value="test"/>
+                    <button type="button" class="btn btn-secondary" id="close_btn" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" id="save_btn" onclick="addNewSubmenu()">保存修改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+    <script>
+
+        function liSortableInit(containerID) {
+
+            // sort_define = '';  //列表的初始值
+
+
+            $("#" + containerID).sortable();
+            $("#" + containerID).disableSelection();
+
+            //获取列表的初始顺序
+            // $("#" + containerID).sortable({
+            //     start:
+            //         function (event, ui) {
+            //             var sort = '';
+            //             $(this).find('li').each(function () {
+            //                 var id = $(this).attr('data-id');
+            //                 if (sort == "") {
+            //                     sort = id;
+            //                 } else {
+            //                     if (typeof(id) != 'undefined')
+            //                         sort = sort + '_' + id
+            //                 }
+            //             });
+            //             sort_define = sort;
+            //         }
+            // });
+
+
+            $("#" + containerID).sortable({
+                stop:
+                    function (event, ui) {
+                        var sort = '';
+                        $(this).find('li').each(function () {
+                            var id = $(this).attr('data-id');
+                            if (sort == "") {
+                                sort = id;
+                            } else {
+                                if (typeof(id) != 'undefined')
+                                    sort = sort + '_' + id;
+                            }
+                        });
+
+                        $("#"+containerID+"Order").val(sort);
                     }
-                });
-                sort_define = sort;
-            } });
+
+            });
+        }
 
 
-    $('#sortable').sortable({ stop:
-            function(event, ui) {
-                var sort='';
-                $(this).find('li').each(function(){
-                    var id = $(this).attr('data-id');
-                    if(sort==""){
-                        sort = id;
-                    }else{
-                        if(typeof(id)!='undefined')
-                            sort = sort+'_'+id;
-                    }
-                });
-                sort_end = sort;
+        function saveMenu(containerID) {
+
+            var orderList = $("#"+containerID+'Order').val();
+
+            if(!orderList){
+              layer.msg("顺序没有改变, 不用保存",{icon:1});
+              return false;
             }
 
-    });
+            $.ajax({
+               'url':'{{url('admin/menuOrder')}}',
+               'type':'post',
+               'data':{'menuName':containerID,'menuOrder':orderList},
+               'dataType':'json',
+               success:function(data){
+                   layer.msg(data.msg,{icon:1});
+               }
+            });
 
-    function abc(){
+        }
 
-        alert(sort_end);
-    }
-</script>
+
+        function showSubMenu(menuId, menu) {
+            if (!menuId) {
+                return false;
+            }
+
+
+
+            $("#subMenuTitle").html(menu);
+
+            $.ajax({
+                'url': "{{url('admin/getSubMenu')}}",
+                'type': 'post',
+                'data': {'id': menuId},
+                'dataType': 'json',
+                success: function (data) {
+
+                    if (data.status) {
+                        $("#subMenuList").html('');
+                        $.each(data.submenuList, function (key, submenu) {
+                            $("#subMenuList").append('<li class="list-group-item d-flex justify-content-between align-items-center" data-id="' + submenu.id + '"><a href="javascript:;" onclick=' + buttonfunction + '>' + submenu.submenu_name + '</a> <span class="badge"><button onclick="delMenu('+submenu.id+',1,\''+submenu.submenu_name+'\')"><i class="icon iconfont">&#xe69d</i></button></span></li>');
+                        });
+
+                        liSortableInit('subMenuList');//初始化菜单的拖动功能
+
+
+                        var buttonfunction = "saveMenu('subMenuList')";
+                        $("#submenuSection").html('<button class="btn btn-success" onclick=' + buttonfunction + '>保存菜单</button>');
+
+
+                        var buttonfunction = 'showAddSubmenu(' + menuId + ',"' + menu + '")';
+                        $("#submenuSection").append('<button class="btn btn-outline-info float-right" onclick=' + buttonfunction + '>添加子菜单</button>');
+
+                    }
+                }
+            });
+
+
+        }
+
+
+        function positionChanged() {
+            //get menu list according to the position
+            var positionId = $("#positionSelectList").val();
+            var SelectedPositionName = $("#positionSelectList").find("option:selected").text();
+
+
+            $.ajax({
+                'url': "{{url('admin/MenuList')}}",
+                'type': 'post',
+                'data': {'id': positionId},
+                'dataType': 'json',
+                success: function (data) {
+                    $('#menuList').find('li').remove();
+                    if (data.status) {
+                        $("#menuTitle").html(SelectedPositionName);
+
+                        $.each(data.menuList, function (key, menu) {
+                            var buttonfunction = 'showSubMenu(' + menu.id + ',"' + menu.menu_name + '")';
+                            $('#menuList').append('<li class="list-group-item d-flex justify-content-between align-items-center" data-id="' + menu.id + '"><a href="javascript:;" onclick=' + buttonfunction + '>' + menu.menu_name + '</a> <span class="badge"><button onclick="delMenu('+menu.id+',0,\''+menu.menu_name+'\')"><i class="icon iconfont">&#xe69d</i></button></span></li>');
+                        });
+
+
+                        liSortableInit('menuList');//初始化菜单的拖动功能
+                        var buttonfunction = "saveMenu('menuList')";
+                        $("#menuSection").html('<button class="btn btn-success" onclick=' + buttonfunction + '>保存菜单</button>');
+
+                        buttonfunction="showAddMenu("+positionId+",'"+SelectedPositionName+"')";
+                        $("#menuSection").append('<button class="btn btn-outline-info float-right" onclick=' + buttonfunction + '>添加菜单</button>');
+
+                    }
+                }
+
+            });
+        }
+
+
+        function showAddMenu(positionId, positionName) {
+            $("#MenuPosition").val(positionId);
+
+            $("#newMenu").modal('show');
+
+        }
+
+        function showAddSubmenu(menuId, menu) {
+            $("#submenuMenuName").html(menu);
+            $("#newSubmenuName").val('');
+            $('#menuId').val(menuId);
+            $('#menuName').val(menu);
+
+            $("#newSubmenu").modal('show');
+
+        }
+
+
+        function addNewSubmenu() {
+            var submenu_name = $("#newSubmenuName").val();
+            var menuId = $("#menuId").val();
+            var menu = $("#menuName").val();
+
+            $.ajax({
+                'url': "{{url('admin/addSubmenu')}}",
+                'type': 'post',
+                'data': {'submenu_name': submenu_name, 'menu_id': menuId},
+                'dataType': 'json',
+                success: function (data) {
+                    if (data.status) {
+                        showSubMenu(menuId, menu);
+                        $("#newSubmenu").modal('hide');
+                        liSortableInit('subMenuList');//初始化菜单的拖动功能
+                    }
+
+                    layer.msg(data.msg, {icon: 1});
+                }
+            });
+
+
+        }
+
+        function addNewMenu() {
+            var menuName = $("#newMenuName").val();
+            var position = $("#MenuPosition").val();
+
+            $.ajax({
+                'url': "{{url('admin/newMenu')}}",
+                'data': {'menu_name': menuName, 'menu_position': position},
+                'dataType': 'json',
+                'type': 'post',
+                success: function (data) {
+                    if (data.status) {
+                        $("#newMenu").modal('hide');
+                    }
+                    layer.msg(data.msg, {icon: 1});
+                    positionChanged();
+                }
+
+
+            });
+
+        }
+
+        function delMenu(menuId,menuType,menu_name){
+            $.ajax({
+                'url':"{{url('admin/delMenu')}}",
+                'type':'delete',
+                'data':{'id':menuId,'type':menuType},
+                'dataType':'json',
+                success:function(data){
+                   if(data.status){
+                       layer.msg(data.msg,{icon:1});
+                       positionChanged();
+                       if(menuType==1){
+                           showSubMenu(data.menuId,data.menuName);
+
+                       }
+                   }
+                }
+
+            });
+        }
+
+
+    </script>
 
 @endsection

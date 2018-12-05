@@ -16,10 +16,11 @@ class CreateSubMenusTable extends Migration
         Schema::create('sub_menus', function (Blueprint $table) {
             $table->increments('id');
             $table->string('submenu_name')->comment('子菜单名字');
-            $table->string('submenu_url')->comment('子菜单链接');
-            $table->integer('submenu_rank')->comment('子菜单序列');
+            $table->string('submenu_url')->nullable()->comment('子菜单链接');
+            $table->integer('rank')->default(0)->comment('子菜单序列');
             $table->integer('menu_id')->comment('菜单ID');
-            $table->string('submenu_icon')->comment('子菜单图标');
+            $table->string('submenu_icon')->nullable()->comment('子菜单图标');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

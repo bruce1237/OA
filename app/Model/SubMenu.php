@@ -9,4 +9,5 @@ class SubMenu extends Model
 {
     //
     use SoftDeletes;
+    protected $guarded=[];
 }
