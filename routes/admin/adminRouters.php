@@ -63,6 +63,15 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************OA Menu Del**********************/
     Route::delete('delMenu',['uses'=>'menuController@delMenu']);
 
+    /*****************OA submenu Add Url**********************/
+    Route::post('addUrl',['uses'=>'menuController@addUrl']);
+
+    /*****************OA get submenuURL access Control**********************/
+    Route::post('readAccess',['uses'=>'menuController@readAccess']);
+
+    /*****************OA get submenuURL access Control**********************/
+    Route::post('addAccess',['uses'=>'menuController@addAccess']);
+
 
 
 

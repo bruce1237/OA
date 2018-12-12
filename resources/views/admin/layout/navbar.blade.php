@@ -22,134 +22,7 @@
                     </li >
                 </ul>
             </li>
-            <li>
-                <a href="javascript:;">
-                    <i class="iconfont">&#xe6b8;</i>
-                    <cite>商标服务</cite>
-                    <i class="iconfont nav_right">&#xe697;</i>
-                </a>
-                <ul class="sub-menu">
-                    <li>
-                        <a _href="{{url('admin/logo')}}">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>商标管理</cite>
 
-                        </a>
-                    </li >
-                    <li>
-                        <a _href="{{url('admin/logoEs')}}">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>ES 搜索管理</cite>
-
-                        </a>
-                    </li>
-                    <li>
-                        <a _href="{{url('admin/logoSeller')}}">
-                            <i class="iconfont">&#xe6a7;</i>
-                            <cite>代理人管理</cite>
-
-                        </a>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            <i class="iconfont">&#xe70b;</i>
-                            <cite>Excel 操作</cite>
-                            <i class="iconfont nav_right">&#xe697;</i>
-                        </a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a _href="{{url('admin/excelExport')}}">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>excel 图片导出</cite>
-
-                                </a>
-                            </li >
-                            <li>
-                                <a _href="xx.html">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>会员删除</cite>
-
-                                </a>
-                            </li>
-                            <li>
-                                <a _href="xx.html">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>等级管理</cite>
-
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            <i class="iconfont">&#xe70b;</i>
-                            <cite>Redis 操作</cite>
-                            <i class="iconfont nav_right">&#xe697;</i>
-                        </a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a _href="{{url('admin/Redis')}}">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>Redis</cite>
-
-                                </a>
-                            </li >
-
-
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            <i class="iconfont">&#xe70b;</i>
-                            <cite>ML 操作</cite>
-                            <i class="iconfont nav_right">&#xe697;</i>
-                        </a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a _href="{{url('admin/ML')}}">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>ML</cite>
-
-                                </a>
-                            </li >
-
-
-                        </ul>
-                    </li>
-                    <li>
-                        <a href="javascript:;">
-                            <i class="iconfont">&#xe70b;</i>
-                            <cite>PHP</cite>
-                            <i class="iconfont nav_right">&#xe697;</i>
-                        </a>
-                        <ul class="sub-menu">
-                            <li>
-                                <a _href="{{url('admin/array')}}">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>Array</cite>
-
-                                </a>
-                            </li >
-                            <li>
-                                <a _href="{{url('admin/file')}}">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>File</cite>
-
-                                </a>
-                            </li>
-                            <li>
-                                <a _href="{{url('admin/string')}}">
-                                    <i class="iconfont">&#xe6a7;</i>
-                                    <cite>String</cite>
-
-                                </a>
-                            </li>
-
-                        </ul>
-                    </li>
-                </ul>
-            </li>
             <li>
                 <a href="javascript:;">
                     <i class="iconfont">&#xe723;</i>
@@ -161,6 +34,12 @@
                         <a _href="{{url('admin/OAMenu')}}">
                             <i class="iconfont">&#xe6a7;</i>
                             <cite>菜单管理</cite>
+                        </a>
+                    </li >
+                    <li>
+                        <a _href="{{url('admin/OAMenu')}}">
+                            <i class="iconfont">&#xe6a7;</i>
+                            <cite>权限管理{{$a}}</cite>
                         </a>
                     </li >
                 </ul>

@@ -131,26 +131,84 @@ class MenuController extends Controller
         switch ($request->post('type')) {
             case 0:
                 $obj = $this->menuObj;
-                $this->submenuObj->where('menu_id','=',$request->post('id'))->delete();
+                $this->submenuObj->where('menu_id', '=', $request->post('id'))->delete();
                 break;
             case 1:
                 $obj = $this->submenuObj;
                 $menu = $obj->find($request->post('id'));
                 $this->data['menuId'] = $menu->menu_id;
-                $this->data['menuName']= $this->menuObj->find($this->data['menuId'])->menu_name;
+                $this->data['menuName'] = $this->menuObj->find($this->data['menuId'])->menu_name;
 
 
                 break;
         }
 
 
-
-        if($obj->destroy($request->post('id'))){
+        if ($obj->destroy($request->post('id'))) {
             $this->data['status'] = true;
             $this->data['msg'] = "菜单删除成功";
         }
         return $this->data;
 
+
+    }
+
+    public function addUrl(Request $request) {
+        if (!$request->ajax()) {
+            return $this->data;
+        }
+
+        if (SubMenu::where('id', '=', $request->post('id'))->update(['submenu_url' => $request->post('submenu_url')])) {
+            $this->data['status'] = true;
+            $this->data['msg'] = "修改成功";
+        }
+
+        return $this->data;
+
+
+    }
+
+    public function readAccess(Request $request) {
+        if (!$request->ajax()) {
+            return $this->data;
+        }
+
+        if (!file_exists(storage_path('access' . "/" . $request->post('submenuId')))) {
+            return $this->data;
+        }
+        if ($this->data['msg'] = json_decode(file_get_contents(storage_path('access' . "/" . $request->post('submenuId'))),true)) {
+            $this->data['status'] = true;
+        }
+
+
+        return $this->data;
+
+
+    }
+
+    public function addAccess(Request $request) {
+        $access = array();
+        if (!$request->ajax()) return $this->data;
+        if(!$request->post('access')) return $this->data;
+        $filePathName = storage_path('access') . "/" . $request->post('submenuId');
+        if (file_exists($filePathName)) {
+
+            $access = json_decode(file_get_contents($filePathName), true);
+            if(in_array(strtolower($request->post('access')),$access[$request->post('submenuURL')])){
+                $this->data['msg'] = "添加的权限已经存在";
+                return $this->data;
+            }
+        }
+
+
+
+        $access[$request->post('submenuURL')][] = strtolower($request->post('access'));
+        if (file_put_contents($filePathName, json_encode($access))) {
+            $this->data['status'] = true;
+            $this->data['msg'] = "添加成功";
+        }
+
+        return $this->data;
 
     }
 

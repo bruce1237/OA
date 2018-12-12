@@ -14,21 +14,22 @@ use Illuminate\Support\Facades\Route;
 class HRController extends Controller
 {
     //
-    public function __construct(){
+    public function __construct(Request $request){
         $allowed=['hrController@staff','hrController@index'];
-
         $current = str_replace(Route::current()->action['namespace']."\\",'',Route::currentRouteAction());
         if(!in_array($current,$allowed)){
-//            dump("not allowed");
+            dump("not allowed");
 
         }
 
 
+        dump($request->getMethod());
 
-//        dump(Route::current()->uri());
-//        dump(Route::current()->action['namespace']);
-//        dump(Route::currentRouteName());
-//        dump(Route::currentRouteAction());
+
+        dump(Route::current()->uri());
+        dump(Route::current()->action['namespace']);
+        dump(Route::currentRouteName());
+        dump(Route::currentRouteAction());
     }
 
     public function index() {
