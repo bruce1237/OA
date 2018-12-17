@@ -20,7 +20,9 @@ class MenuController extends Controller
         $this->positionObj = new Position();
         $this->menuObj = new Menu();
         $this->submenuObj = new SubMenu();
-
+//        $a =HRController::class;
+//        //dd($a);
+//        dd(get_class_methods('App\Http\Controllers\Admin\HRController'));
 
     }
 
@@ -158,7 +160,7 @@ class MenuController extends Controller
             return $this->data;
         }
 
-        if (SubMenu::where('id', '=', $request->post('id'))->update(['submenu_url' => $request->post('submenu_url')])) {
+        if (SubMenu::where('id', '=', $request->post('id'))->update(['submenu_url' => url($request->post('submenu_url'))])) {
             $this->data['status'] = true;
             $this->data['msg'] = "修改成功";
         }
@@ -173,10 +175,10 @@ class MenuController extends Controller
             return $this->data;
         }
 
-        if (!file_exists(storage_path('access' . "/" . $request->post('submenuId')))) {
+        if (!file_exists(storage_path('access' . "/" . $request->post('positionId')))) {
             return $this->data;
         }
-        if ($this->data['msg'] = json_decode(file_get_contents(storage_path('access' . "/" . $request->post('submenuId'))),true)) {
+        if ($this->data['msg'] = json_decode(file_get_contents(storage_path('access' . "/" . $request->post('positionId'))),true)) {
             $this->data['status'] = true;
         }
 
@@ -190,7 +192,7 @@ class MenuController extends Controller
         $access = array();
         if (!$request->ajax()) return $this->data;
         if(!$request->post('access')) return $this->data;
-        $filePathName = storage_path('access') . "/" . $request->post('submenuId');
+        $filePathName = storage_path('access') . "/" . $request->post('positionId');
         if (file_exists($filePathName)) {
 
             $access = json_decode(file_get_contents($filePathName), true);

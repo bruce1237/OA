@@ -2,14 +2,36 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Model\Menu;
+use App\Model\Staff;
+use App\Model\SubMenu;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Auth;
 
 class HomeController extends Controller
 {
-    //
-    public function showDashboard(){
-        $a = "navbar";
-        return view('admin/home/dashboard',['a'=>$a]);
+    public function __construct() {
     }
+
+    public function showDashboard(){
+        $menuList = $this->getMenuList(Auth::guard('admin')->user()->staff_id);
+
+
+        return view('admin/home/dashboard',['menuList'=>$menuList]);
+    }
+
+    public function getMenuList($staffId){
+        $positionId = Staff::find($staffId)->position_id;
+        $menuList = Menu::where('menu_position','=',$positionId)->orderBy('rank')->get();
+        foreach ($menuList as $key=> $menu){
+            $menuList[$key][$menu->menu_name] = SubMenu::where('menu_id','=',$menu->id)->orderBy('rank')->get();
+        }
+        return $menuList;
+    }
+
+
+
+
+
 }

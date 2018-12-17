@@ -364,6 +364,11 @@
             var positionId = $("#positionSelectList").val();
             var SelectedPositionName = $("#positionSelectList").find("option:selected").text();
 
+            $("#subMenuList").html('');
+
+
+
+
 
             $.ajax({
                 'url': "{{url('admin/MenuList')}}",
@@ -516,6 +521,7 @@
             $("#AccessSubmenuURL").val(submenuURL);
             $("#AccessMenuId").val(menuId);
             $("#AccessMenuName").val(menuName);
+            var positionId = $("#positionSelectList").val();
 
             $("#accessTitle").html(submenuName);
             $("#accessTitle").append('<br /><div class="input-group input-group-sm mb-3"><input type="text" id="submenuRul" class="form-control" value="'+submenuURL+'"/></div>');
@@ -526,7 +532,7 @@
             $.ajax({
                'url':"{{url('admin/readAccess')}}",
                'type':'post',
-               'data':{'submenuId':submenuId},
+               'data':{'submenuId':submenuId,'positionId':positionId},
                 'dataType':'json',
                 success:function(data){
                    if(data.status){
@@ -551,6 +557,7 @@
 
 
         function addAccess() {
+            var positionId = $("#positionSelectList").val();
             var access = $("#accessName").val();
             var submenuId = $("#AccessSubmenuID").val();
             var submenuName = $("#AccessSubmenuName").val();
@@ -561,12 +568,14 @@
             $.ajax({
                'url':"{{url('admin/addAccess')}}",
                'type':'post',
-                'data':{'access':access,'submenuId':submenuId,'submenuURL':submenuURL},
+                'data':{'access':access,'positionId':positionId,'submenuId':submenuId,'submenuURL':submenuURL},
                 'dataType':'json',
                 success:function(data){
+                    $("#accessName").val('');
                   layer.msg(data.msg,{icon:1});
                 }
             });
+
             showAccess(submenuId,submenuName,submenuURL,menuId,menuName);
 
 
