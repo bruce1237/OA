@@ -242,6 +242,7 @@
 
     <script>
 
+
         function liSortableInit(containerID) {
 
             // sort_define = '';  //列表的初始值
@@ -393,6 +394,8 @@
                         buttonfunction="showAddMenu("+positionId+",'"+SelectedPositionName+"')";
                         $("#menuSection").append('<button class="btn btn-outline-info float-right" onclick=' + buttonfunction + '>添加菜单</button>');
 
+                    }else{
+                        layer.msg(data.msg,{icon:2});
                     }
                 }
 
@@ -532,7 +535,7 @@
             $.ajax({
                'url':"{{url('admin/readAccess')}}",
                'type':'post',
-               'data':{'submenuId':submenuId,'positionId':positionId},
+               'data':{'submenuId':submenuId,'positionId':positionId,'submenuURL':submenuURL},
                 'dataType':'json',
                 success:function(data){
                    if(data.status){
@@ -540,9 +543,7 @@
 
                        $.each(data.msg,function(key, item){
 
-                           $.each(item,function(k, v) {
-                               $("#accessList").append('<li class="list-group-item d-flex justify-content-between align-items-center">' + v + '</li>');
-                           });
+                               $("#accessList").append('<li class="list-group-item d-flex justify-content-between align-items-center">' + item + '</li>');
                        });
                    }else{
                        $("#accessList").html('<li class="list-group-item d-flex justify-content-between align-items-center">无内容</li>');

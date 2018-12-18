@@ -12,13 +12,17 @@ use Illuminate\Support\Facades\Auth;
 class HomeController extends Controller
 {
     public function __construct() {
+
     }
 
-    public function showDashboard(){
+    public function index(){
         $menuList = $this->getMenuList(Auth::guard('admin')->user()->staff_id);
+        //get positionId
+        $positionId = Staff::where('staff_id','=',Auth::guard('admin')->user()->staff_id)->first()->position_id;
+        $logedName = Auth::guard('admin')->user()->name;
 
 
-        return view('admin/home/dashboard',['menuList'=>$menuList]);
+        return view("admin/home/$positionId",['menuList'=>$menuList,'name'=>$logedName]);
     }
 
     public function getMenuList($staffId){

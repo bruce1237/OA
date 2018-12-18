@@ -71,7 +71,7 @@
 
             </tbody>
         </table>
-        <div class="page">
+        <div class="page">{{ $staffList->links() }}
             <div>
 
             </div>
@@ -834,13 +834,14 @@
     }
 
     function showStaffLoginInfo(Staff){
-        $("#staff_login_password").val('');
 
+        $("#staff_login_password").val('');
         $.ajax({
            'url':"{{url('admin/getStaffLoginInfo')}}/"+Staff,
            'type':'get',
            'dataType':'json',
            success:function(data){
+
                if(data.status){
                    $("#login_staff_id").val(data.info.staff_id);
                    $("#login_staff_name").val(data.info.staff_name);
@@ -849,6 +850,7 @@
                    $("#login_staff_id").val('');
                    $("#login_staff_name").val('');
                    $("#login_staff_no").val('');
+                   layer.msg(data.msg,{icon:2});
                }
            }
         });
@@ -904,6 +906,8 @@
                layer.msg(data.msg, {icon: 1});
                if(data){
                 refreshPage();
+               }else{
+                   layer.msg(data.msg, {icon: 2});
                }
            }
         });
@@ -921,7 +925,8 @@
                     if(data.status){
                         initStaffModel(data.staff);
                         $("#staffModal").modal('show');
-
+                    }else{
+                        layer.msg(data.msg, {icon: 2});
                     }
                 }
             });
@@ -1011,6 +1016,8 @@
                     layer.msg(data.msg, {icon: 1});
                     $("#departmentModal").modal('hide');
                     refreshPage()
+                }else{
+                    layer.msg(data.msg, {icon: 2});
                 }
             }
 

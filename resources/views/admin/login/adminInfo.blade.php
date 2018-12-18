@@ -49,11 +49,20 @@
         </label>
         <button class="layui-btn" lay-filter="add" lay-submit="" onclick="changePwd()">修改密码</button>
     </div>
-
+    <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.js"></script>
 
     <script>
+        // $(document).ready(function(){
+        //     alert("FF");
+        //
+        //
+        //
+        // }
+            $(function(data){
+            alert(data.msg);
+        });
 
-       function changePwd(){
+            function changePwd(){
 
            var oldPwd=$("#old_pass").val();
            var newPwd=$("#L_pass").val();

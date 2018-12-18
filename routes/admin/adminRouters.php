@@ -7,8 +7,8 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
 
 
 
-    Route::get('home',['uses' => 'HomeController@showDashboard']);
-    Route::get('/', ['uses' => 'HomeController@showDashboard']);
+    Route::get('home',['uses' => 'HomeController@index']);
+    Route::get('/', ['uses' => 'HomeController@index']);
     Route::get('info',['uses'=>'loginController@info']);
     Route::post('changePwd',['uses'=>'loginController@changePwd']);
     Route::get('logout',['uses'=>'loginController@logout']);

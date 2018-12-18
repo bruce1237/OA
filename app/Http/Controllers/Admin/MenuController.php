@@ -160,7 +160,7 @@ class MenuController extends Controller
             return $this->data;
         }
 
-        if (SubMenu::where('id', '=', $request->post('id'))->update(['submenu_url' => url($request->post('submenu_url'))])) {
+        if (SubMenu::where('id', '=', $request->post('id'))->update(['submenu_url' => $request->post('submenu_url')])) {
             $this->data['status'] = true;
             $this->data['msg'] = "修改成功";
         }
@@ -178,7 +178,7 @@ class MenuController extends Controller
         if (!file_exists(storage_path('access' . "/" . $request->post('positionId')))) {
             return $this->data;
         }
-        if ($this->data['msg'] = json_decode(file_get_contents(storage_path('access' . "/" . $request->post('positionId'))),true)) {
+        if ($this->data['msg'] = json_decode(file_get_contents(storage_path('access' . "/" . $request->post('positionId'))),true)[$request->post('submenuURL')]) {
             $this->data['status'] = true;
         }
 
@@ -196,9 +196,14 @@ class MenuController extends Controller
         if (file_exists($filePathName)) {
 
             $access = json_decode(file_get_contents($filePathName), true);
-            if(in_array(strtolower($request->post('access')),$access[$request->post('submenuURL')])){
-                $this->data['msg'] = "添加的权限已经存在";
-                return $this->data;
+
+            if(key_exists($request->post('submenuURL'),$access)) {
+
+
+                if (in_array(strtolower($request->post('access')), $access[$request->post('submenuURL')])) {
+                    $this->data['msg'] = "添加的权限已经存在";
+                    return $this->data;
+                }
             }
         }
 

@@ -34,7 +34,11 @@ class HRController extends Controller
 
     public function index() {
         //get staff list
-        $staffList = Staff::all(['staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work']);
+        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')->paginate(1);
+
+
+//        $staffList = Staff::all(['staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work'])->paginate(1);
+//        $staffList = Staff::paginate(1);
         $staffCount = Staff::count();
 
         //get department list
