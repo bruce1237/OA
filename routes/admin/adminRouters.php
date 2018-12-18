@@ -3,6 +3,8 @@ Route::get('/', ['uses' => 'admin\loginController@loginForm']);
 Route::get('/login', ['uses' => 'admin\loginController@loginForm']);
 Route::post('/admin/login', ['uses' => 'admin\loginController@login']);
 
+Route::view('/admin/denied','admin/denied');
+
 Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adminCheck'], function () {
 
 

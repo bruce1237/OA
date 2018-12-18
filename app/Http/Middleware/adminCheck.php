@@ -40,9 +40,9 @@ class adminCheck
             if (strtolower(Route::current()->uri()) != "admin/home") {
 
                 if (!key_exists(strtolower(Route::current()->uri()), $positionAllowedAccessArray)) {
-
-                echo json_encode($data);
-                exit;
+                    return redirect('admin/denied');
+//                echo json_encode($data);
+//                exit;
 
                 }
             }
@@ -68,10 +68,10 @@ class adminCheck
             if (!in_array(strtolower($currentFunctionName), $this->arrString)) {
 
 //                dump("JJ");
+                return redirect('admin/OAMenu');
 
-
-                echo json_encode($data);
-              exit;
+//                echo json_encode($data);
+//              exit;
 
             }
 //
