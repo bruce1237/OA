@@ -9,7 +9,7 @@ class TestController extends Controller
 {
     public function tt(){
         $a = "AAA";
-        return view('admin/test/index',['a'=>$a]);
+        dd(get_class_methods('App\Http\Controllers\Admin\HRController'));
     }
 
 }

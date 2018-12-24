@@ -35,14 +35,18 @@ class adminCheck
 //dump(Route::current()->uri());
             $this->convertArray($positionAllowedAccessArray);
 //            dump($this->arrString);
+//            dump(Route::currentRouteAction());
+
+//            $auth=false;
 
             //first, check if the page is allowed to be shown
             if (strtolower(Route::current()->uri()) != "admin/home") {
 
                 if (!key_exists(strtolower(Route::current()->uri()), $positionAllowedAccessArray)) {
-                    return redirect('admin/denied');
+//                    return redirect('admin/denied');
 //                echo json_encode($data);
 //                exit;
+//                    $auth=false;
 
                 }
             }
@@ -62,19 +66,39 @@ class adminCheck
             $this->convertArray($positionAllowedAccessArray);
 //            dump($this->arrString);
 //            dump(strtolower($currentFunctionName));
-//
+//////
 //            dump(in_array(strtolower($currentFunctionName),$this->arrString));
-//
+////
             if (!in_array(strtolower($currentFunctionName), $this->arrString)) {
+//                            dump(strtolower($currentFunctionName));
+//                return redirect('admin/denied');
+                $auth=false;
+
+
+
+//               session()->put('authorize','F');
+
+//                dd(session()->all());
 
 //                dump("JJ");
-                return redirect('admin/OAMenu');
+//                return redirect('admin/OAMenu');
 
 //                echo json_encode($data);
 //              exit;
 
+            }else{
+//                session()->put('authorize','T');
+                $auth = true;
             }
+
+
+            file_put_contents(storage_path('access')."/access.txt",json_encode($auth));
 //
+//            session(['authorize'=>'F']);
+//            echo session('authorize');
+
+
+
 
 //            dump(Route::current()->uri());
 //

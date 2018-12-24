@@ -17,6 +17,7 @@ class MenuController extends Controller
 
 
     public function __construct() {
+        $this->authorize();
         $this->positionObj = new Position();
         $this->menuObj = new Menu();
         $this->submenuObj = new SubMenu();

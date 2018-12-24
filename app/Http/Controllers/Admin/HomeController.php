@@ -21,9 +21,15 @@ class HomeController extends Controller
         $positionId = Staff::where('staff_id','=',Auth::guard('admin')->user()->staff_id)->first()->position_id;
         $logedName = Auth::guard('admin')->user()->name;
 
-
         return view("admin/home/$positionId",['menuList'=>$menuList,'name'=>$logedName]);
     }
+
+
+
+
+
+
+
 
     public function getMenuList($staffId){
         $positionId = Staff::find($staffId)->position_id;

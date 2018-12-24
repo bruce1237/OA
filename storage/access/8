@@ -1,1 +1,1 @@
-{"admin\/hr":["newposition","index","home","showdashboard"]}
+{"admin\/hr":["newposition","index","home","showdashboard","newdepart","modifydepart","modifypositions","getmanagers","getstafflevel","newstaff","delstaff","getstafflogininfo","savestafflogininfo","middleware","staff"]}

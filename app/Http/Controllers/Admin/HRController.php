@@ -15,12 +15,18 @@ class HRController extends Controller
 {
     //
     public function __construct(Request $request){
-        $allowed=['hrController@staff','hrController@index'];
-        $current = str_replace(Route::current()->action['namespace']."\\",'',Route::currentRouteAction());
-        if(!in_array($current,$allowed)){
-//            dump("not allowed");
+        $this->authorize();
+//        session(['key' => 'value']);
+//        dd(session('key'));
 
-        }
+
+
+//        $allowed=['hrController@staff','hrController@index'];
+//        $current = str_replace(Route::current()->action['namespace']."\\",'',Route::currentRouteAction());
+//        if(!in_array($current,$allowed)){
+////            dump("not allowed");
+//
+//        }
 
 
 //        dump($request->getMethod());
@@ -34,7 +40,7 @@ class HRController extends Controller
 
     public function index() {
         //get staff list
-        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')->paginate(1);
+        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')->get();
 
 
 //        $staffList = Staff::all(['staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work'])->paginate(1);
@@ -167,12 +173,27 @@ class HRController extends Controller
         }
 
         $postData = $request->post();
+        $dataCheck = $request->post();
 
-        unset($postData['staff_id']);
+//        unset($postData['staff_id']);
+        unset($dataCheck['staff_id']);
+        unset($dataCheck['staff_wenxin_private']);
+        unset($dataCheck['staff_email_private']);
+        unset($dataCheck['staff_address']);
+        unset($dataCheck['staff_wenxin_work']);
+        unset($dataCheck['staff_salary']);
+        unset($dataCheck['staff_commission_rate']);
+        unset($dataCheck['staff_contract_no']);
+        unset($dataCheck['staff_contract_start']);
+        unset($dataCheck['staff_contract_end']);
+        unset($dataCheck['staff_family_member']);
+        unset($dataCheck['staff_hobby']);
+        unset($dataCheck['staff_self_assessment']);
+        unset($dataCheck['staff_assessment']);
 
-        if (in_array(null, $postData) || in_array("null", $postData)) {
-            $emptyCols1 = array_keys($request->post(), null);
-            $emptyCols2 = array_keys($request->post(), "null");
+        if (in_array(null, $dataCheck) || in_array("null", $dataCheck)) {
+            $emptyCols1 = array_keys($dataCheck, null);
+            $emptyCols2 = array_keys($dataCheck, "null");
             $emptyCols = array_merge($emptyCols1, $emptyCols2);
 
             $data['msg'] = "请填写必要项";
