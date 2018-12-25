@@ -160,22 +160,21 @@ class HRController extends Controller
 
         $data['status'] = false;
         $data['msg'] = "init";
-        $postData = [];
 
 
-        if (!$request->post('staff_id')) {
-            //新添加员工信息
-            if (!$request->file('upload_staff_photo')) {
-                $data['msg'] = "请填写必要项";
-                $data['emptyCols'] = ['upload_staff_photo'];
-                return json_encode($data);
-            }
-        }
 
-        $postData = $request->post();
+//        if (!$request->post('staff_id')) {
+//            //新添加员工信息
+//            if (!$request->file('upload_staff_photo')) {
+//                $data['msg'] = "请填写必要项";
+//                $data['emptyCols'] = ['upload_staff_photo'];
+//                return json_encode($data);
+//            }
+//        }
+
+
         $dataCheck = $request->post();
 
-//        unset($postData['staff_id']);
         unset($dataCheck['staff_id']);
         unset($dataCheck['staff_wenxin_private']);
         unset($dataCheck['staff_email_private']);
@@ -201,7 +200,6 @@ class HRController extends Controller
             return json_encode($data);
         }
 
-
         $postData = $request->post();
 
         if ($request->file('upload_staff_photo')) {
@@ -225,7 +223,7 @@ class HRController extends Controller
             $data['msg'] = $exception->getMessage();
             switch ($exception->getCode()) {
                 case 23000:
-                    $data['msg'] = "员工号码已经存在!";
+//                    $data['msg'] = "员工号码已经存在!";
                     break;
             }
         }

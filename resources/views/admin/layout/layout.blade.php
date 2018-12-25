@@ -5,7 +5,8 @@
     <title>MLOA-admin 1.0</title>
     <meta name="renderer" content="webkit|ie-comp|ie-stand">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <meta name="viewport" content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
+    <meta name="viewport"
+          content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
     <meta name="csrf-token" content="{{csrf_token() }}">
 
@@ -18,6 +19,21 @@
 
     <script src="/lib/layui/layui.js" charset="utf-8"></script>
     <script type="text/javascript" src="/js/xadmin.js"></script>
+
+    <style>
+        .salesTable tr th, td {
+            border: #0b2e13 solid 2px;
+            border-collapse: separate;
+            empty-cells: show;
+            padding: 2px 2px 2px 2px;
+        }
+
+        .salesTable th {
+            text-align: center;
+        }
+
+
+    </style>
 
 </head>
 <body>
@@ -53,35 +69,98 @@
                         @section('pSection4')@show
 
                         <fieldset class="layui-elem-field">
+                            <legend> 今日业绩:&yen;2400</legend>
+
+
+                            <div class="layui-field-box">
+                                <div class="row">
+                                    <div class="col-4">
+                                        <span class="input-group-text" id="inputGroup-sizing-sm">新增业绩:</span>
+                                        <input type="text" class="form-control" id="sales"
+                                               aria-label="Sizing example input"
+                                               aria-describedby="inputGroup-sizing-sm"/>
+                                        <button class="btn-success btn-sm" onclick="add_sales()">添加</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </fieldset>
+
+
+                        <fieldset class="layui-elem-field">
                             <legend>业绩统计</legend>
                             <div class="layui-field-box">
-                                <table class="layui-table">
+                                <table class="salesTable">
                                     <thead>
                                     <tr>
                                         <th>姓名</th>
-                                        <th>{{date('m')}}月任务</th>
+                                        <th>{{date('m')}}任务</th>
                                         @php
                                             $today = date('d');
+
                                             for($i=1;$i<=$today;$i++){
                                                 echo "<th>".sprintf("%02d", $i)."</th>";
                                             }
                                         @endphp
-                                        <th>总计{{$i}}</th>
+
+                                        <th>总计</th>
                                         <th>达成率</th>
+
+
                                     </tr>
 
                                     </thead>
                                     <tbody>
-                                    <tr>
-                                        <th>郝友伟</th>
-                                        <td>40000</td>
-                                    </tr>
+
+
+
+
+                                    @foreach($monthlySales as $key =>$sales)
+
+                                        <tr>
+                                            <td>{{$sales['staff_name']}}</td>
+                                            <td>{{$sales['target']}}</td>
+
+
+                                            @for($i=1;$i<=$today;$i++)
+
+                                                @php
+
+
+                                                    $a=0;
+
+                                                    foreach ($sales['sales'] as $daySales){
+                                                    if(array_key_exists(date("Y-m-").sprintf("%02d",$i), $daySales)){
+                                                    $a =1;
+                                                        echo "<td>".$daySales[date("Y-m-").sprintf("%02d",$i)]."</td>";
+                                                    }
+
+                                                    }
+                                                if($a!=1){
+                                                    echo "<td></td>";
+                                                }
+
+
+
+
+                                                @endphp
+
+
+
+
+                                            @endfor
+
+
+
+                                        </tr>
+                                    @endforeach
                                     <tr>
                                         <th>总计</th>
                                         <td>500000</td>
                                         <td colspan="{{$i-1}}"></td>
-                                        <td>3548</td>
+                                        <th>总计</th>
+                                        <th>达成率</th>
                                     </tr>
+
                                     </tbody>
                                 </table>
                             </div>
@@ -115,6 +194,22 @@
             }
         });
     });
+
+
+    function add_sales() {
+        var sales = $("#sales").val();
+        $.ajax({
+            'url': "{{url('admin/addSales')}}",
+            'type': 'post',
+            'data': {'sales': sales},
+            'dataType': 'json',
+            success: function (data) {
+                alert(data.msg);
+            }
+        });
+    }
+
+
 </script>
 </body>
 </html>

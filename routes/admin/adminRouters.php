@@ -35,6 +35,15 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************get staff info **********************/
     Route::get('staff/{staff_id?}',['uses'=>'hrController@staff']);
 
+
+
+    /*********************************************/
+    /*****************Sales**********************/
+    /*******************************************/
+
+    /*****************Add Daily Sales**********************/
+    Route::post("addSales",['uses'=>'salesController@addSales']);
+
     /*****************delete staff info **********************/
     Route::delete('staff/{staff_id?}',['uses'=>'hrController@delStaff']);
 

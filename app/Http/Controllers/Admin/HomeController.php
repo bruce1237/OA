@@ -20,8 +20,10 @@ class HomeController extends Controller
         //get positionId
         $positionId = Staff::where('staff_id','=',Auth::guard('admin')->user()->staff_id)->first()->position_id;
         $logedName = Auth::guard('admin')->user()->name;
+        $salesObj = new SalesController();
+        $monthlySales = $salesObj->monthlySales();
 
-        return view("admin/home/$positionId",['menuList'=>$menuList,'name'=>$logedName]);
+        return view("admin/home/$positionId",['menuList'=>$menuList,'name'=>$logedName, 'monthlySales'=>$monthlySales]);
     }
 
 

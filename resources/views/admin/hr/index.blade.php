@@ -121,7 +121,7 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">员工编号*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>员工编号</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_no" aria-label="Sizing example input"
                                        aria-describedby="inputGroup-sizing-sm"/>
@@ -133,7 +133,7 @@
                             </div>
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">姓名*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>姓名</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_name"
                                        aria-label="Sizing example input"
@@ -147,7 +147,7 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">民族*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>民族</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_nationality"
                                        aria-label="Sizing example input"
@@ -165,7 +165,7 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">出生日期*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>出生日期</span>
                                 </div>
                                 <input type="date" class="form-control" id="staff_dob"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
@@ -174,7 +174,7 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <label class="input-group-text" for="inputGroupSelect01">政治面貌*</label>
+                                    <label class="input-group-text" for="inputGroupSelect01"><span style ="color: red;">*</span>政治面貌</label>
                                 </div>
                                 <input type="text" class="form-control" id="staff_political"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
@@ -194,7 +194,7 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">身份证*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>身份证</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_id_no"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
@@ -205,7 +205,7 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">籍贯*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>籍贯</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_jiguan"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
@@ -214,7 +214,7 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">私人手机*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>私人手机</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_mobile_private"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
@@ -242,28 +242,28 @@
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">紧急联系人姓名*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>紧急联系人姓名</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_kin_name"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
                             </div>
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">紧急联系人关系*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>紧急联系人关系</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_kin_relation"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
                             </div>
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">紧急联系人电话*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>紧急联系人电话</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_kin_mobile"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
                             </div>
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">工作手机*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>工作手机</span>
                                 </div>
                                 <input type="text" class="form-control" id="staff_mobile_work"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
@@ -297,7 +297,7 @@
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">职位*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>职位</span>
                                 </div>
 
                                 <select class="custom-select  custom-select-sm" id="position_id"
@@ -314,7 +314,7 @@
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">部门*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>部门</span>
                                 </div>
 
                                 <select class="custom-select  custom-select-sm" id="department_id"
@@ -331,7 +331,7 @@
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">主管*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>主管</span>
                                 </div>
 
                                 <select class="custom-select  custom-select-sm" id="staff_manager">
@@ -373,7 +373,7 @@
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">员工类型*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>员工类型</span>
                                 </div>
                                 <select class="custom-select  custom-select-sm" id="staff_type">
                                     <option value="试用员工" selected>试用员工</option>
@@ -415,7 +415,7 @@
                         <div class="col-4">
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
-                                    <span class="input-group-text" id="inputGroup-sizing-sm">入职日期*</span>
+                                    <span class="input-group-text" id="inputGroup-sizing-sm"><span style ="color: red;">*</span>入职日期</span>
                                 </div>
                                 <input type="date" class="form-control" id="staff_join_date"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
