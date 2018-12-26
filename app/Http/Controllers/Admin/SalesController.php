@@ -13,6 +13,9 @@ class SalesController extends Controller
 {
     //
     protected $targetSet = false;
+    protected $data=['status'=>true, 'msg'=>'init'];
+
+
 
     public function addSales(Request $request) {
         $postData = $request->post();
@@ -22,18 +25,28 @@ class SalesController extends Controller
         $postData['department_id'] = Staff::find($postData['staff_id'])->department_id;
 
         try {
-
+            $sum = Sales::where('staff_id','=',$postData['staff_id'])->where('date','like',date("Y-m-").'%')->sum('sales')+$postData['sales'];
             $sales = Sales::where('staff_id', '=', $postData['staff_id'])->where('date', '=', $postData['date'])->first()->sales;
 //            $sales = Sales::where('staff_id','=',78)->where('date','=',$postData['date'])->first()->sales;
             $postData['sales'] += $sales;
         } catch (\Exception $exception) {
+            $sum=$postData['sales'];
 
         }
 
 
-        if ($this->updateSalesTarget($postData['staff_id'], $postData['sales'])) {
-            Sales::updateOrCreate(['staff_id' => $postData['staff_id']], $postData);
+
+        if ($this->updateSalesTarget($postData['staff_id'], $sum)) {
+
+            if($postData['sales']>0){
+                Sales::updateOrCreate(['staff_id' => $postData['staff_id'],'date'=>$postData['date']], $postData);
+            }else{
+                Sales::where(['staff_id' => $postData['staff_id'],'date'=>$postData['date']], $postData)->delete();
+            }
+            $this->data =['status'=> true,'msg'=>'更新成功!'];
         }
+
+        return $this->data;
 
 
     }
@@ -53,6 +66,7 @@ class SalesController extends Controller
         foreach ($sales as $key => $value) {
             $salesRecord[$value['staff_id']]['staff_name'] = $value['staff_name'];
             $salesRecord[$value['staff_id']]['sales'][] = [$value['date'] => $value['sales']];
+            $salesRecord[$value['staff_id']]['department_id'] = $value['department_id'];
 
 
             foreach ($salesTarget as $k => $v) {

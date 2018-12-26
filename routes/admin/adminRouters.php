@@ -36,14 +36,6 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::get('staff/{staff_id?}',['uses'=>'hrController@staff']);
 
 
-
-    /*********************************************/
-    /*****************Sales**********************/
-    /*******************************************/
-
-    /*****************Add Daily Sales**********************/
-    Route::post("addSales",['uses'=>'salesController@addSales']);
-
     /*****************delete staff info **********************/
     Route::delete('staff/{staff_id?}',['uses'=>'hrController@delStaff']);
 
@@ -82,6 +74,36 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
 
     /*****************OA get submenuURL access Control**********************/
     Route::post('addAccess',['uses'=>'menuController@addAccess']);
+
+
+
+    /*********************************************/
+    /*****************Sales**********************/
+    /*******************************************/
+
+    /*****************Add Daily Sales**********************/
+    Route::post("addSales",['uses'=>'salesController@addSales']);
+
+
+    /*************************-*******************/
+    /*****************Desktop********************/
+    /*******************************************/
+    Route::post('addToDo',['uses'=>'homeController@addToDo']);
+
+    Route::post('delToDo',['uses' =>'homeController@delToDo']);
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
