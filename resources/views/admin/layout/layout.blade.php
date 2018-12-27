@@ -43,7 +43,9 @@
 <!-- <div class="x-slide_left"></div> -->
 <!-- 左侧菜单结束 -->
 <!-- 右侧主体开始 -->
-<div class="page-content">
+<div class="page-content" @if (!sizeof($menuList))
+style="left: 0px;"
+     @endif>
     <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
         <ul class="layui-tab-title">
             <li class="home"><i class="layui-icon">&#xe68e;</i>@section('title') 我的桌面@show</li>
@@ -56,7 +58,7 @@
 
                     <div class="x-body layui-anim layui-anim-up">
                         <blockquote class="layui-elem-quote">欢迎管理员：
-                            <span class="x-red">{{$name}}</span>！当前时间: @php echo date("Y-m-d H:i:s");@endphp
+                            <span class="x-red">{{$name}}</span>！当前时间: <span id ="currentDateTime"></span>
                             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:-8px;float:right"
                                href="javascript:location.replace(location.href);" title="刷新">
                                 <i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -113,7 +115,7 @@
                         <fieldset class="layui-elem-field">
                             <legend>业绩统计</legend>
                             <div class="layui-field-box">
-                                <table class="table" border="1">
+                                <table class="table" style="white-space:nowrap;" border =1>
                                     <thead>
                                     <tr>
                                         <th>姓名</th>
@@ -269,7 +271,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">事件:</span>
                         </div>
-                        <input type="text" id="a" name="event" class="form-control" placeholder="Username"
+                        <input type="text" id="a" name="event" class="form-control" placeholder="待办事件"
                                aria-label="Username" aria-describedby="basic-addon1">
                     </div>
 
@@ -277,7 +279,7 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">日期:</span>
                         </div>
-                        <input type="date" id="b" name="date" class="form-control" placeholder="Username"
+                        <input type="date" id="b" name="date" class="form-control"
                                aria-label="Username" aria-describedby="basic-addon1">
                     </div>
 
@@ -293,14 +295,24 @@
 
 
 <script>
-    $(document).ready(function () {
 
+
+    $(function () {
+        setInterval(showDateTime, 1000);
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
     });
+
+
+    function showDateTime(){
+        var date = new Date();
+        var dateTime=date.toLocaleString();
+        $("#currentDateTime").html(dateTime);
+    }
+
 
 
     function add_sales() {
@@ -356,6 +368,8 @@
             }
         });
     }
+
+
 
 </script>
 </body>

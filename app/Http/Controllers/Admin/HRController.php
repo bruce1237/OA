@@ -14,8 +14,8 @@ use Illuminate\Support\Facades\Route;
 class HRController extends Controller
 {
     //
-    public function __construct(Request $request){
-        $this->authorize();
+    public function __construct(){
+//        $this->authorize();
 //        session(['key' => 'value']);
 //        dd(session('key'));
 

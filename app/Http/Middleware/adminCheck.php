@@ -25,88 +25,45 @@ class adminCheck
         $data['status'] = false;
         $data['msg'] = "你没有授权, 无权操作!";
 
-
 //        dump(Route::current()->uri());
         if (Auth::guard('admin')->check()) {
 
             $positionId = Staff::find(Auth::guard('admin')->user()->staff_id)->position_id;
-            $positionAllowedAccessArray = json_decode(file_get_contents(storage_path('access' . "/" . $positionId)), true);
+            $positionAllowedAccessArray = file_exists(storage_path('access' . "/" . $positionId)) ? json_decode(file_get_contents(storage_path('access' . "/" . $positionId)), true) : [];
 //            dump($positionAllowedAccessArray);
-//dump(Route::current()->uri());
+//            dump(Route::current()->uri());
             $this->convertArray($positionAllowedAccessArray);
 //            dump($this->arrString);
 //            dump(Route::currentRouteAction());
 
-//            $auth=false;
+            $auth = false;
 
             //first, check if the page is allowed to be shown
             if (strtolower(Route::current()->uri()) != "admin/home") {
-
+//                dump($positionAllowedAccessArray);
+//                dump(Route::current()->action);
                 if (!key_exists(strtolower(Route::current()->uri()), $positionAllowedAccessArray)) {
-//                    return redirect('admin/denied');
-//                echo json_encode($data);
-//                exit;
-//                    $auth=false;
+//                if (!key_exists(Route::current()->uri(), $positionAllowedAccessArray)) {
+//dd("FF");
+                    $auth = false;
 
+                } else {
+                    //next, check if the page
+                    $currentFunctionName = (substr(Route::currentRouteAction(), strpos(Route::currentRouteAction(), '@') + 1));
+                    if (in_array(strtolower($currentFunctionName), $this->arrString)) {
+                        $auth = true;
+                    }
                 }
             }
 
-            //next, check if the page
-
-            $currentFunctionName = (substr(Route::currentRouteAction(), strpos(Route::currentRouteAction(), '@') + 1));
-
-//            dump(strtolower($currentFunctionName));
+//            if(!$auth){
 //
-//            dump($positionAllowedAccessArray['admin/hr']);
-////
-//
-//
-
-//            $data=array();
-            $this->convertArray($positionAllowedAccessArray);
-//            dump($this->arrString);
-//            dump(strtolower($currentFunctionName));
-//////
-//            dump(in_array(strtolower($currentFunctionName),$this->arrString));
-////
-            if (!in_array(strtolower($currentFunctionName), $this->arrString)) {
-//                            dump(strtolower($currentFunctionName));
-//                return redirect('admin/denied');
-                $auth=false;
-
-
-
-//               session()->put('authorize','F');
-
-//                dd(session()->all());
-
-//                dump("JJ");
-//                return redirect('admin/OAMenu');
-
 //                echo json_encode($data);
-//              exit;
-
-            }else{
-//                session()->put('authorize','T');
-                $auth = true;
-            }
-
-
-            file_put_contents(storage_path('access')."/access.txt",json_encode($auth));
-//
-//            session(['authorize'=>'F']);
-//            echo session('authorize');
+//                exit;
+//            }
 
 
 
-
-//            dump(Route::current()->uri());
-//
-//
-//            dump(Route::current()->uri());
-//            dump(Route::current()->action['namespace']);
-//
-//            dump(Route::currentRouteAction());
 
             return $next($request);
         } else {

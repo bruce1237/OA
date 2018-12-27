@@ -26,18 +26,26 @@ class SalesController extends Controller
 
         try {
             $sum = Sales::where('staff_id','=',$postData['staff_id'])->where('date','like',date("Y-m-").'%')->sum('sales')+$postData['sales'];
+
+
+           try{
+
             $sales = Sales::where('staff_id', '=', $postData['staff_id'])->where('date', '=', $postData['date'])->first()->sales;
-//            $sales = Sales::where('staff_id','=',78)->where('date','=',$postData['date'])->first()->sales;
             $postData['sales'] += $sales;
+           }catch (\Exception $e){
+//            dd($sum);
+
+           }
+//            $sales = Sales::where('staff_id','=',78)->where('date','=',$postData['date'])->first()->sales;
         } catch (\Exception $exception) {
             $sum=$postData['sales'];
 
         }
 
-
+//dd($sum);
 
         if ($this->updateSalesTarget($postData['staff_id'], $sum)) {
-
+//            dd($sum);
             if($postData['sales']>0){
                 Sales::updateOrCreate(['staff_id' => $postData['staff_id'],'date'=>$postData['date']], $postData);
             }else{

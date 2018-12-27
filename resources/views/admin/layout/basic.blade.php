@@ -54,7 +54,7 @@
        href="javascript:location.replace(location.href);" title="刷新">
         <i class="layui-icon" style="line-height:30px">ဂ</i></a>
 </div>
-<div class="x-body">
+<div class="x-body" style="width:auto;height:800px;overflow-x:auto;overflow-y:auto">
     @section('content')
     @show
 </div>

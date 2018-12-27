@@ -45,7 +45,14 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************save/modify staff login info **********************/
     Route::post('saveStaffLoginInfo',['uses'=>'hrController@saveStaffLoginInfo']);
 
-    /*****************OA Menu Index**********************/
+
+
+
+
+
+    /*********************************************/
+    /*****************OA Menu Index***************/
+    /*********************************************/
     Route::get('OAMenu',['uses'=>'menuController@index']);
 
     /*****************OA Menu New**********************/
@@ -70,11 +77,25 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('addUrl',['uses'=>'menuController@addUrl']);
 
     /*****************OA get submenuURL access Control**********************/
-    Route::post('readAccess',['uses'=>'menuController@readAccess']);
+//    Route::post('readAccess',['uses'=>'menuController@readAccess']);
 
     /*****************OA get submenuURL access Control**********************/
-    Route::post('addAccess',['uses'=>'menuController@addAccess']);
+//    Route::post('addAccess',['uses'=>'menuController@addAccess']);
 
+
+
+    /*********************************************/
+    /*****************OA Access Control***********/
+    /*********************************************/
+
+    Route::get('AccessControl',['uses'=>'accessController@index']);
+    Route::post('getControllers',['uses'=>'accessController@getControllers']);
+    Route::post('addController',['uses'=>'accessController@addController']);
+    Route::post('getFuncs', ['uses'=>'accessController@getFuncs']);
+    Route::post('addFunc',['uses'=>'accessController@addFunc']);
+    Route::post('addCommonControllerFuncs',['uses'=>'accessController@addCommonControllerFuncs']);
+    Route::post('getAllControllers',['uses'=>'accessController@getAllControllers']);
+    Route::post('getControllerFuncs',['uses'=>'accessController@getControllerFuncs']);
 
 
     /*********************************************/
