@@ -45,7 +45,7 @@
 <!-- 右侧主体开始 -->
 <div class="page-content" @if (!sizeof($menuList))
 style="left: 0px;"
-     @endif>
+        @endif>
     <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
         <ul class="layui-tab-title">
             <li class="home"><i class="layui-icon">&#xe68e;</i>@section('title') 我的桌面@show</li>
@@ -58,7 +58,7 @@ style="left: 0px;"
 
                     <div class="x-body layui-anim layui-anim-up">
                         <blockquote class="layui-elem-quote">欢迎管理员：
-                            <span class="x-red">{{$name}}</span>！当前时间: <span id ="currentDateTime"></span>
+                            <span class="x-red">{{$name}}</span>！当前时间: <span id="currentDateTime"></span>
                             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:-8px;float:right"
                                href="javascript:location.replace(location.href);" title="刷新">
                                 <i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -115,7 +115,7 @@ style="left: 0px;"
                         <fieldset class="layui-elem-field">
                             <legend>业绩统计</legend>
                             <div class="layui-field-box">
-                                <table class="table" style="white-space:nowrap;" border =1>
+                                <table class="table" style="white-space:nowrap;" border=1>
                                     <thead>
                                     <tr>
                                         <th>姓名</th>
@@ -141,7 +141,7 @@ style="left: 0px;"
 
                                         @if($department_id!=0 && $department_id !=$sales['department_id'])
 
-                                            <tr  bgcolor="#deb887">
+                                            <tr bgcolor="#deb887">
                                                 <th>共计</th>
                                                 <td>{{$totalTarget}}</td>
                                                 <td colspan="{{$i-1}}"></td>
@@ -213,7 +213,7 @@ style="left: 0px;"
                                         <td>{{$grandTarget}}</td>
                                         @for ($i = 1; $i <= $today; $i++)
                                             @if (array_key_exists($i, $dailySales))
-                                             <td>{{$dailySales[$i]}}</td>
+                                                <td>{{$dailySales[$i]}}</td>
                                             @else
                                                 <td>--</td>
                                             @endif
@@ -307,12 +307,11 @@ style="left: 0px;"
     });
 
 
-    function showDateTime(){
+    function showDateTime() {
         var date = new Date();
-        var dateTime=date.toLocaleString();
+        var dateTime = date.toLocaleString();
         $("#currentDateTime").html(dateTime);
     }
-
 
 
     function add_sales() {
@@ -323,12 +322,11 @@ style="left: 0px;"
             'data': {'sales': sales},
             'dataType': 'json',
             success: function (data) {
+
                 if (data.status) {
                     location.replace(location.href);
-                    layer.msg(data.msg, {icon: data.icon});
-
-
                 }
+                layer.msg(data.msg, {icon: data.icon});
             }
         });
     }
@@ -365,11 +363,10 @@ style="left: 0px;"
             'dataType': 'json',
             success: function (data) {
                 location.replace(location.href);
-                layer.msg(data.msg,{icon:data.icon});
+                layer.msg(data.msg, {icon: data.icon});
             }
         });
     }
-
 
 
 </script>
