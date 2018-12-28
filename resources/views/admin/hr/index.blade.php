@@ -873,7 +873,7 @@
                    $("#login_staff_id").val('');
                    $("#login_staff_name").val('');
                    $("#login_staff_no").val('');
-                   layer.msg(data.msg,{icon:2});
+                   layer.msg(data.msg,{icon:data.icon});
                }
            }
         });
@@ -897,7 +897,7 @@
            'data':data,
            'dataType':'json',
            success:function(data){
-               layer.msg(data.msg, {icon: 1});
+               layer.msg(data.msg, {icon: data.icon});
                $("#staffLoginInfoModal").modal('hide');
            }
         });
@@ -911,7 +911,7 @@
             'dataType':'json',
             'data':{'staffIds':data},
             success:function(data){
-                layer.msg(data.msg, {icon: 1});
+                layer.msg(data.msg, {icon: data.icon});
                 if(data){
                     refreshPage();
                 }
@@ -926,11 +926,9 @@
            'type':'delete',
            'dataType':'json',
            success:function(data){
-               layer.msg(data.msg, {icon: 1});
+               layer.msg(data.msg, {icon: data.icon});
                if(data){
                 refreshPage();
-               }else{
-                   layer.msg(data.msg, {icon: 2});
                }
            }
         });
@@ -949,7 +947,7 @@
                         initStaffModel(data.staff);
                         $("#staffModal").modal('show');
                     }else{
-                        layer.msg(data.msg, {icon: 2});
+                        layer.msg(data.msg, {icon: data.icon});
                     }
                 }
             });
@@ -979,6 +977,7 @@
             'data': {'department_id': department_id, 'position_id': position_id},
             'dataType': 'json',
             success: function (data) {
+                $("#staff_manager").html('');
                 $.each(data, function (key, item) {
                     $("#staff_manager").append('<option value="' + item.staff_id + '">' + item.staff_name + '</option>');
                 });
@@ -987,7 +986,6 @@
 
 
     }
-
 
     function new_position() {
         $("#newPositionName").val('');
@@ -1005,7 +1003,7 @@
             'dataType': 'json',
             success: function (data) {
                 if (data.status) {
-                    layer.msg(data.msg, {icon: 1});
+                    layer.msg(data.msg, {icon: data.icon});
                     $("#newDepartmentModal").modal('hide');
                     refreshPage()
                 } else {
@@ -1028,7 +1026,7 @@
 
 
         $.ajax({
-            'url': "{{url('admin/modifyPositions')}}",
+            'url': "{{url('admin/modifyPosition')}}",
             'type': 'post',
             'contentType': false,
             'processData': false,
@@ -1036,12 +1034,11 @@
             'dataType': 'json',
             success: function (data) {
                 if (data.status) {
-                    layer.msg(data.msg, {icon: 1});
+
                     $("#departmentModal").modal('hide');
                     refreshPage()
-                }else{
-                    layer.msg(data.msg, {icon: 2});
                 }
+                layer.msg(data.msg, {icon: data.icon});
             }
 
         });
@@ -1071,7 +1068,7 @@
             success: function (data) {
 
                 if (data.status) {
-                    layer.msg(data.msg, {icon: 1});
+                    layer.msg(data.msg, {icon: data.icon});
                     $("#newDepartmentModal").modal('hide');
                     refreshPage()
                 } else {
@@ -1090,7 +1087,7 @@
     function new_departments_save(maxDepartId) {
         data = new FormData();
 
-        for (i = 1; i <= maxDepartId; i++) {
+        for (var i = 1; i <= maxDepartId; i++) {
             var department = $("#depart_name" + i).val();
             if (department != undefined) {
                 data.append(i, department);
@@ -1105,7 +1102,7 @@
             'data': data,
             'dataType': 'json',
             success: function (data) {
-                layer.msg(data.msg, {icon: 1});
+                layer.msg(data.msg, {icon:data.icon});
                 $("#departmentModal").modal('hide');
                 refreshPage()
             }
@@ -1175,12 +1172,11 @@
             'processData': false,
             success: function (data) {
                 if (data.status) {
-                    var iconCode = 1;
                     $("#staffModal").modal('hide');
                     refreshPage();
 
                 } else {
-                    var iconCode = 2;
+
                     if (data.emptyCols) {
                         $.each(data.emptyCols, function (key, item) {
                             $("#" + item).addClass("is-invalid");
@@ -1188,7 +1184,7 @@
                     }
                 }
 
-                layer.msg(data.msg, {icon: iconCode});
+                layer.msg(data.msg, {icon: data.icon});
 
             }
         });

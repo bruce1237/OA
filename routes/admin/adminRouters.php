@@ -20,7 +20,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('/newDepart',['uses'=>'hrController@newDepart']);
     Route::post('/modifyDepart',['uses'=>'hrController@modifyDepart']);
     Route::post('/newPosition',['uses'=>'hrController@newPosition']);
-    Route::post('/modifyPositions',['uses'=>'hrController@modifyPositions']);
+    Route::post('/modifyPosition',['uses'=>'hrController@modifyPosition']);
 
 
     /*****************get managers list**********************/
@@ -95,7 +95,8 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('addFunc',['uses'=>'accessController@addFunc']);
     Route::post('addCommonControllerFuncs',['uses'=>'accessController@addCommonControllerFuncs']);
     Route::post('getAllControllers',['uses'=>'accessController@getAllControllers']);
-    Route::post('getControllerFuncs',['uses'=>'accessController@getControllerFuncs']);
+    Route::post('delCF',['uses'=>'accessController@delCF']);
+
 
 
     /*********************************************/

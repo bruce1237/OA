@@ -31,60 +31,6 @@
     </div>
 
     <div class="clearfix" style="margin-bottom: 10px;"></div>
-
-    <div class="row">
-        <div class="col-4">
-            <div class="card border-success mb-3">
-                <div class="card-header bg-transparent border-success">
-                    请添加控制器
-                </div>
-                <ul class="list-group list-group-flush bg-secondary" id="controllerList">
-
-                </ul>
-            </div>
-
-
-        </div>
-        <div class="col-4">
-            <div class="card border-primary mb-3">
-                <div class="card-header bg-transparent border-primary">
-                    请添加方法
-                </div>
-                <ul class="list-group list-group-flush bg-secondary" id="funcsList">
-
-                </ul>
-            </div>
-
-        </div>
-        <div class="col-4">
-            <div class="card border-danger mb-3" id="accessList">
-                <div class="card-header bg-transparent border-danger" id="accessTitle">
-                    现有的控制器和方法
-                </div>
-                <div class="bd-example">
-
-                    <ul>
-                        @foreach($accessControllers as $controller => $funcs)
-                            <li class="list-group-item list-group-item-primary">{{$controller}}</li>
-                                @foreach($funcs as $func)
-                                    <li class="list-group-item">{{$func->function}} ({{$func->comment}})</li>
-                                @endforeach
-                        @endforeach
-
-                    </ul>
-                </div>
-
-                <div class="card-footer bg-transparent border-danger">
-
-                    123
-
-                </div>
-
-            </div>
-        </div>
-
-    </div>
-
     <div class="row">
         <div class="col-4">
             <div id="controllers">
@@ -118,8 +64,65 @@
                 </div>
             </div>
         </div>
-        <div class="col-4"></div>
+
     </div>
+
+
+
+    <div class="row">
+        <div class="col-4">
+            <div class="card border-success mb-3">
+                <div class="card-header bg-transparent border-success">
+                    请添加控制器
+                </div>
+                <ul class="list-group list-group-flush bg-secondary" id="controllerList">
+
+                </ul>
+            </div>
+
+
+        </div>
+        <div class="col-4">
+            <div class="card border-primary mb-3">
+                <div class="card-header bg-transparent border-primary">
+                    请添加方法 <span id="selectedControllerName"></span>
+                </div>
+                <ul class="list-group list-group-flush bg-secondary" id="funcsList">
+
+                </ul>
+            </div>
+
+        </div>
+        <div class="col-4" style="width:auto;height:650px;overflow-x:auto;overflow-y:auto">
+            <div class="card border-danger mb-3" id="accessList">
+                <div class="card-header bg-transparent border-danger" id="accessTitle">
+                    现有的控制器和方法
+                </div>
+                <div class="bd-example">
+
+                    <ul>
+                        @foreach($accessControllers as $controller => $funcs)
+                            <li class="list-group-item list-group-item-primary">{{$controller}}</li>
+                                @foreach($funcs as $func)
+                                    <li class="list-group-item">{{$func->function}} ({{$func->comment}})</li>
+                                @endforeach
+                        @endforeach
+
+                    </ul>
+                </div>
+
+                <div class="card-footer bg-transparent border-danger">
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+
+
 
     <input type="hidden" id="currentControllerID"/>
 
@@ -127,7 +130,7 @@
 
     <div class="modal fade" id="newControllerFuncs" tabindex="-1" role="dialog"
          aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="submenuName">添加控制器和方法</h5>
@@ -162,7 +165,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">作用:</span>
                                 </div>
-                                <input type="text" class="form-control" id="funcs{{$i}}" name="for{{$i}}"
+                                <input type="text" class="form-control" id="fors{{$i}}" name="for{{$i}}"
                                        aria-label="Sizing example input" aria-describedby="inputGroup-sizing-sm"/>
                             </div>
                                     @endfor
@@ -184,7 +187,7 @@
 
     <div class="modal fade" id="modifyControllerFuncs" tabindex="-1" role="dialog"
          aria-labelledby="mySmallModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-sm">
+        <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="submenuName">添加控制器和方法</h5>
@@ -260,7 +263,8 @@
                 if (data.status) {
                     $("#controllerList").html('');
                     $.each(data.msg, function (key, item) {
-                        $("#controllerList").append('<li class="list-group-item" onclick="showFunctions('+item.id+')">' + item.controller + '</li>');
+                        $("#controllerList").append('<li class="list-group-item" onclick="showFunctions('+item.id+')">' + item.controller + '' +
+                            '<span class="badge" style="float: right"><button onclick="delCF(0,'+item.id+')"><i class="icon iconfont"></i></button></span></li>');
                     });
                 }
             }
@@ -293,6 +297,8 @@
 
     function showFunctions(controllerID){
         $("#currentControllerID").val('');
+
+
         $.ajax({
            'url':"{{url('admin/getFuncs')}}",
             'type':'post',
@@ -301,9 +307,11 @@
             success:function(data){
                if(data.status){
                    $("#currentControllerID").val(controllerID);
+                   $("#selectedControllerName").html(data.controllerName);
                    $("#funcsList").html('');
                    $.each(data.msg,function(key,item){
-                       $("#funcsList").append('<li class="list-group-item" onclick="showFunctions('+item.id+')">' + item.function + '</li>');
+                       $("#funcsList").append('<li class="list-group-item" >' + item.function +
+                           '<span class="badge" style="float: right"><button onclick="delCF(1,'+item.id+')"><i class="icon iconfont"></i></button></span></li>');
 
                    });
 
@@ -340,6 +348,10 @@
 
 
     function showModifyControllerFuncsModal() {
+        for( var i=0;i<20;i++){
+            $("#func"+i).val('');
+            $("#for"+i).val('');
+        }
         $.ajax({
            "url":"{{url('admin/getAllControllers')}}",
             "type":'post',
@@ -349,8 +361,11 @@
                    $("#controllerSelection").html('<option value="" selected disabled>选择控制器</option>');
                    $.each(data.msg,function(key,item){
                        $("#controllerSelection").append('<option value="'+item.id+'">'+item.controller+'</option>');
-
                    });
+
+
+
+
 
                }else{
                    layer.msg(data.msg,{icon:data.icon});
@@ -371,7 +386,7 @@
         }
 
         $.ajax({
-           'url':"{{url('admin/getControllerFuncs')}}",
+           'url':"{{url('admin/getFuncs')}}",
             'type':'post',
             'data':{'controller_id':controllerId},
             'dataType':'json',
@@ -393,6 +408,12 @@
 
 
     function showAddControllerFuncsModal(){
+        for( var i=0;i<20;i++){
+            $("#funcs"+i).val('');
+            $("#fors"+i).val('');
+        }
+        $("#controllerName").val('');
+
         $("#newControllerFuncs").modal('show');
     }
 
@@ -419,6 +440,7 @@
            success:function(data){
                if(data.status){
                    $("#newControllerFuncs").modal('hide');
+                   $("#modifyControllerFuncs").modal('hide');
                }
                layer.msg(data.msg,{icon:data.icon});
 
@@ -426,5 +448,19 @@
         });
 
     }
+
+    function delCF(type,id){
+        $.ajax({
+           'url':"{{url('admin/delCF')}}",
+           'type':'post',
+           'data':{'type':type,'id':id},
+           'dataType':'json',
+           success:function(data){
+               layer.msg(data.msg,{icon:data.icon});
+           }
+        });
+
+    }
+
 
 </script>

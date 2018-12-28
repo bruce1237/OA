@@ -8,8 +8,8 @@
             <a href="javascript:;">+新增</a>
             <dl class="layui-nav-child"> <!-- 二级菜单 -->
                 <dd><a onclick="showToDoModal()"><i class="iconfont">&#xe6a2;</i>待办</a></dd>
-                <dd><a onclick="x_admin_show('图片','http://www.baidu.com')"><i class="iconfont">&#xe6a8;</i>图片</a></dd>
-                <dd><a onclick="x_admin_show('用户','http://www.baidu.com')"><i class="iconfont">&#xe6b8;</i>用户</a></dd>
+                {{--<dd><a onclick="x_admin_show('图片','http://www.baidu.com')"><i class="iconfont">&#xe6a8;</i>图片</a></dd>--}}
+                {{--<dd><a onclick="x_admin_show('用户','http://www.baidu.com')"><i class="iconfont">&#xe6b8;</i>用户</a></dd>--}}
             </dl>
         </li>
     </ul>

@@ -325,7 +325,7 @@ style="left: 0px;"
             success: function (data) {
                 if (data.status) {
                     location.replace(location.href);
-                    layer.msg(data.msg, {icon: 1});
+                    layer.msg(data.msg, {icon: data.icon});
 
 
                 }
@@ -345,7 +345,7 @@ style="left: 0px;"
                     $("#alert" + todoId).alert('close');
                 }
                 else {
-                    layer.msg(data.msg, {icon: 1});
+                    layer.msg(data.msg, {icon: data.icon});
                 }
 
             }
@@ -364,7 +364,8 @@ style="left: 0px;"
             'data': data,
             'dataType': 'json',
             success: function (data) {
-                alert(data.msg);
+                location.replace(location.href);
+                layer.msg(data.msg,{icon:data.icon});
             }
         });
     }
