@@ -8,7 +8,7 @@
     <meta name="viewport"
           content="width=device-width,user-scalable=yes, minimum-scale=0.4, initial-scale=0.8,target-densitydpi=low-dpi"/>
     <meta http-equiv="Cache-Control" content="no-siteapp"/>
-    <meta name="csrf-token" content="{{csrf_token() }}">
+    <meta name="csrf-token" content="{{csrf_token()}}">
 
     <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
@@ -350,9 +350,7 @@ style="left: 0px;"
         });
     }
 
-    function showToDoModal() {
-        $("#toDoModal").modal('show');
-    }
+
 
     function saveToDo() {
         var data = $("#toDoForm").serialize();

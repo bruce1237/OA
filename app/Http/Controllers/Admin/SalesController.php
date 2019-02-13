@@ -14,7 +14,12 @@ class SalesController extends Controller
     //
     protected $targetSet = false;
     protected $data=['status'=>true, 'msg'=>'init'];
+    protected $currentMonth;
 
+    public function __construct()
+    {
+        $this->currentMonth  = date("Y-m");
+    }
 
 
     public function addSales(Request $request) {
@@ -26,26 +31,19 @@ class SalesController extends Controller
 
         try {
             $sum = Sales::where('staff_id','=',$postData['staff_id'])->where('date','like',date("Y-m-").'%')->sum('sales')+$postData['sales'];
-
-
            try{
-
             $sales = Sales::where('staff_id', '=', $postData['staff_id'])->where('date', '=', $postData['date'])->first()->sales;
             $postData['sales'] += $sales;
            }catch (\Exception $e){
-//            dd($sum);
 
            }
-//            $sales = Sales::where('staff_id','=',78)->where('date','=',$postData['date'])->first()->sales;
         } catch (\Exception $exception) {
             $sum=$postData['sales'];
 
         }
 
-//dd($sum);
 
         if ($this->updateSalesTarget($postData['staff_id'], $sum)) {
-//            dd($sum);
             if($postData['sales']>0){
                 Sales::updateOrCreate(['staff_id' => $postData['staff_id'],'date'=>$postData['date']], $postData);
             }else{
@@ -60,14 +58,13 @@ class SalesController extends Controller
     }
 
     public function updateSalesTarget($staffId, $achieved) {
-        $month = date("Y-m");
-        return SalesTarget::where('staff_id', '=', $staffId)->where('month', '=', $month)->update(['achieved' => $achieved]);
+        return SalesTarget::where('staff_id', '=', $staffId)->where('month', '=', $this->currentMonth)->update(['achieved' => $achieved]);
     }
 
     public function monthlySales() {
 
-        $salesTarget = SalesTarget::where('month','=',date("Y-m"))->get();
-        $sales = Sales::orderBy('department_id')->orderBy('date')->get();
+        $salesTarget = SalesTarget::where('month','=',date($this->currentMonth))->get();
+        $sales = Sales::where('date', 'like', date($this->currentMonth)."%")->orderBy('department_id')->orderBy('date')->get();
 
         $salesRecord = array();
 
@@ -78,14 +75,13 @@ class SalesController extends Controller
 
 
             foreach ($salesTarget as $k => $v) {
-                $salesRecord[$v['staff_id']]['target'] = $v['target'];
-                $salesRecord[$v['staff_id']]['achieved'] = $v['achieved'];
+                $salesRecord[$v['staff_id']]['target'] = $v['target']?$v['target']:0;
+                $salesRecord[$v['staff_id']]['achieved'] = $v['achieved']?$v['achieved']:0;
             }
 
 
         }
 
-//dd($salesRecord);
         return $salesRecord;
 
     }
