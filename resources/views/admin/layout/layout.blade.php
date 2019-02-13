@@ -350,7 +350,9 @@ style="left: 0px;"
         });
     }
 
-
+    function showToDoModal() {
+        $("#toDoModal").modal('show');
+    }
 
     function saveToDo() {
         var data = $("#toDoForm").serialize();
