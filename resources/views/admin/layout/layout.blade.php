@@ -13,14 +13,10 @@
     <script type="text/javascript" src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
     <script src="http://apps.bdimg.com/libs/jqueryui/1.10.4/jquery-ui.min.js"></script>
 
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-            crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-            crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
 
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
@@ -57,178 +53,187 @@ style="left: 0px;"
                 <div class="layui-anim layui-anim-up" style="width:auto;height:850px;overflow-x:auto;overflow-y:auto">
 
                     <div class="x-body layui-anim layui-anim-up">
-                        <blockquote class="layui-elem-quote">欢迎管理员：
+                        <blockquote class="layui-elem-quote">欢迎{{$positionName}}：
                             <span class="x-red">{{$name}}</span>！当前时间: <span id="currentDateTime"></span>
                             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:-8px;float:right"
                                href="javascript:location.replace(location.href);" title="刷新">
                                 <i class="layui-icon" style="line-height:30px">ဂ</i></a>
                         </blockquote>
 
-                        @section('pSection1')@show
-                        @section('pSection2')@show
-                        @section('pSection3')@show
-                        @section('pSection4')@show
-
-                        <div class="alert alert-success" role="alert">
-                            <h3 class="alert-heading">待办事项</h3><br/>
-                            <div class="row">
-                                @foreach($todoLists as $todolist)
-                                    <div class="col-3">
-                                        <div class="alert alert-warning alert-dismissible fade show" role="alert"
-                                             id="alert{{$todolist['id']}}">
-                                            <strong>{{$todolist['event']}}</strong>
-                                            <hr/>
-                                            <em>{{$todolist['date']}}</em>
-                                            <button type="button" class="close" onclick="delTodo({{$todolist['id']}})">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
+                        @section('pSection1')
+                            {{--代办事项--}}
+                            <div class="alert alert-success" role="alert">
+                                <h3 class="alert-heading">待办事项</h3><br/>
+                                <div class="row">
+                                    @foreach($todoLists as $todolist)
+                                        <div class="col-3">
+                                            <div class="alert alert-warning alert-dismissible fade show" role="alert"
+                                                 id="alert{{$todolist['id']}}">
+                                                <strong>{{$todolist['event']}}</strong>
+                                                <hr/>
+                                                <em>{{$todolist['date']}}</em>
+                                                <button type="button" class="close" onclick="delTodo({{$todolist['id']}})">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
-                                @endforeach
-                            </div>
-
-                        </div>
-
-
-                        <fieldset class="layui-elem-field">
-                            <legend> 今日业绩:</legend>
-
-                            <div class="layui-field-box">
-                                <div class="col-4">
-                                    <div class="input-group mb-3">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">新增业绩:</span>
-                                        </div>
-                                        <input type="text" class="form-control" id="sales" placeholder="业绩"
-                                               aria-label="Username" aria-describedby="basic-addon1">
-                                        <div class="input-group-prepend">
-                                            <button class="btn-success btn-sm" onclick="add_sales()">添加</button>
-                                        </div>
-                                    </div>
+                                    @endforeach
                                 </div>
 
-
                             </div>
-                        </fieldset>
+                        @show
+                        @section('pSection2')
+
+                        @show
+                        @section('pSection3')
+                            {{--今日业绩--}}
+                            <fieldset class="layui-elem-field">
+                                <legend> 今日业绩:</legend>
+
+                                <div class="layui-field-box">
+                                    <div class="col-4">
+                                        <div class="input-group mb-3">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">新增业绩:</span>
+                                            </div>
+                                            <input type="text" class="form-control" id="sales" placeholder="业绩"
+                                                   aria-label="Username" aria-describedby="basic-addon1">
+                                            <div class="input-group-prepend">
+                                                <button class="btn-success btn-sm" onclick="add_sales()">添加</button>
+                                            </div>
+                                        </div>
+                                    </div>
 
 
-                        <fieldset class="layui-elem-field">
-                            <legend>业绩统计</legend>
-                            <div class="layui-field-box">
-                                <table class="table" style="white-space:nowrap;" border=1>
-                                    <thead>
-                                    <tr>
-                                        <th>姓名</th>
-                                        <th>{{date('m')}}任务</th>
-                                        @php
-                                            $today = date('d');
-
-                                            for($i=1;$i<=$today;$i++){
-                                                echo "<th>".sprintf("%02d", $i)."</th>";
-                                            }
-                                        @endphp
-                                        <th>总计</th>
-                                        <th>达成率</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-
-
-                                    @php $dailySales=[]; $grandTarget = $grandAchieved = $grandAchievedRate = $totalTarget=$totalAchieved=$toatlAchievedRate = $department_id=0;@endphp
-
-                                    @foreach($monthlySales as $key =>$sales)
-
-
-                                        @if($department_id!=0 && $department_id !=$sales['department_id'])
-
-                                            <tr bgcolor="#deb887">
-                                                <th>共计</th>
-                                                <td>{{$totalTarget}}</td>
-                                                <td colspan="{{$i-1}}"></td>
-                                                <th>{{$totalAchieved}}</th>
-                                                <th>{{$toatlAchievedRate}}%</th>
-                                            </tr>
-
-                                            @php $totalTarget=$totalAchieved=$toatlAchievedRate =0; @endphp
-
-                                        @endif
-
-                                        <tr bgcolor="#dcdcdc">
-                                            <td>{{$sales['staff_name']}}</td>
-                                            <td>{{$sales['target']}}</td>
-
-                                            @php $b=0; $department_id =$sales['department_id'];@endphp
-
-                                            @for($i=1;$i<=$today;$i++)
-                                                @php
-                                                    $a=0;
-                                                    foreach ($sales['sales'] as $daySales){
-                                                        if(array_key_exists(date("Y-m-").sprintf("%02d",$i), $daySales)){
-                                                            $a=1; //the date is existed in the salesReport, so set up a flag to indicate there is a sales of the day
-                                                            $b=0; //as the sales is existed, reset the sales flag
-                                                            echo "<td bgcolor='#70ad47'>".$daySales[date("Y-m-").sprintf("%02d",$i)]."</td>";
-                                                            if(array_key_exists($i,$dailySales)){
-                                                                $dailySales[$i] += $daySales[date("Y-m-").sprintf("%02d",$i)];
-                                                            }else{
-                                                                $dailySales[$i] = $daySales[date("Y-m-").sprintf("%02d",$i)];
-                                                            }
-                                                        }
-                                                    }
-                                                if($a==0){
-                                                    $b++;//the date of the sales is not existed, so add flag to change the bgcolor
-                                                    if($b==1) $bgcolor = "yellow";
-                                                    if($b==2) $bgcolor = "red";
-                                                    if($b>=3) $bgcolor = "black";
-                                                    echo "<td bgcolor=$bgcolor>&nbsp;&nbsp;&nbsp;&nbsp;</td>";
-                                                }
-                                                @endphp
-                                            @endfor
-                                            <td>{{$sales['achieved']}}</td>
-                                            <td>{{round($sales['achieved']*100/$sales['target'],2)}}%</td>
+                                </div>
+                            </fieldset>
+                        @show
+                        @section('pSection4')
+                            {{--业绩统计--}}
+                            <fieldset class="layui-elem-field">
+                                <legend>业绩统计</legend>
+                                <div class="layui-field-box">
+                                    <table class="table" style="white-space:nowrap;" border=1>
+                                        <thead>
+                                        <tr>
+                                            <th>姓名</th>
+                                            <th>{{date('m')}}任务</th>
                                             @php
-                                                $totalTarget+=$sales['target'];
-                                                $totalAchieved += $sales['achieved'];
-                                                $toatlAchievedRate +=round($sales['achieved']*100/$sales['target'],2);
+                                                $today = date('d');
 
-                                                $grandTarget +=$sales['target'];
-                                                $grandAchieved += $sales['achieved'];
-                                                $grandAchievedRate +=round($sales['achieved']*100/$sales['target'],2);
-
-
+                                                for($i=1;$i<=$today;$i++){
+                                                    echo "<th>".sprintf("%02d", $i)."</th>";
+                                                }
                                             @endphp
+                                            <th>总计</th>
+                                            <th>达成率</th>
                                         </tr>
-                                    @endforeach
+                                        </thead>
+                                        <tbody>
 
 
-                                    <tr bgcolor="#deb887">
-                                        <th>共计</th>
-                                        <td>{{$totalTarget}}</td>
-                                        <td colspan="{{$i-1}}"></td>
-                                        <th>{{$totalAchieved}}</th>
-                                        <th>{{$toatlAchievedRate}}%</th>
-                                    </tr>
+                                        @php $dailySales=[]; $grandTarget = $grandAchieved = $grandAchievedRate = $totalTarget=$totalAchieved=$toatlAchievedRate = $department_id=0;@endphp
 
-                                    <tr bgcolor="orange">
-                                        <th>总计</th>
-                                        <td>{{$grandTarget}}</td>
-                                        @for ($i = 1; $i <= $today; $i++)
-                                            @if (array_key_exists($i, $dailySales))
-                                                <td>{{$dailySales[$i]}}</td>
-                                            @else
-                                                <td>--</td>
+                                        @foreach($monthlySales as $key =>$sales)
+
+
+                                            @if($department_id!=0 && $department_id !=$sales['department_id'])
+
+                                                <tr bgcolor="#deb887">
+                                                    <th>共计</th>
+                                                    <td>{{$totalTarget}}</td>
+                                                    <td colspan="{{$i-1}}"></td>
+                                                    <th>{{$totalAchieved}}</th>
+                                                    <th>{{$toatlAchievedRate}}%</th>
+                                                </tr>
+
+                                                @php $totalTarget=$totalAchieved=$toatlAchievedRate =0; @endphp
+
                                             @endif
 
-                                        @endfor
+                                            <tr bgcolor="#dcdcdc">
+                                                <td>{{$sales['staff_name']}}</td>
+                                                <td>{{$sales['target']}}</td>
 
-                                        <th>{{$grandAchieved}}</th>
-                                        <th>{{$grandAchievedRate}}%</th>
-                                    </tr>
+                                                @php $b=0; $department_id =$sales['department_id'];@endphp
 
-                                    </tbody>
-                                </table>
+                                                @for($i=1;$i<=$today;$i++)
+                                                    @php
+                                                        $a=0;
+                                                        foreach ($sales['sales'] as $daySales){
+                                                            if(array_key_exists(date("Y-m-").sprintf("%02d",$i), $daySales)){
+                                                                $a=1; //the date is existed in the salesReport, so set up a flag to indicate there is a sales of the day
+                                                                $b=0; //as the sales is existed, reset the sales flag
+                                                                echo "<td bgcolor='#70ad47'>".$daySales[date("Y-m-").sprintf("%02d",$i)]."</td>";
+                                                                if(array_key_exists($i,$dailySales)){
+                                                                    $dailySales[$i] += $daySales[date("Y-m-").sprintf("%02d",$i)];
+                                                                }else{
+                                                                    $dailySales[$i] = $daySales[date("Y-m-").sprintf("%02d",$i)];
+                                                                }
+                                                            }
+                                                        }
+                                                    if($a==0){
+                                                        $b++;//the date of the sales is not existed, so add flag to change the bgcolor
+                                                        if($b==1) $bgcolor = "yellow";
+                                                        if($b==2) $bgcolor = "red";
+                                                        if($b>=3) $bgcolor = "black";
+                                                        echo "<td bgcolor=$bgcolor>&nbsp;&nbsp;&nbsp;&nbsp;</td>";
+                                                    }
+                                                    @endphp
+                                                @endfor
+                                                <td>{{$sales['achieved']}}</td>
+                                                <td>{{round($sales['achieved']*100/$sales['target'],2)}}%</td>
+                                                @php
+                                                    $totalTarget+=$sales['target'];
+                                                    $totalAchieved += $sales['achieved'];
+                                                    $toatlAchievedRate +=round($sales['achieved']*100/$sales['target'],2);
 
-                            </div>
-                        </fieldset>
+                                                    $grandTarget +=$sales['target'];
+                                                    $grandAchieved += $sales['achieved'];
+                                                    $grandAchievedRate +=round($sales['achieved']*100/$sales['target'],2);
+
+
+                                                @endphp
+                                            </tr>
+                                        @endforeach
+
+
+                                        <tr bgcolor="#deb887">
+                                            <th>共计</th>
+                                            <td>{{$totalTarget}}</td>
+                                            <td colspan="{{$i-1}}"></td>
+                                            <th>{{$totalAchieved}}</th>
+                                            <th>{{$toatlAchievedRate}}%</th>
+                                        </tr>
+
+                                        <tr bgcolor="orange">
+                                            <th>总计</th>
+                                            <td>{{$grandTarget}}</td>
+                                            @for ($i = 1; $i <= $today; $i++)
+                                                @if (array_key_exists($i, $dailySales))
+                                                    <td>{{$dailySales[$i]}}</td>
+                                                @else
+                                                    <td>--</td>
+                                                @endif
+
+                                            @endfor
+
+                                            <th>{{$grandAchieved}}</th>
+                                            <th>{{$grandAchievedRate}}%</th>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            </fieldset>
+                        @show
+
+
+
+
+
+
 
 
                         <blockquote class="layui-elem-quote layui-quote-nm">本系统由米鹿科技提供技术支持。</blockquote>

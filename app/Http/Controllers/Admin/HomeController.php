@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Model\Client;
 use App\Model\Menu;
+use App\Model\Position;
 use App\Model\Staff;
 use App\Model\SubMenu;
 use App\Model\Todo;
+use App\Model\Visit;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -25,6 +28,8 @@ class HomeController extends Controller
 
         //get positionId
         $positionId = Staff::where('staff_id', '=', $staff_id)->first()->position_id;
+        $positionName = Position::find($positionId)->position_name;
+
 
         //use the positionId to the designed menu for this logged in staff
         $menuList = $this->getMenuList($positionId);
@@ -45,6 +50,12 @@ class HomeController extends Controller
         //get the logged in staff's todolist
         $todoLists = $this->getToDoList($staff_id);
 
+        $pendingClientCount =Client::where('clients.client_assign_to','=',$staff_id)
+            ->leftJoin('visits','clients.client_id','=','visits.visit_client_id')
+            ->where('visits.visit_next_date','<=',date('Y-m-d'))
+            ->count();
+
+
 
         //if the view file is not exist, then copy the dashboard.balde.php file and rename it the needed file
         if(!view()->exists("admin\home\\$positionId")){ //the view template is not exist
@@ -53,7 +64,7 @@ class HomeController extends Controller
 
 
         //display the page with all variables above with it
-        return view("admin/home/$positionId", ['menuList' => $menuList, 'name' => $logedName, 'monthlySales' => $monthlySales, 'birthday' => $birthday, 'todoLists' => $todoLists]);
+        return view("admin/home/$positionId", ['pendingClientCount'=>$pendingClientCount,'positionName'=>$positionName,'menuList' => $menuList, 'name' => $logedName, 'monthlySales' => $monthlySales, 'birthday' => $birthday, 'todoLists' => $todoLists]);
     }
 
     /**

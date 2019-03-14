@@ -321,7 +321,7 @@
                                         onchange="getManagerName()">
                                     <option selected disabled value=null>请选择</option>
                                     @foreach($departments as $department)
-                                        <option value="{{$department->id}}">{{$department->depart_name}}</option>
+                                        <option value="{{$department->depart_name}}">{{$department->depart_name}}</option>
                                     @endforeach
                                 </select>
 
@@ -336,9 +336,9 @@
 
                                 <select class="custom-select  custom-select-sm" id="staff_manager">
                                     <option value="0" selected>无上级主管</option>
-                                    {{--@foreach($managers as $manager)--}}
-                                    {{--<option value ="{{$staff_manager->id}}">{{$staff_manager->staff_name}}</option>--}}
-                                    {{--@endforeach--}}
+                                    @foreach($managers as $manager)
+                                    <option value ="{{$manager->staff_id}}">{{$manager->staff_name}}</option>
+                                    @endforeach
                                 </select>
 
                             </div>
@@ -802,6 +802,7 @@
     }
 
     function initStaffModel(Staff){
+
         if(Staff){
             var modalTitle="修改员工信息";
             $("#staff_photo").attr('src',"/storage/staff/photo/"+Staff.staff_photo);
@@ -826,6 +827,7 @@
         $("#staff_dob").val(Staff.staff_dob);
         $("#staff_political").val(Staff.staff_political);
         $("#position_id").val(Staff.position_id?Staff.position_id:null);
+
         $("#department_id").val(Staff.department_id?Staff.department_id:null);
         $("#staff_manager").val(Staff.staff_manager?Staff.staff_manager:0);
         $("#staff_id_no").val(Staff.staff_id_no);
@@ -944,6 +946,7 @@
                 'dataType':'json',
                 success:function(data){
                     if(data.status){
+
                         initStaffModel(data.staff);
                         $("#staffModal").modal('show');
                     }else{
@@ -977,7 +980,7 @@
             'data': {'department_id': department_id, 'position_id': position_id},
             'dataType': 'json',
             success: function (data) {
-                $("#staff_manager").html('');
+                // $("#staff_manager").html('');
                 $.each(data, function (key, item) {
                     $("#staff_manager").append('<option value="' + item.staff_id + '">' + item.staff_name + '</option>');
                 });
@@ -1112,7 +1115,7 @@
     }
 
     function new_staff() {
-        // initStaffModel('');
+        initStaffModel('');
         //初始化
         $('#staffModal').modal('show');
 

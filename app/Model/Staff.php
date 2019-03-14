@@ -12,6 +12,14 @@ class Staff extends Model
     protected $primaryKey = 'staff_id';
     protected $guarded =[];
 
+    public function getDepartmentIdAttribute($value){
+        return Department::select('depart_name')->find($value)->depart_name;
+
+    }
+    public function setDepartmentIdAttribute($value){
+        $this->attributes['department_id'] = Department::select('depart_name')->find($value)->id;
+    }
+
     public function getStaffGenderAttribute($value){
         switch ($value){
             case 0:

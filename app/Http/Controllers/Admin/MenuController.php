@@ -50,7 +50,7 @@ class MenuController extends Controller
 
     }
 
-    public function newMenu(Request $request) {
+        public function newMenu(Request $request) {
 
         if ($request->post()) {
             $menuObj = new Menu();

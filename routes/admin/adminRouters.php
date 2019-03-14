@@ -115,10 +115,33 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('delToDo',['uses' =>'homeController@delToDo']);
 
 
+    /*************************-*******************/
+    /*****************infoDepart信息部*************/
+    /*******************************************/
+    Route::get('crm_info',['uses'=>'infoDepartController@index']);
+    Route::post('crm_info_update',['uses'=>'infoDepartController@infoUpdate']);
+    Route::get('infoAssign',['uses'=>'infoAssignController@index']);
+    Route::post('assignInfo',['uses'=>'infoAssignController@assignInfo']);
+    Route::post('newClient',['uses'=>'clientController@create']);
+    Route::post('infoStatic',['uses'=>'infoAssignController@infoStatic']);
+    Route::get('templateManage',['uses'=>'templateController@index']);
+    Route::post('modifyTemplate',['uses'=>'templateController@templateModify']);
 
 
-
-
+    /*************************-*******************/
+    /*****************client客户部*************/
+    /*******************************************/
+    Route::get('clientManage',['uses'=>'clientController@index']);
+//    Route::get('pendingVisitClient',['uses'=>'clientController@pendingVisitClient']);
+    Route::post('getClientDetail',['uses'=>'clientController@getClientDetail']);
+    Route::post('acknowledgeClient',['uses'=>'clientController@acknowledgeClient']);
+    Route::post('modifyClientInfo',['uses'=>'clientController@modifyClientInfo']);
+    Route::post('AddClientVisitData',['uses'=>'clientController@AddClientVisitData']);
+    Route::post('addCompany',['uses'=>'clientController@addCompany']);
+    Route::post('getCompanyInfo',['uses'=>'clientController@getCompanyInfo']);
+    Route::post('modifyCompany',['uses'=>'clientController@modifyCompany']);
+    Route::post('getClientList',['uses'=>'clientController@getClientList']);
+    Route::post('toPool',['uses'=>'clientController@toPool']);
 
 
 

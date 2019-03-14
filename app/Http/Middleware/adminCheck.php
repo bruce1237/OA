@@ -29,7 +29,7 @@ class adminCheck
         if (Auth::guard('admin')->check()) {
 
             $positionId = Staff::find(Auth::guard('admin')->user()->staff_id)->position_id;
-//
+
             if(!$this->accessCheck($positionId)){
                 echo json_encode($data);
                 exit;

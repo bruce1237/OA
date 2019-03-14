@@ -285,10 +285,14 @@ class HRController extends Controller
 
         //after the photo has been saved or not, the upload_staff_photo is no longer required
         unset($postData['upload_staff_photo']);
+//        dd($postData);
 
         try { //failsafe
             //update or insert into the database
             Staff::updateOrCreate(['staff_id' => $postData['staff_id']], $postData);
+//            Admin::where('staff_id','=',$postData['staff_id'])->update(['name'=>$postData['staff_name'],'staff_no'=>$postData['staff_no']]);
+//            $a = Admin::where('staff_id','=',$postData['staff_id'])->get();
+//            dd($a);
 
 //            if ($request->file('upload_staff_photo')) {
 //                $request->file('upload_staff_photo')->storeAs('staff/photo', $photoFullName, 'public');
@@ -296,6 +300,7 @@ class HRController extends Controller
 
             //rewrite the return variable
             $this->data = ['status' => true, 'msg' => "员工添加成功！", 'icon' => 1];
+//            $this->data = ['status' => true, 'msg' =>$postData['staff_id'], 'icon' => 1];
         } catch (\Exception $exception) {
             //rewrite the return variable as there is an exception occurred
             $data['msg'] = $exception->getMessage();
@@ -321,6 +326,7 @@ class HRController extends Controller
             //rewrite the return variable
             $this->data = ['status' => true, 'staff' => $staff];
         }
+
         return $this->data;
     }
 

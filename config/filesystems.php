@@ -42,6 +42,14 @@ return [
     */
 
     'disks' => [
+        'CRM' =>[
+            'driver' =>'local',
+            'root' =>storage_path('app/public/CRM'),
+        ],
+        'contract' =>[
+            'driver' =>'local',
+            'root' =>storage_path('contractTemplates'),
+        ],
         'staff' =>[
             'driver' => 'local',
             'root' => storage_path('staff'),
