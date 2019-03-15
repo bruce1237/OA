@@ -50,10 +50,14 @@ class HomeController extends Controller
         //get the logged in staff's todolist
         $todoLists = $this->getToDoList($staff_id);
 
-        $pendingClientCount =Client::where('clients.client_assign_to','=',$staff_id)
-            ->leftJoin('visits','clients.client_id','=','visits.visit_client_id')
-            ->where('visits.visit_next_date','<=',date('Y-m-d'))
-            ->count();
+        $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
+        $staffId = Auth::guard('admin')->user()->staff_id;
+
+        $clientObj = new ClientController();
+
+        $pendingClientCount =sizeof($clientObj->pendingClientList($staffId, $staffLevel)['clients']);
+
+
 
 
 

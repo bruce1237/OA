@@ -22,7 +22,7 @@
                             <select class="form-control" name="client_belongs_company">
                                 @foreach($data['firms'] as $firm)
                                     <option
-                                        value="{{$firm['firm_id']}}">{{$firm['firm_name']}}</option>
+                                        value="{{$firm['firm_name']}}">{{$firm['firm_name']}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -280,13 +280,16 @@
 
     <script>
         function newClient() {
-            var data = $("#newClientForm").serialize();
+
+            var data = new FormData($("#newClientForm")[0]);
             $.ajax({
-                url: "{{url('admin/newClient')}}",
-                type: "post",
-                data: data,
-                dataType: 'json',
-                success: function (data) {
+                url:"{{url('admin/newClient')}}",
+                type:'post',
+                data:data,
+                dataType:'Json',
+                contentType:false,
+                processData:false,
+                success:function(data){
                     location.replace(location.href);
                     layer.msg(data.msg, {icon: data.code});
                 }

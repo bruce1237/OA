@@ -122,7 +122,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('crm_info_update',['uses'=>'infoDepartController@infoUpdate']);
     Route::get('infoAssign',['uses'=>'infoAssignController@index']);
     Route::post('assignInfo',['uses'=>'infoAssignController@assignInfo']);
-    Route::post('newClient',['uses'=>'clientController@create']);
+    Route::post('newClient',['uses'=>'clientController@addClient']);
     Route::post('infoStatic',['uses'=>'infoAssignController@infoStatic']);
     Route::get('templateManage',['uses'=>'templateController@index']);
     Route::post('modifyTemplate',['uses'=>'templateController@templateModify']);
@@ -145,6 +145,17 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
 
 
 
+    /*************************-*******************/
+    /*****************通知类*************/
+    /*******************************************/
+    Route::post('notificationCheck',['uses'=>'notificationController@handler']);
+
+
+    /*************************-*******************/
+    /*****************处理审批信息*************/
+    /*******************************************/
+    Route::get('approval',['uses'=>'approvalController@index']);
+    Route::post('approval',['uses'=>'approvalController@process']);
 
 
 

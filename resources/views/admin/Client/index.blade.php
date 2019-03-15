@@ -46,6 +46,7 @@
                         <tbody id="clientTableBody">
 
                         @foreach($data['clients']['clients'] as $client)
+
                             <tr id="clientList{{$client->client_id}}" onclick="getClientDetail({{$client->client_id}})">
                                 <td>{{$client->client_name}}@if($client->client_new_enquiries)<span
                                         id="newTag{{$client->client_id}}"
@@ -247,7 +248,7 @@
                     <form id="addCompanyForm">
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">公司名称:</span>
+                                <span class="input-group-text">公司名称:<i class="text-danger">*</i> </span>
                             </div>
                             <input type="text" name="company_name" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
@@ -261,35 +262,35 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">纳税识别号:</span>
+                                <span class="input-group-text">纳税识别号:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" name="company_tax_id" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">银行账号:</span>
+                                <span class="input-group-text">银行账号:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" name="company_account_number" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">开户银行地址:</span>
+                                <span class="input-group-text">开户银行地址:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" name="company_account_address" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">客户公司地址:</span>
+                                <span class="input-group-text">客户公司地址:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" name="company_address" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">客户公司邮编:</span>
+                                <span class="input-group-text">客户公司邮编:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" name="company_post_code" class="form-control" placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
                         </div>
@@ -377,6 +378,7 @@
     <div class="modal" tabindex="-1" role="dialog" id="newClientModal">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
+                <form id="newClientForm">
                 <div class="modal-header">
                     <h5 class="modal-title">添加客户</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -384,7 +386,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="newClientForm">
+
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">客户隶属:</span>
@@ -392,7 +394,7 @@
                             <select class="form-control" name="client_belongs_company">
                                 @foreach($data['firms'] as $firm)
                                     <option
-                                        value="{{$firm['firm_id']}}">{{$firm['firm_name']}}</option>
+                                        value="{{$firm['firm_name']}}">{{$firm['firm_name']}}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -421,7 +423,7 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">客户手机:</span>
+                                <span class="input-group-text">客户手机:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" class="form-control" name="client_mobile" placeholder="客户手机"
                                    aria-label="Username"
@@ -491,20 +493,15 @@
                                    aria-describedby="basic-addon1">
                         </div>
 
-
-
-
-
-                    </form>
                 </div>
                 <div class="modal-footer">
                     <button type="reset" class="btn btn-secondary">重置</button>
-                    <button type="button" class="btn btn-primary" onclick="newClient()">修改</button>
+                    <button type="button" class="btn btn-primary" onclick="addClient()">修改</button>
                 </div>
+                </form>
             </div>
         </div>
     </div>
-
 
     <script type="text/javascript" language="javascript" class="init">
         $(document).ready(function () {
@@ -513,6 +510,10 @@
     </script>
 
     <script>
+
+
+
+
         function getClientDetail(client_id) {
             $.ajax({
                 url: "{{url('admin/getClientDetail')}}",
@@ -526,7 +527,7 @@
                     }
                     $("#client_id").val(data.data.client_id);
                     var clientName = data.data.client_name == null ? "" : data.data.client_name;
-                    $("#clientDetailHeader").html('(' + data.data.client_id + ') ' + clientName + ' ' + data.data.client_mobile + ' <span id="acknowledgeButton"><button class="btn btn-warning btn-sm " onclick="modifyClientInfo(' + data.data.client_id + ')">修改客户信息</button></span> <button class="btn btn-info btn-sm " onclick="showAddCompanyModal(' + data.data.client_id + ')">添加公司</button> <button class="btn btn-danger btn-sm " onclick="toPool(' + data.data.client_id + ')">放入公海</button>');
+                    $("#clientDetailHeader").html('(' + data.data.client_id + ') ' + clientName + ' ' + data.data.client_mobile + ' <button class="btn btn-warning btn-sm " onclick="modifyClientInfo(' + data.data.client_id + ')">修改客户信息</button></span> <button class="btn btn-info btn-sm " onclick="showAddCompanyModal(' + data.data.client_id + ')">添加公司</button> <button class="btn btn-danger btn-sm " onclick="toPool(' + data.data.client_id + ')">放入公海</button>');
 
                     if (data.data.client_new_enquiries != '0' || data.data.client_assign_to =='0') {
                         $("#clientDetailHeader").append('<span id="acknowledgeButton"><button class="btn btn-success btn-sm float-right" onclick="acknowledgeClient(' + data.data.client_id + ')">认领</button></span>&nbsp;');
@@ -589,9 +590,12 @@
                 processData:false,
                 contentType:false,
                 success:function(data){
+                    if(data.status){
+                        $("#newCompanyModal").modal('hide');
+                    }
                     layer.msg(data.msg,{icon:data.code});
                     getClientDetail(newCompanyData.get('company_client_id'));
-                    $("#newCompanyModal").modal('hide');
+
 
                 }
             })
@@ -738,8 +742,8 @@
                         if(client.client_new_enquiries==0){
                             newTag = "";
                         }
-
-                        tableTr +='<td>'+client.client_name+newTag+'</td><td>'+client.client_mobile+'</td><td>'+client.created_at+'</td><td>'+client.visit_next_date+'</td><td>'+client.visit_status+'</td><td>'+client.client_assign_to+'</td></tr>';
+                            var clientName = client.client_name==null?'':client.client_name;
+                        tableTr +='<td>'+clientName+newTag+'</td><td>'+client.client_mobile+'</td><td>'+client.created_at+'</td><td>'+client.visit_next_date+'</td><td>'+client.visit_status+'</td><td>'+client.client_assign_to+'</td></tr>';
                     });
 
                     var tableEnd = '</tr></tbody></table>';
@@ -765,9 +769,27 @@
                 }
             });
         }
-
         function showNewClientModal() {
+            document.getElementById('newClientForm').reset();
             $("#newClientModal").modal('show');
+        }
+        function addClient() {
+            var data = new FormData($("#newClientForm")[0]);
+            $.ajax({
+               url:"{{url('admin/newClient')}}",
+               type:'post',
+               data:data,
+               dataType:'Json',
+               contentType:false,
+               processData:false,
+               success:function(data){
+                   if(data.status){
+                       $("#newClientModal").modal('hide');
+                   }
+                   layer.msg(data.msg,{icon:data.code});
+               }
+            });
+
         }
 
     </script>

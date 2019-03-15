@@ -302,13 +302,18 @@ style="left: 0px;"
 <script>
 
 
+
+
     $(function () {
-        setInterval(showDateTime, 1000);
+
         $.ajaxSetup({
             headers: {
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        setInterval(showDateTime, 1000);
+        self.setInterval("notificationCheck()",300000);
+
     });
 
 
@@ -372,6 +377,35 @@ style="left: 0px;"
             }
         });
     }
+
+
+
+
+
+
+
+
+    function notificationCheck(){
+
+
+        $.ajax({
+            url:"{{url('admin/notificationCheck')}}",
+            type:'post',
+            success:function(data){
+                $.each(data, function(key,value){
+                    new Notification(value.title,{
+                        body:value.body,
+                        icon:value.icon,
+                        dir:value.dir,
+
+                    });
+                });
+            }
+        });
+
+    }
+
+
 
 
 </script>
