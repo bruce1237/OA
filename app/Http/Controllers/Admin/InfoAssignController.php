@@ -10,6 +10,7 @@ use App\Model\InfoSource;
 use App\Model\InfoStatic;
 use App\Model\Staff;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class InfoAssignController extends Controller
@@ -88,21 +89,32 @@ class InfoAssignController extends Controller
      */
     public function assignInfo(Request $request)
     {
+
+
         $client_id = (int)$request->post('client_id'); //get client id from the post data
         $client = Client::find($client_id); //get ID client's data
-        if (!$client->client_new_enquiries) { //check if the client is new client or client has new enquires and NOT been assigned staff acknowledged
-            $this->returnData['msg'] = "客户已被认领,重新分配失败";
-            return $this->returnData;
+//        $staffId=Auth::guard('admin')->user()->staff_id;
+//        $staffLevel = Staff::find($staffId)->staff_level;
+
+
+        if(null==($request->post('overwrite')) || !$request->post('overwrite')){
+            if ($client->client_new_enquiries=='0') { //check if the client is new client or client has new enquires and NOT been assigned staff acknowledged
+
+                $this->returnData['msg'] = "客户已被认领,重新分配失败";
+                return $this->returnData;
+            }
         }
+
         if ($client->getOriginal('client_assign_to') >= 0) { //reassign client if the client has been assigned, delete the old assign statistic data
-            InfoStatic::where('staff_id', '=', $client->getOriginal('client_assign_to'))->where('client_id', '=', $client_id)->delete();
+                InfoStatic::where('staff_id', '=', $client->getOriginal('client_assign_to'))->where('client_id', '=', $client_id)->delete();
         }
         //create new record for the client assign activity
-        InfoStatic::create(['staff_id' => $request->post('staff_id'),
+        InfoStatic::create(['staff_id' =>$request->post('staff_id'),
             'client_id' => $request->post('client_id'),
             'info_source' => $client->client_source,
             'assigned_at' => date("Y-m-d")]);
         //update client info for the client assignment
+//        dd($request->post('staff_id'));
         if (Client::find($request->post('client_id'))->update(['client_assign_to' => $request->post('staff_id'), 'client_assign_date' => date('Y-m-d')])) {
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "分配成功";

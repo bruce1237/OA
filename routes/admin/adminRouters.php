@@ -142,7 +142,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('modifyCompany',['uses'=>'clientController@modifyCompany']);
     Route::post('getClientList',['uses'=>'clientController@getClientList']);
     Route::post('toPool',['uses'=>'clientController@toPool']);
-
+    Route::post('clientQualificationUploads',['uses'=>'clientController@qualificatesUpload']);
 
 
     /*************************-*******************/

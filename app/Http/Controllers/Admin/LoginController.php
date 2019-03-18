@@ -28,6 +28,7 @@ class LoginController extends Controller
             ['staff_no' => $request->post('staff_no'), 'password' => $request->post('password')],
                 $request->has('remember')
             )) {
+            Admin::find(Auth::guard('admin')->user()->id)->update(['last_login'=>date("Y-m-d H:i:s")]);
             return redirect('/admin/home');
         } else {
             return redirect('/login')->withErrors('登录信息不正确','loginError');

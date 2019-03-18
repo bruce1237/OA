@@ -126,4 +126,6 @@ class Staff extends Model
         }
         $this->attributes['staff_type'] = $value;
     }
+
+
 }

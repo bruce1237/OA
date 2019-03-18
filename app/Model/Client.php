@@ -16,12 +16,24 @@ class Client extends Model
     }
 
     public function getClientAssignToAttribute($value){
-       if($value){
+
+       if($value>0){
            return Staff::find($value)->staff_name;
        }else{
-           return 0;
+           return "";
        }
     }
+
+//    public function setClientAssignToAttribute($value){
+//dd($value);
+//        try{
+//            $this->attributes['client_assign_to'] =Staff::where('staff_name', '=', $value)->first()->staff_id;
+//        }catch (\Exception $e){
+//            $this->attributes['client_assign_to'] = 0;
+//        }
+//
+//
+//    }
 
     public function getClientBelongsCompanyAttribute($value){
         return Firm::find($value)->firm_name;

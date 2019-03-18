@@ -205,6 +205,7 @@
                         <tbody>
                         @foreach($data['freshlyAssignClients'] as $freshClient)
                             <tr>
+
                                 <td>{{$freshClient['client_belongs_company']}}</td>
                                 <td>{{$freshClient['client_source']}}</td>
                                 <td>{{$freshClient['client_mobile']}}</td>
@@ -215,13 +216,13 @@
                                     <div class="input-group input-group-sm mb-3">
                                         <select class="form-control" id="reAssignstaff_id_{{$freshClient->client_id}}"
                                                 onchange="reAssignInfo({{$freshClient->client_id}})">
-                                            @foreach($data['staffs'] as $staff)
 
-                                                {{$select =""}}
-                                                @if($staff->staff_name == $freshClient->client_assign_to)
-                                                    {{$select = "selected"}}
+                                            @foreach($data['staffs'] as $staff)
+                                                <option
+                                                @if($staff->staff_name   == $freshClient->client_assign_to)
+                                                  selected
                                                 @endif
-                                                <option {{$select}} value="{{$staff->staff_id}}">{{$staff->staff_name}}
+                                              value="{{$staff->staff_id}}">{{$staff->staff_name}}
                                                     ({{$staff->department_id}}) {{$staff->today}}
                                                     / {{$staff->month}}</option>
                                             @endforeach

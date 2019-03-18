@@ -42,15 +42,18 @@ class NotificationController extends Controller
      */
     public function handler()
     {
+
         //get staff info for check is the current logged staff need to be notified
         $staff = Staff::find(Auth::guard('admin')->user()->staff_id);
         foreach ($this->_checker as $checker) { //go through the checker
             $data = call_user_func([$this, $checker]); //call each check function to get result
+
             if(in_array($staff->position_id,$data['position_id'])){ //if the current logged in staff in the returned data's position_id filed, then need to notify the staff
                 unset($data['position_id']); //destroy unnecessary variable/array filed
                 $this->_returnData[]=$data; //assign the data into the return data
             }
         }
+
         return $this->_returnData; //return the checking result
     }
 
@@ -63,7 +66,7 @@ class NotificationController extends Controller
         $data=$this->_returnDataTemp;//structure the $data variable
         if ($this->_clientChangeArr) { //if there is any file in the indicated folder, then their is file need to be notify
             $data = [
-                'position_id' => [5], //list whitch position need to be notified
+                'position_id' => explode(',',env('CLIENT_MOBILE_CHANGE_POSITION_NOTIFY')), //list which position need to be notified
                 'status' => true,
                 'title' => '等待审批',
                 'body' => '客户信息修改',
@@ -71,6 +74,7 @@ class NotificationController extends Controller
                 'dir' => 'auto'
             ];
         }
+
         return $data;
     }
 }

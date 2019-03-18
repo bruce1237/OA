@@ -21,9 +21,7 @@
 
 
 @section('content')
-    <div class="row">
-        <div class="col-12">search section</div>
-    </div>
+
 
     <div class="row">
         <div class="col-5">
@@ -73,7 +71,27 @@
 
         <div class="col-7">
             <div class="card border-primary mb-3">
-                <div class="card-header bg-primary text-white" id="clientDetailHeader"></div>
+                <div class="card-header bg-primary text-white">
+                    <span id="clientDetailHeader"></span>
+
+                @if($data['staffLevel']>=env('DEPARTMENT_CHIEF_LEVEL'))
+
+                        <div class="input-group input-group-sm mb-3" id="reassignStaff" style="display:none ">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="inputGroup-sizing-sm">重新分配</span>
+                            </div>
+                            <select class="form-control" name="reassignClientTo" id="reassignClientTo" aria-label="Small"
+                                    aria-describedby="inputGroup-sizing-sm" onchange="reassignClient()">
+                                <option selected disabled>请选择业务员</option>
+                                @foreach($data['assignableStaffs'] as $assignableStaff)
+                                    <option value="{{$assignableStaff->staff_id}}">{{$assignableStaff->staff_name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                    @endif
+
+                </div>
                 <div class="card-body text-primary" id="clientDetailBody">
                     客户需求 <input type="hidden" id="client_id" />
                     <p class="card-text" id="client_enquiries"></p>
@@ -184,8 +202,26 @@
                             <div class="col-12" id="companies"></div>
                         </div>
                     </form>
+                        <br />
+                        <div class="col-12" id="uploadClientQlf" style="display: none">
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="custom-file">
+                                    <input type="file" class="custom-file-input" id="client_qualification" multiple="multiple" >
+                                    <label class="custom-file-label" for="inputGroupFile02">选择资质文件(多选)</label>
+                                </div>
+                                <div class="input-group-append">
+                                    <button class="btn btn-primary" id="" onclick="uploadClientQualification()">上传</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    <div id="clientQlf"></div>
+
+
+
                 </div>
             </div>
+
 
 
             <div class="card border-success mb-3">
@@ -503,6 +539,34 @@
         </div>
     </div>
 
+    <div class="modal fade " tabindex="-1" role="dialog" id="clientQlfModal">
+        <div class="modal-dialog" role="document" style="max-width: 1200px;">
+            <div class="modal-content">
+                <form id="newClientForm">
+                <div class="modal-header">
+                    <h5 class="modal-title">客户资质</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+
+                    {{--<embed id="clientQLFEMBD" style="width:1000px auto;height:600px auto;" src="/storage/CRM/Client/QLF/15/22.jpg"></embed>--}}
+                    <iframe id="clientQLFEMBD" style="width:1000px;height:600px;" src="/storage/CRM/Client/QLF/15/333.pdf"></iframe>
+                    {{--<img id="clientQLFEMBD"  src="/storage/CRM/Client/QLF/15/22.jpg" />--}}
+                    {{--<a id="tyu" class="media" href="/thinkphp/public/videoDep/1.flv">My Flash Movie</a>--}}
+
+
+                </div>
+                <div class="modal-footer">
+                    <button type="reset" class="btn btn-secondary">重置</button>
+                    <button type="button" class="btn btn-primary" onclick="addClient()">修改</button>
+                </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <script type="text/javascript" language="javascript" class="init">
         $(document).ready(function () {
             $("#clientListTable").DataTable();
@@ -525,15 +589,23 @@
                         layer.msg(data.msg, {icon: data.code});
                         return false;
                     }
+                    resetClientInfo();
                     $("#client_id").val(data.data.client_id);
                     var clientName = data.data.client_name == null ? "" : data.data.client_name;
                     $("#clientDetailHeader").html('(' + data.data.client_id + ') ' + clientName + ' ' + data.data.client_mobile + ' <button class="btn btn-warning btn-sm " onclick="modifyClientInfo(' + data.data.client_id + ')">修改客户信息</button></span> <button class="btn btn-info btn-sm " onclick="showAddCompanyModal(' + data.data.client_id + ')">添加公司</button> <button class="btn btn-danger btn-sm " onclick="toPool(' + data.data.client_id + ')">放入公海</button>');
-
-                    if (data.data.client_new_enquiries != '0' || data.data.client_assign_to =='0') {
+                    if(!data.data.client_assign_to || (data.data.client_assign_to =="{{\Illuminate\Support\Facades\Auth::guard('admin')->user()->name}}") && data.data.client_new_enquiries != '0'){
                         $("#clientDetailHeader").append('<span id="acknowledgeButton"><button class="btn btn-success btn-sm float-right" onclick="acknowledgeClient(' + data.data.client_id + ')">认领</button></span>&nbsp;');
                     }
-                    resetClientInfo();
+                    $("#clientQlf").html('');
+                    $.each(data.data.qlf,function(key,qlf){
+                        var fileName=qlf.replace("client/QLF/"+data.data.client_id+"/","");
+                        $("#clientQlf").append('<span class="badge badge-info" onclick="showClientQlfFile(\''+fileName+'\')">'+fileName+'</span> ');
+                    });
+
+
                     assignClientInfo(data);
+                    $("#reassignStaff").show();
+                    $("#uploadClientQlf").show();
 
                 }
             });
@@ -687,24 +759,6 @@
                }
             });
         }
-        function resetClientInfo(){
-            $("#companies").html('');
-            $("#client_enquiries").html('');
-            $("#client_name").val('');
-            $("#client_address").val('');
-            $("#client_post_code").val('');
-            $("#client_belongs_company").val('');
-            $("#client_mobile").val('');
-            $("#client_tel").val('');
-            $("#client_wechat").val('');
-            $("#client_qq").val('');
-            $("#client_email").val('');
-            $("#client_source").val('');
-            $("#client_level").html('');
-            $("#created_at").html('');
-            $("#visit_next_date").html('');
-            $("#visitHistory").html('');
-        }
         function getClientList(type) {
             resetClientInfo();
             $.ajax({
@@ -789,6 +843,78 @@
                    layer.msg(data.msg,{icon:data.code});
                }
             });
+
+        }
+        function reassignClient() {
+            var clientid = $("#client_id").val();
+            var assign_to = $("#reassignClientTo").val();
+
+            $.ajax({
+                url: "{{url('admin/assignInfo')}}",
+                type: 'post',
+                data: {client_id: clientid, staff_id: assign_to,overwrite:true},
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg,{icon: data.code});
+
+
+                    location.replace(location.href);
+                }
+            });
+        }
+        function uploadClientQualification(){
+            var data =new FormData();
+            for(var i=0; i<$("#client_qualification")[0].files.length;i++){
+                data.append('file'+i,$("#client_qualification")[0].files[i]);
+            }
+            data.append('client_id',$("#client_id").val());
+
+            $.ajax({
+                url:"{{url('admin/clientQualificationUploads')}}",
+                type:'post',
+                data:data,
+                processData:false,
+                contentType:false,
+                async : false,
+                success:function(data){
+                    layer.msg(data.msg,{icon:data.code});
+                    if(data.status){
+                        getClientDetail($("#client_id").val());
+                    }
+                }
+            })
+        }
+
+        function showClientQlfFile(fileName){
+           $("#clientQlfModal").modal('show');
+           $("#clientQLFEMBD").attr('src','/storage/CRM/Client/QLF/'+$("#client_id").val()+'/'+fileName);
+            // $('#tyu').media({width:450, height:350,autoplay: true},src="/storage/CRM/Client/QLF/15/333.pdf");
+
+
+        }
+
+        function resetClientInfo(){
+            $("#client_qualification").val('');
+            $("#client_id").val('');
+            $("#clientDetailHeader").html('');
+            $("#companies").html('');
+            $("#client_enquiries").html('');
+            $("#client_name").val('');
+            $("#client_address").val('');
+            $("#client_post_code").val('');
+            $("#client_belongs_company").val('');
+            $("#client_mobile").val('');
+            $("#client_tel").val('');
+            $("#client_wechat").val('');
+            $("#client_qq").val('');
+            $("#client_email").val('');
+            $("#client_source").val('');
+            $("#client_level").html('');
+            $("#created_at").html('');
+            $("#visit_next_date").html('');
+            $("#visitHistory").html('');
+            $("#reassignStaff").hide();
+            $("#uploadClientQlf").hide();
 
         }
 

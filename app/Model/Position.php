@@ -19,13 +19,13 @@ class Position extends Model
             case 3:
                 $value = "部门经理";
                 break;
-            case 7:
+            case 700:
                 $value = "区域经理";
                 break;
-            case 9:
+            case 900:
                 $value = "总经理";
                 break;
-            case 100:
+            case 1000:
                 $value = "OA管理员";
                 break;
 
@@ -42,13 +42,13 @@ class Position extends Model
                 $value = 3;
                 break;
             case "区域经理":
-                $value = 7;
+                $value = 700;
                 break;
             case "总经理":
-                $value = 9;
+                $value = 900;
                 break;
             case "OA管理员":
-                $value = 100;
+                $value = 1000;
                 break;
 
         }
