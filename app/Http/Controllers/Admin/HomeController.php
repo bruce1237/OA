@@ -52,10 +52,12 @@ class HomeController extends Controller
 
         $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
         $staffId = Auth::guard('admin')->user()->staff_id;
+        $staffName = Auth::guard('admin')->user()->name;
 
-        $clientObj = new ClientController();
-
-        $pendingClientCount =sizeof($clientObj->pendingClientList($staffId, $staffLevel)['clients']);
+        $pendingClientCount =Client::where('client_assign_to','=',$staffId)
+            ->where('client_next_date','>=',date("Y-m-d"))
+            ->where('client_status','=','1')
+            ->count();
 
 
 

@@ -13,13 +13,16 @@ use App\Model\Visit;
 use App\Model\VisitStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
+    private $_pageSize=15;
 
-    public function index()
+    public function index($type="all")
     {
+
         //get staff level, use staff_level to decided what and how to display required info
         $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
         $staffId = Auth::guard('admin')->user()->staff_id; //get staff id
@@ -31,11 +34,14 @@ class ClientController extends Controller
 
 
 //        $staffLevel=3; //部门经理级别 测试用
-
-        $clients = $this->allClientList($staffId, $staffLevel); //get the full client according to the staffLevel
         $clientSource = InfoSource::all(); //get infoSource data
         $visitStatus = VisitStatus::all(); //get visitStatus data
         $firms = Firm::all(); //get firm data
+        $func = $type."ClientList";
+        $clients = call_user_func([$this,$func],$staffId, $staffLevel);
+//            $this->allClientList($staffId, $staffLevel); //get the full client according to the staffLevel
+
+
 
         //use one unified combined variable to store all the data for the view use, so the view() statement will be shorter and easier to read
         $data = [
@@ -59,10 +65,10 @@ class ClientController extends Controller
                 $clientList = Client::where('clients.client_assign_to', '=', $staffId)
                     ->where('clients.client_status', '=', '1')
                     ->orderby('updated_at', 'desc')
-                    ->get();
+                    ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
-                $clientList = Client::where('clients.client_status', '=', '1')->get();
+                $clientList = Client::where('clients.client_status', '=', '1')->paginate($this->_pageSize);
                 break;
         }
         foreach ($clientList as $key => $client) {
@@ -84,10 +90,14 @@ class ClientController extends Controller
      */
     public function AddClientVisitData(Request $request)
     {
-        if (Visit::create($request->post())) {
+        try {
+            Visit::create($request->post());
+            Client::find($request->post('visit_client_id'))->update(['client_next_date'=>$request->post('visit_next_date'),'client_visit_status'=>$request->post('visit_status')]);
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "添加成功";
             $this->returnData['code'] = 1;
+        }catch(\Exception $e){
+            $this->returnData['msg'] = "添加失败";
         }
         return $this->returnData;
     }
@@ -256,6 +266,8 @@ class ClientController extends Controller
      */
     public function getCompanyInfo(Request $request)
     {
+
+
         if ($this->returnData['data'] = Company::find($request->post('company_id'))) {
             $this->returnData['status'] = true;
         } else {
@@ -344,27 +356,45 @@ class ClientController extends Controller
             case "0": //普通员工
                 $clientList = Client::where('clients.client_assign_to', '=', $staffId)
                     ->where('clients.client_status', '=', '1')
-                    ->get();
+                    ->where('client_next_date','=',date("Y-m-d"))
+                    ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
                 $clientList = Client::where('clients.client_status', '=', '1')
                     ->where('clients.client_assign_to', '>', '0')
-                    ->get();
+                    ->where('client_next_date','=',date("Y-m-d"))
+                    ->paginate($this->_pageSize);
                 break;
         }
-        $filteredClientList = array();
-        foreach ($clientList as $key => $client) { //get client next vist date
-            if ($visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)
-                ->where('visit_next_date', '<=', date('Y-m-d'))
-                ->orderBy('visit_next_date', 'desc')->first()) {
-                $filteredClientList[$key] = $client->toArray(); //convert client Obj into array
-                $filteredClientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : ''; //assign next visit date into client Array
-                $filteredClientList[$key]['visit_status'] = $visitNextDate ? $visitNextDate->visit_status : ''; //assign next visit status into client Array
-            }
-        }
+
         $clients['list_name'] = '待回访客户信息';
         $clients['bg'] = 'bg-warning';
-        $clients['clients'] = $filteredClientList;
+        $clients['clients'] = $clientList;
+
+        return $clients;
+    }
+    public function overdueClientList($staffId, $staffLevel)
+    {
+        $clientList = array();
+        switch ($staffLevel) {
+            case "0": //普通员工
+                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
+                    ->where('clients.client_status', '=', '1')
+                    ->where('client_next_date','<=',date("Y-m-d"))
+                    ->paginate($this->_pageSize);
+                break;
+            case "3": //部门经理
+                $clientList = Client::where('clients.client_status', '=', '1')
+                    ->where('clients.client_assign_to', '>', '0')
+                    ->where('client_next_date','<=',date("Y-m-d"))
+                    ->paginate($this->_pageSize);
+                break;
+        }
+
+        $clients['list_name'] = '逾期访客户信息';
+        $clients['bg'] = 'bg-primary';
+        $clients['clients'] = $clientList;
+
         return $clients;
     }
 
@@ -379,7 +409,7 @@ class ClientController extends Controller
         $clientList = Client::where('client_assign_to', '=', '0')
             ->where('client_status', '=', '1')
             ->orderBy('updated_at', 'desc')
-            ->get();
+            ->paginate($this->_pageSize);
         foreach ($clientList as $key => $client) {
             $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
             $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
@@ -405,15 +435,16 @@ class ClientController extends Controller
                 $clientList = Client::where('clients.client_assign_to', '=', $staffId)
                     ->where('clients.client_status', '=', '1')
                     ->where('clients.client_new_enquiries', '=', '1')
-                    ->get();
+                    ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
                 $clientList = Client::where('clients.client_status', '=', '1')
                     ->where('clients.client_new_enquiries', '=', '1')
                     ->where('clients.client_assign_to', '=', '-1')
-                    ->get();
+                    ->paginate($this->_pageSize);
                 break;
         }
+
         foreach ($clientList as $key => $client) {
             $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
             $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';

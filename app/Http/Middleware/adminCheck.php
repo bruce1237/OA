@@ -66,8 +66,6 @@ class adminCheck
             $action = Route::current()->getActionMethod();
 
 
-//            dump(Route::currentRouteAction());
-
             return Controller::where('position_id','=',$positionId)->where('controller','=',$controller)
                 ->leftjoin('functions','controllers.id','=','functions.controller_id')
                 ->where('functions.function','=',$action)

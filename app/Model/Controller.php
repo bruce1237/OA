@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Controller extends Model
 {
     //
-    use SoftDeletes;
+//    use SoftDeletes;
     protected $guarded=[];
 
 }

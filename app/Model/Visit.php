@@ -10,6 +10,10 @@ class Visit extends Model
     protected $primaryKey = 'visit_id';
     protected $guarded =[];
 
+    public function getVisitStatusAttribute($value){
+
+        return VisitStatus::find($value)->first()->visit_status_name;
+    }
 
 
 }

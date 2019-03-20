@@ -33,6 +33,8 @@ class CreateClientsTable extends Migration
             $table->enum('client_new_enquiries',[0,1])->default(1)->nullable()->comment('是否有新的诉求:0没有,1有');
             $table->longText('client_enquiries')->nullable()->comment('诉求内容');
             $table->string('client_source',20)->nullable()->comment('客户来源:抖音,百度...');
+            $table->date('client_next_date')->nullable()->comment('下次回访时间');
+            $table->integer('client_visit_status')->nullable()->comment('客户回访状态');
             $table->enum('client_status',[0,1,2,])->default(1)->nullable()->comment('客户状态:0停用1正常2锁定:用于修改用户信息后等待主管/经理的审批期间');
             $table->softDeletes();
             $table->timestamps();

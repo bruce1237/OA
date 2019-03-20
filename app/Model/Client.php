@@ -17,9 +17,12 @@ class Client extends Model
     }
 
     public function getClientAssignToAttribute($value){
-
        if($value>0){
-           return Staff::find($value)->staff_name;
+           try{
+               return Staff::withTrashed()->find($value)->staff_name;
+           }catch (\Exception $e){
+               return "已离职";
+           }
        }else{
            return "";
        }
@@ -46,6 +49,14 @@ class Client extends Model
 
     public function setClientBelongsCompanyAttribute($value){
         $this->attributes['client_belongs_company'] = Firm::where('firm_name','=',$value)->first()->firm_id;
+    }
+
+    public function getClientVisitStatusAttribute($value){
+        try{
+            return VisitStatus::find($value)->visit_status_name;
+        }catch (\Exception $e){
+            return "";
+        }
     }
 
 

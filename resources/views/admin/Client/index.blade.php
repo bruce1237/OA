@@ -4,16 +4,24 @@
     <a class="layui-btn layui-btn btn-success layui-btn-xs" onclick="showNewClientModal()">
         <span style="color:white"><i class="layui-icon"></i>添加新客户</span>
     </a>
-    <a class="layui-btn layui-btn btn-danger layui-btn-xs" onclick="getClientList('new')">
+
+    <a class="layui-btn layui-btn btn-danger layui-btn-xs" href="{{url('admin/clientManage/new')}}">
         <span style="color:white"><i class="layui-icon"></i>新信息列表</span>
     </a>
-    <a class="layui-btn layui-btn btn-warning layui-btn-xs" onclick="getClientList('pending')">
+
+
+    <a class="layui-btn layui-primary layui-btn-xs" href="{{url('admin/clientManage/overdue')}}">
+        <span style="color:white"><i class="layui-icon"></i>逾期回访客户</span>
+    </a>
+
+    <a class="layui-btn layui-btn btn-warning layui-btn-xs" href="{{url('admin/clientManage/pending')}}">
         <span style="color:white"><i class="layui-icon"></i>待回访客户</span>
     </a>
-    <a class="layui-btn layui-btn btn-info layui-btn-xs" onclick="getClientList('all')">
+
+    <a class="layui-btn layui-btn btn-info layui-btn-xs" href="{{url('admin/clientManage/all')}}">
         <span style="color:white"><i class="layui-icon"></i>全部信息</span>
     </a>
-    <a class="layui-btn layui-btn btn-primary layui-btn-xs" onclick="getClientList('pool')">
+    <a class="layui-btn layui-btn btn-primary layui-btn-xs" href="{{url('admin/clientManage/pool')}}">
         <span style="color:white"><i class="layui-icon"></i>公海信息</span>
     </a>
 
@@ -30,7 +38,8 @@
                      id="clientListTitle">{{$data['clients']['list_name']}}</div>
                 <div class="card-body text-secondary" id="dataTableDiv">
 
-                    <table id="clientListTable" class="table table-sm table-hover">
+                    {{--<table id="clientListTable" class="table table-sm table-hover">--}}
+                    <table class="table table-sm table-hover">
                         <thead>
                         <tr>
                             <th>姓名</th>
@@ -44,17 +53,17 @@
                         <tbody id="clientTableBody">
 
                         @foreach($data['clients']['clients'] as $client)
-
-                            <tr id="clientList{{$client->client_id}}" onclick="getClientDetail({{$client->client_id}})">
-                                <td>{{$client->client_name}}@if($client->client_new_enquiries)<span
-                                        id="newTag{{$client->client_id}}"
+{{--{{dd($client)}}--}}
+                            <tr id="clientList{{$client['client_id']}}" onclick="getClientDetail({{$client['client_id']}})">
+                                <td>{{$client['client_name']}}@if($client['client_new_enquiries'])<span
+                                        id="newTag{{$client['client_id']}}"
                                         class="badge badge-pill badge-danger">(NEW)</span>@endif</td>
                                 {{--@if($client->client_new_enquiries)<span class="badge badge-pill badge-danger">(NEW)</span>@endif--}}
-                                <td>{{$client->client_mobile}}</td>
-                                <td>{{$client->created_at}}</td>
-                                <td>{{$client->visit_next_date}}</td>
-                                <td>{{$client->visit_status_name}}</td>
-                                <td>{{$client->client_assign_to}}</td>
+                                <td>{{$client['client_mobile']}}</td>
+                                <td>{{$client['created_at']}}</td>
+                                <td>{{$client['client_next_date']}}</td>
+                                <td>{{$client['client_visit_status']}}</td>
+                                <td>{{$client['client_assign_to']}}</td>
                             </tr>
                         @endforeach
 
@@ -62,7 +71,7 @@
 
 
                     </table>
-
+                    {{ $data['clients']['clients']->links() }}
                 </div>
             </div>
 
@@ -103,7 +112,7 @@
                             <div class="col-3">
                                 <div class="input-group input-group-sm mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm">姓名</span>
+                                        <span class="input-group-text" id="inputGroup-sizing-sm"><strong>姓名</strong></span>
                                     </div>
                                     <input type="text" name="client_name" id="client_name" class="form-control"
                                            aria-label="Small"
@@ -243,7 +252,7 @@
                         <tr>
                             <th scope="col">回访时间</th>
                             <th scope="col">销售状况</th>
-                            <th scope="col">回访内容</th>
+                            <th scope="col" width="40%">回访内容</th>
                             <th scope="col">下次回访日期</th>
                             <th scope="col">回访人</th>
                         </tr>
@@ -714,10 +723,12 @@
                 processData: false,
                 data: visitData,
                 dataType: 'Json',
-                success: function () {
-                    // alert(visitData.get('visit_client_id'));
+                success: function (data) {
+                  if(data.status){
+                      getClientDetail($("#client_id").val());
+                  }
+                  layer.msg(data.msg,{icon:data.code});
 
-                    getClientDetail($("#client_id").val());
                 }
             });
 
@@ -738,7 +749,7 @@
             $("#client_source").val(data.data.client_source);
             $("#client_level").html(data.data.client_level);
             $("#created_at").html(data.data.created_at);
-            $("#visit_next_date").html(data.data.visit_next_date);
+            $("#visit_next_date").html(data.data.client_next_date);
 
             $.each(data.company, function (key, company) {
                 $("#companies").append('<button type="button" class="btn btn-outline-primary btn-sm" onclick="showCompany(' + company.company_id + ')" >' + company.company_name + '</button> ');
@@ -750,6 +761,7 @@
         }
 
         function showCompany(companyId) {
+
             $.ajax({
                 url: "{{url('admin/getCompanyInfo')}}",
                 type: 'post',
@@ -805,7 +817,7 @@
                     $("#clientListTitle").attr('class', 'card-header text-white ' + data.data.bg);
 
 
-                    var tableHeader = '  <table id="clientListTable2" class="table table-sm table-hover">\n' +
+                    var tableHeader = '  <table id="" class="table table-sm table-hover">\n' +
                         '                        <thead>\n' +
                         '                        <tr>\n' +
                         '                            <th>姓名</th>\n' +
@@ -830,7 +842,7 @@
                         tableTr += '<td>' + clientName + newTag + '</td><td>' + client.client_mobile + '</td><td>' + client.created_at + '</td><td>' + client.visit_next_date + '</td><td>' + client.visit_status + '</td><td>' + client.client_assign_to + '</td></tr>';
                     });
 
-                    var tableEnd = '</tr></tbody></table>';
+                    var tableEnd = "</tr></tbody></table>";
 
                     $("#dataTableDiv").html(tableHeader + tableTr + tableEnd);
 

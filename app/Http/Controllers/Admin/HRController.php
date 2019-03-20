@@ -247,6 +247,9 @@ class HRController extends Controller
         unset($dataCheck['staff_hobby']);
         unset($dataCheck['staff_self_assessment']);
         unset($dataCheck['staff_assessment']);
+        unset($dataCheck['staff_edu_history']);
+        unset($dataCheck['staff_work_exp']);
+        unset($dataCheck['staff_achievement']);
 
         //validate the post data
         if (in_array(null, $dataCheck) || in_array("null", $dataCheck)) {
@@ -289,27 +292,30 @@ class HRController extends Controller
 
         try { //failsafe
             //update or insert into the database
-
-            Staff::updateOrCreate(['staff_id' => $postData['staff_id']], $postData);
+//dd( $postData);
+           Staff::updateOrCreate(['staff_id' => $postData['staff_id']], $postData);
+          if($postData['staff_id']){
+              Admin::updateOrCreate(['staff_id'=>$postData['staff_id']],['staff_id'=>$postData['staff_id'],'staff_no'=>$postData['staff_no'],'name'=>$postData['staff_name']]);
+          }
 
 //            Admin::where('staff_id','=',$postData['staff_id'])->update(['name'=>$postData['staff_name'],'staff_no'=>$postData['staff_no']]);
 //            $a = Admin::where('staff_id','=',$postData['staff_id'])->get();
-//            dd($a);
+//            dd($a);c
 
 //            if ($request->file('upload_staff_photo')) {
 //                $request->file('upload_staff_photo')->storeAs('staff/photo', $photoFullName, 'public');
 //            }
 
             //rewrite the return variable
-            $this->data = ['status' => true, 'msg' => "员工添加成功！", 'icon' => 1];
+            $this->data = ['status' => true, 'msg' => "操作成功！", 'icon' => 1];
 //            $this->data = ['status' => true, 'msg' =>$postData['staff_id'], 'icon' => 1];
         } catch (\Exception $exception) {
-            dd($exception->getMessage());
+echo $exception->getMessage();
             //rewrite the return variable as there is an exception occurred
-            $data['msg'] = $exception->getMessage();
+//            $data['msg'] = $exception->getMessage();
             switch ($exception->getCode()) {
                 case 23000:
-//                    $data['msg'] = "员工号码已经存在!";
+                    $this->data['msg'] = "员工号码已经存在!";
                     break;
             }
         }
@@ -386,9 +392,9 @@ class HRController extends Controller
      * @target assign the password into the admin table or create if not exist
      */
     public function saveStaffLoginInfo(Request $request) {
-
+//dd($request->post());
         if (Admin::updateOrCreate(['staff_id' => $request->post('staff_id')], $request->post())) {
-            $this->data = ['status' => true, 'info' => '密码修改成功', 'icon' => 1];
+            $this->data = ['status' => true, 'msg' => '密码修改成功', 'icon' => 1];
         }
 
         return $this->data;

@@ -802,14 +802,13 @@
     }
 
     function initStaffModel(Staff){
-
         if(Staff){
             var modalTitle="修改员工信息";
             $("#staff_photo").attr('src',"/storage/staff/photo/"+Staff.staff_photo);
 
             $("#del_btn").attr('onclick',"delStaff("+Staff.staff_id+")");
 
-
+            $("#staff_manager").val(Staff.staff_manager?Staff.staff_manager:0);
         }else{
             var modalTitle="添加员工信息";
             $("#staff_photo").attr('src',"");
@@ -930,7 +929,7 @@
            success:function(data){
                layer.msg(data.msg, {icon: data.icon});
                if(data){
-                refreshPage();
+                // refreshPage();
                }
            }
         });
@@ -980,7 +979,8 @@
             'data': {'department_id': department_id, 'position_id': position_id},
             'dataType': 'json',
             success: function (data) {
-                // $("#staff_manager").html('');
+                $("#staff_manager").html('');
+                $("#staff_manager").append(' <option value="0" selected>无上级主管</option>');
                 $.each(data, function (key, item) {
                     $("#staff_manager").append('<option value="' + item.staff_id + '">' + item.staff_name + '</option>');
                 });

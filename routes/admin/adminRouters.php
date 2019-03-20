@@ -131,7 +131,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*************************-*******************/
     /*****************client客户部*************/
     /*******************************************/
-    Route::get('clientManage',['uses'=>'clientController@index']);
+    Route::get('clientManage/{type?}',['uses'=>'clientController@index']);
 //    Route::get('pendingVisitClient',['uses'=>'clientController@pendingVisitClient']);
     Route::post('getClientDetail',['uses'=>'clientController@getClientDetail']);
     Route::post('acknowledgeClient',['uses'=>'clientController@acknowledgeClient']);
