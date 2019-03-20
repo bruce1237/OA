@@ -17,7 +17,7 @@ class CreateVisitsTable extends Migration
             $table->increments('visit_id')->comment('回访记录ID');
             $table->integer('visit_client_id')->comment('回访的客户ID');
             $table->foreign('visit_client_id')->references('clients')->on('client_id');
-            $table->integer('visit_by_staff_id')->comment('回访客户的员工ID');
+            $table->string('visit_by_staff_name',50)->comment('回访客户的员工姓名');
             $table->foreign('visit_by_staff_id')->references('staff')->on('staff_id');
             $table->integer('visit_status')->comment('回访状态');
             $table->foreign('visit_status')->references('visit_status')->on('visit_status_id')->comment('回访状态');

@@ -27,7 +27,7 @@ class CreateClientsTable extends Migration
             $table->integer('client_assign_to')->comment('客户对应员工ID');
             $table->foreign('client_assign_to')->references('staff')->on('staff_id')->comment('客户对应员工ID');
             $table->date('client_assign_date')->comment('信息分配的日期');
-            $table->integer('client_added_by')->comment('客户添加员工ID');
+            $table->string('client_added_by',50)->comment('添加客户的员工姓名');
             $table->foreign('client_added_by')->references('staff')->on('staff_id')->comment('客户添加员工ID');
             $table->integer('client_level')->default(0)->nullable()->comment('客户等级即客户成交单数');
             $table->enum('client_new_enquiries',[0,1])->default(1)->nullable()->comment('是否有新的诉求:0没有,1有');

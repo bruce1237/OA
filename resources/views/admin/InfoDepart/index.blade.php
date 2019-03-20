@@ -661,7 +661,7 @@
                         value_5: $("#value_" + inputId + "_5").val()
 
                     };
-                    alert(JSON.stringify(data));
+                    // alert(JSON.stringify(data));
                     break;
                 case "order_status_name":
                     data = {order_status_name: $("#" + tableName + '_' + inputId).val()};

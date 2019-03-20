@@ -143,6 +143,8 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('getClientList',['uses'=>'clientController@getClientList']);
     Route::post('toPool',['uses'=>'clientController@toPool']);
     Route::post('clientQualificationUploads',['uses'=>'clientController@qualificatesUpload']);
+    Route::post('rmClientQLFfile',['uses'=>'clientController@rmclentQLFfile']);
+
 
 
     /*************************-*******************/

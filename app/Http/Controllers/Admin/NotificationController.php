@@ -73,6 +73,7 @@ class NotificationController extends Controller
                 'icon' => '',
                 'dir' => 'auto'
             ];
+            $this->_returnDataTemp[]=$data;
         }
 
         return $data;

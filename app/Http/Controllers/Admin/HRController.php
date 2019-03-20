@@ -289,7 +289,9 @@ class HRController extends Controller
 
         try { //failsafe
             //update or insert into the database
+
             Staff::updateOrCreate(['staff_id' => $postData['staff_id']], $postData);
+
 //            Admin::where('staff_id','=',$postData['staff_id'])->update(['name'=>$postData['staff_name'],'staff_no'=>$postData['staff_no']]);
 //            $a = Admin::where('staff_id','=',$postData['staff_id'])->get();
 //            dd($a);
@@ -302,6 +304,7 @@ class HRController extends Controller
             $this->data = ['status' => true, 'msg' => "员工添加成功！", 'icon' => 1];
 //            $this->data = ['status' => true, 'msg' =>$postData['staff_id'], 'icon' => 1];
         } catch (\Exception $exception) {
+            dd($exception->getMessage());
             //rewrite the return variable as there is an exception occurred
             $data['msg'] = $exception->getMessage();
             switch ($exception->getCode()) {

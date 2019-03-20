@@ -62,8 +62,10 @@ class InfoDepartController extends Controller
      */
     public function infoUpdate(Request $request)
     {
+
         //as the firm section involves pictures and data, it is hard to combine with ajax method, so use form post to process CURD firm request
-        if ($request->isMethod('post')) { //for the firm CURD
+        if (!$request->ajax()) { //for the firm CURD
+
             //assign request post data into variable
             $data = $request->post();
             //unset the unnecessary data
@@ -98,6 +100,7 @@ class InfoDepartController extends Controller
                     }
                     break;
                 case "delete": //deltet firm
+
                     $firm_id = $request->post('firm_id'); //put the posted firm id into variable
                     Firm::destroy($request->post('firm_id')); //delete the deleted firm
                     Storage::disk('CRM')->delete("firm/{$firm_id}/seal/{$firm_id}.png"); // remove/unlink/delete  the seal
@@ -109,6 +112,7 @@ class InfoDepartController extends Controller
 
 
         } elseif ($request->ajax()) { //use ajax method to process all the data except the firm
+
             $type = $request->post('type');//acquire the action types for this operation: create/update/delete/get
             $table = str_replace("_", '', $request->post('tableName'));//change the tableName to Modal
             $id = $request->post('id'); //operation on the ID/PK

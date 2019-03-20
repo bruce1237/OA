@@ -23,6 +23,7 @@ class ClientController extends Controller
         //get staff level, use staff_level to decided what and how to display required info
         $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
         $staffId = Auth::guard('admin')->user()->staff_id; //get staff id
+        $staffName = Auth::guard('admin')->user()->name; //get staff id
 
         $assignableStaffs = Staff::join('departments','departments.id','=','staff.department_id')
             ->where('departments.assignable','=','1')
@@ -39,6 +40,7 @@ class ClientController extends Controller
         //use one unified combined variable to store all the data for the view use, so the view() statement will be shorter and easier to read
         $data = [
             'staffId' => $staffId,
+            'staffName' => $staffName,
             'staffLevel' =>$staffLevel,
             'assignableStaffs' => $assignableStaffs,
             'clients' => $clients,
@@ -136,7 +138,7 @@ class ClientController extends Controller
     {
 
 
-        $data['client_added_by'] = Auth::guard('admin')->user()->staff_id;
+        $data['client_added_by'] = Auth::guard('admin')->user()->name;
         $data['client_new_enquiries'] = '1';
 
         $client = Client::where('client_mobile', '=', $data['client_mobile'])->first();
@@ -471,6 +473,20 @@ class ClientController extends Controller
             return $this->returnData;
         }
 
+    }
+
+    public function rmclentQLFfile(Request $request){
+        $clientId = $request->post('client_id');
+        $fileName = $request->post('file_name');
+
+        if(Storage::disk('CRM')->delete("/client/QLF/{$clientId}/{$fileName}")){
+            $this->returnData['status'] = true;
+            $this->returnData['msg']="删除成功";
+            $this->returnData['code'] =1;
+        }else{
+            $this->returnData['msg']="删除失败";
+        }
+        return $this->returnData;
     }
 
 

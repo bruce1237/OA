@@ -13,11 +13,11 @@ class Staff extends Model
     protected $guarded =[];
 
     public function getDepartmentIdAttribute($value){
-        return Department::select('depart_name')->find($value)->depart_name;
+        return Department::find($value)->depart_name;
 
     }
     public function setDepartmentIdAttribute($value){
-        $this->attributes['department_id'] = Department::select('depart_name')->find($value)->id;
+        $this->attributes['department_id'] = Department::where('depart_name','=',$value)->first()->id;
     }
 
     public function getStaffGenderAttribute($value){

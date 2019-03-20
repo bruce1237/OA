@@ -12,6 +12,7 @@ class Client extends Model
 
 
     public function getClientSourceAttribute($value){
+
      return  InfoSource::find($value)->info_source_name;
     }
 
