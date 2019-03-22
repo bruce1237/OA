@@ -563,22 +563,15 @@ class ClientController extends Controller
 
     private function searchClientList($staffId, $staffLevel, Request $request = null)
     {
-
-
         $searchData = $request->post();
-
         unset($searchData['_token']);
-
         $orderBy=['client_next_date','desc'];
-
         if(isset($searchData['order_by'])){
             $orderBy = explode(',',$searchData['order_by']);
         }
-
-
         $clientList = Client::where(function ($query) use ($searchData, $staffId, $staffLevel) {
             if (key_exists('client_name', $searchData) && $searchData['client_name']) {
-                $query->where('client_name', 'like', $searchData['client_name'] . "%");
+                $query->where('client_name', 'like', "%".$searchData['client_name'] . "%");
             }
             if (key_exists('client_mobile', $searchData) && $searchData['client_mobile']) {
                 $query->where('client_mobile', 'like', $searchData['client_mobile'] . "%");
@@ -597,7 +590,9 @@ class ClientController extends Controller
             if (key_exists('staff_id', $searchData) && $searchData['staff_id']) {
                 $query->where('client_assign_to', '=', $searchData['staff_id']);
             }else{
-                $query->where('client_assign_to', '=', $staffId);
+                if($staffLevel=="0"){
+                    $query->where('client_assign_to', '=', $staffId);
+                }
             }
             if (key_exists('search_clientType', $searchData) && null !== $searchData['search_clientType']) {
                 switch ($searchData['search_clientType']) {
@@ -672,7 +667,10 @@ class ClientController extends Controller
     }
     public function batchToAssign(Request $request){
         $clients = $request->post('clientIds');
-        $staffId = $request->post('staffId');
+        $loggedStaffId = Auth::guard('admin')->user()->staff_id;
+        $staffLevel = Staff::find($loggedStaffId)->staff_level;
+
+        $staffId = $staffLevel?$request->post('staffId'):$loggedStaffId;
 
         foreach($clients as $client){
             $this->assignClient($client,$staffId);

@@ -43,9 +43,15 @@
                     <xblock>
                         <button class="layui-btn layui-btn-danger" onclick="batchToPool()"><i class="layui-icon"></i>批量放入公海
                         </button>
+                        @if($data['staffLevel'])
                         <button class="layui-btn layui-btn-success" onclick="showBatchToAssignModal()"><i
                                 class="layui-icon"></i>批量指派
                         </button>
+                            @else
+                            <button class="layui-btn layui-btn-success" onclick="batchToAssign()"><i
+                                    class="layui-icon"></i>批量领取
+                            </button>
+                        @endif
                     </xblock>
                     {{--<table id="clientListTable" class="table table-sm table-hover">--}}
                     <table class="table table-sm table-hover">
@@ -339,7 +345,7 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">纳税识别号:<i class="text-danger">*</i></span>
+                                <span class="input-group-text">纳税识别号:</span>
                             </div>
                             <input type="text" name="company_tax_id" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
@@ -347,7 +353,7 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">银行账号:<i class="text-danger">*</i></span>
+                                <span class="input-group-text">银行账号:</span>
                             </div>
                             <input type="text" name="company_account_number" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
@@ -355,7 +361,7 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">开户银行地址:<i class="text-danger">*</i></span>
+                                <span class="input-group-text">开户银行地址:</span>
                             </div>
                             <input type="text" name="company_account_address" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
@@ -371,7 +377,7 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">客户公司邮编:<i class="text-danger">*</i></span>
+                                <span class="input-group-text">客户公司邮编:</span>
                             </div>
                             <input type="text" name="company_post_code" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
@@ -1286,7 +1292,7 @@
 
             var data = tableCheck.getData();
                 //捉到所有被选中的，发异步进行删除
-            var staff_id=$("#assign_staff").val();
+            var staff_id=$("#assign_staff").val()?$("#assign_staff").val():{{$data['staffId']}};
                 $.ajax({
                     url: "{{url('admin/batchToAssign')}}",
                     type: 'post',

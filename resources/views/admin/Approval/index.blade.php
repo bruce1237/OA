@@ -51,12 +51,12 @@
                                                 }
                                         @endphp
 
-
+                                        {{$tag}}<small>{{$field}}</small>
                                         @if(key_exists($key,$client['change']['new']))
-                                            {{$tag}}<small>{{$field}}</small> <span class="badge badge-danger">{{$client['change']['new'][$key]}}</span>
-                                            <br />
-                                        @endif
+                                             <span class="badge badge-danger">{{$client['change']['new'][$key]}}</span>
 
+                                        @endif
+                                        <br />
                                     @endforeach
                                     <hr />
                                     <button type="button" class="btn btn-success float-right" onclick="process('client',1,{{$client['pk']}})">通过</button>

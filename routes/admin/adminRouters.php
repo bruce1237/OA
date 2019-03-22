@@ -132,7 +132,6 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************client客户部*************/
     /*******************************************/
     Route::any('clientManage/{type?}',['uses'=>'clientController@index']);
-//    Route::get('pendingVisitClient',['uses'=>'clientController@pendingVisitClient']);
     Route::post('getClientDetail',['uses'=>'clientController@getClientDetail']);
     Route::post('acknowledgeClient',['uses'=>'clientController@acknowledgeClient']);
     Route::post('modifyClientInfo',['uses'=>'clientController@modifyClientInfo']);
@@ -164,7 +163,10 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::get('approval',['uses'=>'approvalController@index']);
     Route::post('approval',['uses'=>'approvalController@process']);
 
-
+    /*************************-*******************/
+    /*****************设置员工业绩目标*************/
+    /*******************************************/
+    Route::get('setSalesTarget',['uses'=>'staffController@setTargetIndex']);
 
 
 

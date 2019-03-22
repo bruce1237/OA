@@ -1,11 +1,9 @@
 @extends('admin/layout/layout')
 
-@section('pSection3')
-    <div class="alert alert-primary" role="alert">
-        <h3 class="alert-heading">待回访客户:{{$pendingClientCount}}个</h3><br/>
+@section('topBar')
+    <span class="alert alert-success">今日回访:<span class="badge badge-warning">{{$pendingClientCount['pending']}}个</span></span>
+    <span class="alert alert-danger">逾期回访:<span class="badge badge-danger">{{$pendingClientCount['overdue']}}个</span></span>
 
-
-    </div>
     @endsection
 
 

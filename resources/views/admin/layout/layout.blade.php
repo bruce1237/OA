@@ -15,8 +15,7 @@
 
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <script src="/js/bootstrap.min.js"></script>
-    <script src="/js/popper.min.js" ></script>
-
+    <script src="/js/popper.min.js"></script>
 
 
     <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon"/>
@@ -41,7 +40,7 @@
 <!-- 右侧主体开始 -->
 <div class="page-content" @if (!sizeof($menuList))
 style="left: 0px;"
-        @endif>
+    @endif>
     <div class="layui-tab tab" lay-filter="xbs_tab" lay-allowclose="false">
         <ul class="layui-tab-title">
             <li class="home"><i class="layui-icon">&#xe68e;</i>@section('title') 我的桌面@show</li>
@@ -53,8 +52,10 @@ style="left: 0px;"
                 <div class="layui-anim layui-anim-up" style="width:auto;height:850px;overflow-x:auto;overflow-y:auto">
 
                     <div class="x-body layui-anim layui-anim-up">
-                        <blockquote class="layui-elem-quote">欢迎{{$positionName}}：
-                            <span class="x-red">{{$name}}</span>！当前时间: <span id="currentDateTime"></span>
+                        <blockquote class="layui-elem-quote">欢迎{{$positionName}}： <span class="x-red">{{$name}}</span>！
+                            @section('topBar')@show
+
+                            当前时间: <span id="currentDateTime"></span>
                             <a class="layui-btn layui-btn-small" style="line-height:1.6em;margin-top:-8px;float:right"
                                href="javascript:location.replace(location.href);" title="刷新">
                                 <i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -62,51 +63,53 @@ style="left: 0px;"
 
                         @section('pSection1')
                             {{--代办事项--}}
-                            <div class="alert alert-success" role="alert">
-                                <h3 class="alert-heading">待办事项</h3><br/>
-                                <div class="row">
-                                    @foreach($todoLists as $todolist)
-                                        <div class="col-3">
-                                            <div class="alert alert-warning alert-dismissible fade show" role="alert"
-                                                 id="alert{{$todolist['id']}}">
-                                                <strong>{{$todolist['event']}}</strong>
-                                                <hr/>
-                                                <em>{{$todolist['date']}}</em>
-                                                <button type="button" class="close" onclick="delTodo({{$todolist['id']}})">
-                                                    <span aria-hidden="true">&times;</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                    @endforeach
+                            <div class="card border-secondary mb-3">
+                                <div class="card-header">待办事项: 标签
+                                    <span class="badge alert-danger">今天</span>
+                                    <span class="badge alert-warning">2-3天</span>
+                                    <span class="badge alert-success">5天以后</span>
                                 </div>
+                                <div class="card-body text-secondary">
+                                    <div class="row">
+                                        @foreach($todoLists as $todolist)
 
+                                            <div class="col-3 float-left" id="alert{{$todolist['id']}}">
+                                                <div class="alert
+                                                @php
+                                                    $days =round((strtotime($todolist['date'])-strtotime(date("Y-m-d")))/(3600*24));
+                                                @endphp
+                                                @if($days>=5)
+                                                    alert-success
+                                                @elseif($days>=2 && $days<5)
+                                                    alert-warning
+                                                @else
+                                                    alert-danger
+                                                @endif
+
+                                                    alert-dismissible fade show" role="alert">
+                                                    <p class="h5">
+                                                        <span
+                                                            class="badge  badge-primary">{{$todolist['date']}}</span>
+                                                    </p>
+                                                    <p class="h4">{{$todolist['event']}}</p>
+                                                    <button type="button" class="close"
+                                                            onclick="delTodo({{$todolist['id']}})">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
                             </div>
+
+
                         @show
                         @section('pSection2')
 
                         @show
                         @section('pSection3')
-                            {{--今日业绩--}}
-                            <fieldset class="layui-elem-field">
-                                <legend> 今日业绩:</legend>
 
-                                <div class="layui-field-box">
-                                    <div class="col-4">
-                                        <div class="input-group mb-3">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">新增业绩:</span>
-                                            </div>
-                                            <input type="text" class="form-control" id="sales" placeholder="业绩"
-                                                   aria-label="Username" aria-describedby="basic-addon1">
-                                            <div class="input-group-prepend">
-                                                <button class="btn-success btn-sm" onclick="add_sales()">添加</button>
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                            </fieldset>
                         @show
                         @section('pSection4')
                             {{--业绩统计--}}
@@ -230,12 +233,6 @@ style="left: 0px;"
                         @show
 
 
-
-
-
-
-
-
                         <blockquote class="layui-elem-quote layui-quote-nm">本系统由米鹿科技提供技术支持。</blockquote>
                     </div>
 
@@ -274,7 +271,7 @@ style="left: 0px;"
                 <form id="toDoForm" class="form-inline">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">事件:</span>
+                            <span class="input-group-text" id="basic-addon1">代办事件:</span>
                         </div>
                         <input type="text" id="a" name="event" class="form-control" placeholder="待办事件"
                                aria-label="Username" aria-describedby="basic-addon1">
@@ -282,7 +279,7 @@ style="left: 0px;"
 
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">日期:</span>
+                            <span class="input-group-text" id="basic-addon1">代办日期:</span>
                         </div>
                         <input type="date" id="b" name="date" class="form-control"
                                aria-label="Username" aria-describedby="basic-addon1">
@@ -291,8 +288,8 @@ style="left: 0px;"
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button type="button" class="btn btn-primary" onclick="saveToDo()">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" onclick="saveToDo()">添加</button>
             </div>
         </div>
     </div>
@@ -300,8 +297,6 @@ style="left: 0px;"
 
 
 <script>
-
-
 
 
     $(function () {
@@ -312,7 +307,7 @@ style="left: 0px;"
             }
         });
         setInterval(showDateTime, 1000);
-        self.setInterval("notificationCheck()",300000);
+        self.setInterval("notificationCheck()", 300000);
 
     });
 
@@ -324,22 +319,7 @@ style="left: 0px;"
     }
 
 
-    function add_sales() {
-        var sales = $("#sales").val();
-        $.ajax({
-            'url': "{{url('admin/addSales')}}",
-            'type': 'post',
-            'data': {'sales': sales},
-            'dataType': 'json',
-            success: function (data) {
 
-                if (data.status) {
-                    location.replace(location.href);
-                }
-                layer.msg(data.msg, {icon: data.icon});
-            }
-        });
-    }
 
     function delTodo(todoId) {
 
@@ -350,9 +330,9 @@ style="left: 0px;"
             'dataType': 'json',
             success: function (data) {
                 if (data.status) {
-                    $("#alert" + todoId).alert('close');
-                }
-                else {
+                    $("#alert" + todoId).remove();
+
+                } else {
                     layer.msg(data.msg, {icon: data.icon});
                 }
 
@@ -365,6 +345,8 @@ style="left: 0px;"
     }
 
     function saveToDo() {
+
+
         var data = $("#toDoForm").serialize();
         $.ajax({
             'url': "{{url('admin/addToDo')}}",
@@ -379,24 +361,18 @@ style="left: 0px;"
     }
 
 
-
-
-
-
-
-
-    function notificationCheck(){
+    function notificationCheck() {
 
 
         $.ajax({
-            url:"{{url('admin/notificationCheck')}}",
-            type:'post',
-            success:function(data){
-                $.each(data, function(key,value){
-                    new Notification(value.title,{
-                        body:value.body,
-                        icon:value.icon,
-                        dir:value.dir,
+            url: "{{url('admin/notificationCheck')}}",
+            type: 'post',
+            success: function (data) {
+                $.each(data, function (key, value) {
+                    new Notification(value.title, {
+                        body: value.body,
+                        icon: value.icon,
+                        dir: value.dir,
 
                     });
                 });
@@ -404,8 +380,6 @@ style="left: 0px;"
         });
 
     }
-
-
 
 
 </script>

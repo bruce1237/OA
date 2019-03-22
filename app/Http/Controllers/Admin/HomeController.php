@@ -54,12 +54,15 @@ class HomeController extends Controller
         $staffId = Auth::guard('admin')->user()->staff_id;
         $staffName = Auth::guard('admin')->user()->name;
 
-        $pendingClientCount =Client::where('client_assign_to','=',$staffId)
-            ->where('client_next_date','>=',date("Y-m-d"))
+        $pendingClientCount['pending'] =Client::where('client_assign_to','=',$staffId)
+            ->where('client_next_date','=',date("Y-m-d"))
             ->where('client_status','=','1')
             ->count();
 
-
+        $pendingClientCount['overdue'] =Client::where('client_assign_to','=',$staffId)
+            ->where('client_next_date','<',date("Y-m-d"))
+            ->where('client_status','=','1')
+            ->count();
 
 
 
@@ -138,7 +141,7 @@ class HomeController extends Controller
      */
     private function getToDoList($staffId) {
         //get todoList for that particular staff identified by staff_id
-        return Todo::where('staff_id', '=', $staffId)->get();
+        return Todo::where('staff_id', '=', $staffId)->orderBy('date')->get();
     }
 
     /**
