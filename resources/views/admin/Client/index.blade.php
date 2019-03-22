@@ -9,7 +9,6 @@
         <span style="color:white"><i class="layui-icon"></i>新信息列表</span>
     </a>
 
-
     <a class="layui-btn layui-primary layui-btn-xs" href="{{url('admin/clientManage/overdue')}}">
         <span style="color:white"><i class="layui-icon"></i>逾期回访客户</span>
     </a>
@@ -25,6 +24,10 @@
         <span style="color:white"><i class="layui-icon"></i>公海信息</span>
     </a>
 
+    <a class="layui-btn layui-btn btn-primary layui-btn-xs" data-toggle="modal" data-target="#searchClientModal">
+        <span style="color:white"><i class="layui-icon"></i>客户搜索</span>
+    </a>
+
 @endsection
 
 
@@ -37,11 +40,21 @@
                 <div class="card-header text-white {{$data['clients']['bg']}}"
                      id="clientListTitle">{{$data['clients']['list_name']}}</div>
                 <div class="card-body text-secondary" id="dataTableDiv">
-
+                    <xblock>
+                        <button class="layui-btn layui-btn-danger" onclick="batchToPool()"><i class="layui-icon"></i>批量放入公海
+                        </button>
+                        <button class="layui-btn layui-btn-success" onclick="showBatchToAssignModal()"><i
+                                class="layui-icon"></i>批量指派
+                        </button>
+                    </xblock>
                     {{--<table id="clientListTable" class="table table-sm table-hover">--}}
                     <table class="table table-sm table-hover">
                         <thead>
                         <tr>
+                            <th>
+                                <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i
+                                        class="layui-icon">&#xe605;</i></div>
+                            </th>
                             <th>姓名</th>
                             <th>手机</th>
                             <th>创建时间</th>
@@ -53,25 +66,30 @@
                         <tbody id="clientTableBody">
 
                         @foreach($data['clients']['clients'] as $client)
-{{--{{dd($client)}}--}}
-                            <tr id="clientList{{$client['client_id']}}" onclick="getClientDetail({{$client['client_id']}})">
-                                <td>{{$client['client_name']}}@if($client['client_new_enquiries'])<span
-                                        id="newTag{{$client['client_id']}}"
+
+                            <tr id="clientList{{$client->client_id}}"
+                                onclick="getClientDetail({{$client->client_id}})">
+                                <td>
+                                    <div class="layui-unselect layui-form-checkbox" lay-skin="primary"
+                                         data-id='{{$client->client_id}}'><i class="layui-icon">&#xe605;</i></div>
+                                </td>
+                                <td>{{$client->client_name}}@if($client->client_new_enquiries)<span
+                                        id="newTag{{$client->client_id}}"
                                         class="badge badge-pill badge-danger">(NEW)</span>@endif</td>
                                 {{--@if($client->client_new_enquiries)<span class="badge badge-pill badge-danger">(NEW)</span>@endif--}}
-                                <td>{{$client['client_mobile']}}</td>
-                                <td>{{$client['created_at']}}</td>
-                                <td>{{$client['client_next_date']}}</td>
-                                <td>{{$client['client_visit_status']}}</td>
-                                <td>{{$client['client_assign_to']}}</td>
+                                <td>{{$client->client_mobile}}</td>
+                                <td>{{$client->created_at}}</td>
+                                <td>{{$client->client_next_date}}</td>
+                                <td>{{$client->client_visit_status}}</td>
+                                <td>{{$client->client_assign_to}}</td>
                             </tr>
                         @endforeach
 
                         </tbody>
 
-
                     </table>
-                    {{ $data['clients']['clients']->links() }}
+
+                    {!!  $data['clients']['clients']->appends($data['search'])->render() !!}
                 </div>
             </div>
 
@@ -112,7 +130,8 @@
                             <div class="col-3">
                                 <div class="input-group input-group-sm mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm"><strong>姓名</strong></span>
+                                        <span class="input-group-text"
+                                              id="inputGroup-sizing-sm"><strong>姓名</strong></span>
                                     </div>
                                     <input type="text" name="client_name" id="client_name" class="form-control"
                                            aria-label="Small"
@@ -306,7 +325,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">公司名称:<i class="text-danger">*</i> </span>
                             </div>
-                            <input type="text" name="company_name" class="form-control" placeholder="Username"
+                            <input type="text" name="company_name" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
@@ -314,7 +333,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">公司网站:</span>
                             </div>
-                            <input type="text" name="company_website" class="form-control" placeholder="Username"
+                            <input type="text" name="company_website" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
@@ -322,7 +341,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">纳税识别号:<i class="text-danger">*</i></span>
                             </div>
-                            <input type="text" name="company_tax_id" class="form-control" placeholder="Username"
+                            <input type="text" name="company_tax_id" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
@@ -330,7 +349,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">银行账号:<i class="text-danger">*</i></span>
                             </div>
-                            <input type="text" name="company_account_number" class="form-control" placeholder="Username"
+                            <input type="text" name="company_account_number" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
@@ -339,14 +358,14 @@
                                 <span class="input-group-text">开户银行地址:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" name="company_account_address" class="form-control"
-                                   placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                                   aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
                                 <span class="input-group-text">客户公司地址:<i class="text-danger">*</i></span>
                             </div>
-                            <input type="text" name="company_address" class="form-control" placeholder="Username"
+                            <input type="text" name="company_address" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
@@ -354,9 +373,20 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">客户公司邮编:<i class="text-danger">*</i></span>
                             </div>
-                            <input type="text" name="company_post_code" class="form-control" placeholder="Username"
+                            <input type="text" name="company_post_code" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
                         </div>
+
+
+                        <div class="input-group input-group-sm mb-3">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="company_qualification"
+                                       multiple="multiple">
+                                <label class="custom-file-label" for="inputGroupFile02">选择资质文件(多选)</label>
+                            </div>
+
+                        </div>
+
 
                     </form>
                 </div>
@@ -385,7 +415,7 @@
                                 </span>
                             </div>
                             <input type="text" id="modify_company_name" name="company_name" class="form-control"
-                                   placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                                   aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
@@ -393,7 +423,7 @@
                                 <span class="input-group-text">公司网站:</span>
                             </div>
                             <input type="text" id="modify_company_website" name="company_website" class="form-control"
-                                   placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                                   aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
@@ -401,7 +431,7 @@
                                 <span class="input-group-text">纳税识别号:</span>
                             </div>
                             <input type="text" id="modify_company_tax_id" name="company_tax_id" class="form-control"
-                                   placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                                   aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
@@ -409,7 +439,7 @@
                                 <span class="input-group-text">银行账号:</span>
                             </div>
                             <input type="text" id="modify_company_account_number" name="company_account_number"
-                                   class="form-control" placeholder="Username" aria-label="Username"
+                                   class="form-control" aria-label="Username"
                                    aria-describedby="basic-addon1">
                         </div>
 
@@ -418,7 +448,7 @@
                                 <span class="input-group-text">开户银行地址:</span>
                             </div>
                             <input type="text" id="modify_company_account_address" name="company_account_address"
-                                   class="form-control" placeholder="Username" aria-label="Username"
+                                   class="form-control" aria-label="Username"
                                    aria-describedby="basic-addon1">
                         </div>
 
@@ -427,7 +457,7 @@
                                 <span class="input-group-text">客户公司地址:</span>
                             </div>
                             <input type="text" id="modify_company_address" name="company_address" class="form-control"
-                                   placeholder="Username" aria-label="Username" aria-describedby="basic-addon1">
+                                   aria-label="Username" aria-describedby="basic-addon1">
                         </div>
 
                         <div class="input-group input-group-sm mb-3">
@@ -435,11 +465,19 @@
                                 <span class="input-group-text">客户公司邮编:</span>
                             </div>
                             <input type="text" id="modify_company_post_code" name="company_post_code"
-                                   class="form-control" placeholder="Username" aria-label="Username"
+                                   class="form-control" aria-label="Username"
                                    aria-describedby="basic-addon1">
                         </div>
+                        <div class="input-group input-group-sm mb-3">
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="modify_company_qualification"
+                                       multiple="multiple">
+                                <label class="custom-file-label" for="inputGroupFile02">选择资质文件(多选)</label>
+                            </div>
 
+                        </div>
                     </form>
+                    <div id="company_qualifications"></div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
@@ -575,7 +613,6 @@
             </div>
         </div>
     </div>
-
     <div class="modal fade " tabindex="-1" role="dialog" id="clientQlfModal">
         <div class="modal-dialog" role="document" style="max-width: 1200px;">
             <div class="modal-content">
@@ -594,6 +631,219 @@
                         <button type="button" class="btn btn-primary" onclick="rmClientQLFFile()">删除</button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade " tabindex="-1" role="dialog" id="companyQlfModal">
+        <div class="modal-dialog" role="document" style="max-width: 1200px;">
+            <div class="modal-content">
+                <form id="newClientForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="companyQLFTitle">公司资质</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe id="companyQLFEMBD" style="width:1150px;height:600px;"></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" id="companyQLFFileName"/>
+                        <button type="button" class="btn btn-primary" onclick="rmCompanyQLFFile()">删除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="searchClientModal">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <form action="{{url('admin/clientManage/search')}}" method="post">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">搜索客户</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        @csrf
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">客户类型</span>
+                            </div>
+                            <select class="form-control" name="search_clientType" id="search_clientType"
+                                    aria-label="Small"
+                                    aria-describedby="inputGroup-sizing-sm">
+                                <option value="1">已有</option>
+                                <option value="0">公海</option>
+                                <option value="2">全部</option>
+
+                            </select>
+
+
+                        </div>
+
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">选择部门</span>
+                            </div>
+                            <select class="form-control" name="department" id="search_department" aria-label="Small"
+                                    aria-describedby="inputGroup-sizing-sm" onchange="getStaffByDepart('search_department','search_staff')">
+                                <option value=0 selected>选择部门</option>
+                                @foreach($data['departments'] as $department)
+                                    <option
+                                        value="{{$department->id}}">{{$department->depart_name}}</option>
+                                @endforeach
+                            </select>
+
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1"> : </span>
+                            </div>
+
+                            <select class="form-control" name="staff_id" id="search_staff" aria-label="Small"
+                                    aria-describedby="inputGroup-sizing-sm">
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">客户姓名</span>
+                            </div>
+                            <input type="text" name="client_name" class="form-control" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">客户手机</span>
+                            </div>
+                            <input type="text" name="client_mobile" class="form-control" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">销售状况</span>
+                            </div>
+                            <select class="form-control" name="client_visit_status" aria-label="Small"
+                                    aria-describedby="inputGroup-sizing-sm">
+                                <option value=0 selected>销售状况</option>
+                                @foreach($data['visitStatus'] as $visitStatus)
+                                    <option
+                                        value="{{$visitStatus->visit_status_id}}">{{$visitStatus->visit_status_name}}</option>
+                                @endforeach
+                            </select>
+
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">创建时间</span>
+                            </div>
+                            <input type="date" name="client_created_from" value="" class="form-control"
+                                   aria-label="Username" aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">-</span>
+                            </div>
+                            <input type="date" name="client_created_to" class="form-control" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><label for="create_order_asc">升序 </label>
+                                    <input type="radio" id="create_order_asc" name="order_by" value="created_at,asc"
+                                           aria-label="Radio button for following text input">
+                                </div>
+                            </div>
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><label for="create_order_desc">降序 </label>
+                                    <input type="radio" id="create_order_desc" name="order_by" value="created_at,desc"
+                                           aria-label="Radio button for following text input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">回访时间</span>
+                            </div>
+                            <input type="date" name="client_visit_from" class="form-control" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">-</span>
+                            </div>
+                            <input type="date" name="client_visit_to" class="form-control" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><label for="visit_order_asc">升序 </label>
+                                    <input type="radio" checked id="visit_order_asc" name="order_by"
+                                           value="client_next_date,asc"
+                                           aria-label="Radio button for following text input">
+                                </div>
+                            </div>
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><label for="visit_order_desc">降序 </label>
+                                    <input type="radio" id="visit_order_desc" name="order_by"
+                                           value="client_next_date,desc"
+                                           aria-label="Radio button for following text input">
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                        <button type="submit" class="btn btn-primary">搜索</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" tabindex="-1" role="dialog" id="batchAssignModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">批量指派</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Modal body text goes here.</p>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">选择部门</span>
+                        </div>
+                        <select class="form-control" name="department" id="assign_department" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm" onchange="getStaffByDepart('assign_department','assign_staff')">
+                            <option value=0 selected>选择部门</option>
+                            @foreach($data['departments'] as $department)
+                                <option
+                                    value="{{$department->id}}">{{$department->depart_name}}</option>
+                            @endforeach
+                        </select>
+
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1"> : </span>
+                        </div>
+
+                        <select class="form-control" name="staff_id" id="assign_staff" aria-label="Small"
+                                aria-describedby="inputGroup-sizing-sm">
+
+                        </select>
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="batchToAssign()">批量指派</button>
+
+                </div>
             </div>
         </div>
     </div>
@@ -672,7 +922,7 @@
                 dataType: 'json',
                 success: function (data) {
                     layer.msg(data.msg, {icon: data.code});
-                    if(data.code==5){
+                    if (data.code == 5) {
                         $("#clientList" + clientId).attr('style', 'display:none');
                     }
                     getClientDetail(clientId);
@@ -689,6 +939,10 @@
         function addCompany() {
             var newCompanyData = new FormData($('#addCompanyForm')[0]);
             newCompanyData.append('company_client_id', $("#client_id").val());
+            for (var i = 0; i < $("#company_qualification")[0].files.length; i++) {
+                newCompanyData.append('file' + i, $("#company_qualification")[0].files[i]);
+            }
+
             $.ajax({
                 url: "{{url('admin/addCompany')}}",
                 type: 'post',
@@ -711,7 +965,7 @@
         function addVisit() {
             var visitData = new FormData;
             visitData.append('visit_client_id', $("#client_id").val());
-            visitData.append('visit_by_staff_name',"{{$data['staffName']}}");
+            visitData.append('visit_by_staff_name', "{{$data['staffName']}}");
             visitData.append('visit_status', $("#visit_status").val());
             visitData.append('visit_records', $("#visit_records").val());
             visitData.append('visit_next_date', $("#visit_visit_next_date").val());
@@ -724,10 +978,10 @@
                 data: visitData,
                 dataType: 'Json',
                 success: function (data) {
-                  if(data.status){
-                      getClientDetail($("#client_id").val());
-                  }
-                  layer.msg(data.msg,{icon:data.code});
+                    if (data.status) {
+                        getClientDetail($("#client_id").val());
+                    }
+                    layer.msg(data.msg, {icon: data.code});
 
                 }
             });
@@ -776,17 +1030,31 @@
                         $("#modify_" + field).val(value);
                         $("#updateCompanyModal").modal('show');
                     });
+
+                    $("#company_qualifications").html('');
+                    $.each(data.data.qlf, function (key, qlf) {
+                        var fileName = qlf.replace("company/QLF/" + data.data.company_id + "/", "");
+                        $("#company_qualifications").append('<span class="badge badge-info" onclick="showCompanyQlfFile(\'' + fileName + '\')">' + fileName + '</span> ');
+                    });
+
+
                 }
             });
         }
 
         function modifyCompany() {
             var companyId = $("#modify_company_id").val();
-            var data = new FormData($("#updateCompanyForm")[0]);
+            var CompanyData = new FormData($("#updateCompanyForm")[0]);
+            CompanyData.append('company_client_id', $("#client_id").val());
+            for (var i = 0; i < $("#modify_company_qualification")[0].files.length; i++) {
+                CompanyData.append('file' + i, $("#modify_company_qualification")[0].files[i]);
+            }
+
+
             $.ajax({
                 url: "{{url('admin/modifyCompany')}}",
                 type: 'post',
-                data: data,
+                data: CompanyData,
                 dataType: 'json',
                 contentType: false,
                 processData: false,
@@ -797,56 +1065,6 @@
                         getClientDetail($("#client_id").val());
                     }
 
-                }
-            });
-        }
-
-        function getClientList(type) {
-            resetClientInfo();
-            $.ajax({
-                url: "{{url('admin/getClientList')}}",
-                type: 'post',
-                data: {type: type},
-                dataType: 'json',
-                success: function (data) {
-                    if (!data.status) {
-                        layer.msg(data.msg, {icon: data.code});
-                        return false;
-                    }
-                    $("#clientListTitle").html(data.data.list_name);
-                    $("#clientListTitle").attr('class', 'card-header text-white ' + data.data.bg);
-
-
-                    var tableHeader = '  <table id="" class="table table-sm table-hover">\n' +
-                        '                        <thead>\n' +
-                        '                        <tr>\n' +
-                        '                            <th>姓名</th>\n' +
-                        '                            <th>手机</th>\n' +
-                        '                            <th>创建时间</th>\n' +
-                        '                            <th>回访时间</th>\n' +
-                        '                            <th>销售情况</th>\n' +
-                        '                            <th>隶属人</th>\n' +
-                        '                        </tr>\n' +
-                        '                        </thead>\n' +
-                        '                        <tbody>';
-                    var tableTr = '';
-                    $.each(data.data.clients, function (key, client) {
-
-                        tableTr += '<tr id="clientList' + client.client_id + '" onclick="getClientDetail(' + client.client_id + ')">';
-                        var newTag = '<span id="newTag' + client.client_id + '" class="badge badge-pill badge-danger">(NEW)</span>';
-
-                        if (client.client_new_enquiries == 0) {
-                            newTag = "";
-                        }
-                        var clientName = client.client_name == null ? '' : client.client_name;
-                        tableTr += '<td>' + clientName + newTag + '</td><td>' + client.client_mobile + '</td><td>' + client.created_at + '</td><td>' + client.visit_next_date + '</td><td>' + client.visit_status + '</td><td>' + client.client_assign_to + '</td></tr>';
-                    });
-
-                    var tableEnd = "</tr></tbody></table>";
-
-                    $("#dataTableDiv").html(tableHeader + tableTr + tableEnd);
-
-                    $("#clientListTable2").DataTable();
                 }
             });
         }
@@ -939,6 +1157,13 @@
             $("#clientQlfModal").modal('show');
         }
 
+        function showCompanyQlfFile(fileName) {
+            $("#companyQLFTitle").html(fileName);
+            $("#companyQLFFileName").val(fileName);
+            $("#companyQLFEMBD").attr('src', '/storage/CRM/company/QLF/' + $("#modify_company_id").val() + '/' + fileName);
+            $("#companyQlfModal").modal('show');
+        }
+
         function rmClientQLFFile() {
             var fileName = $("#clientQLFFileName").val();
             var clientId = $("#client_id").val();
@@ -952,6 +1177,27 @@
                     if (data.status) {
                         getClientDetail(clientId);
                         $("#clientQlfModal").modal('hide');
+
+                    }
+                }
+            });
+        }
+
+        function rmCompanyQLFFile() {
+            var fileName = $("#companyQLFFileName").val();
+            var companyId = $("#modify_company_id").val();
+            var clientId = $("#client_id").val();
+            $.ajax({
+                url: "{{url('admin/rmCompanyQLFfile')}}",
+                type: 'post',
+                data: {file_name: fileName, company_id: companyId},
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                    if (data.status) {
+                        getClientDetail(clientId);
+                        showCompany(companyId);
+                        $("#companyQlfModal").modal('hide');
 
                     }
                 }
@@ -983,6 +1229,83 @@
             $("#clientQLFFileName").val('');
 
         }
+
+        function getStaffByDepart(departControl,staffControl) {
+            var depart_id = $("#"+departControl).val();
+            $.ajax({
+                url: "{{url('admin/getStaffByDepart')}}",
+                type: 'post',
+                data: {departId: depart_id},
+                dataType: 'json',
+                success: function (data) {
+                    if (!data.status) {
+                        layer.msg(data.msg, {icon: data.code});
+                        return false;
+                    }
+                    $("#"+staffControl).html('');
+                    $.each(data.data, function (item, staff) {
+                        $("#"+staffControl).append('<option value="' + staff.staff_id + '">' + staff.staff_name + '</option>');
+                    });
+                }
+            });
+        }
+
+        function batchToPool() {
+
+            var data = tableCheck.getData();
+
+
+            layer.confirm('确认放入公海吗？', function () {
+                //捉到所有被选中的，发异步进行删除
+
+                $.ajax({
+                    url: "{{url('admin/batchToPool')}}",
+                    type: 'post',
+                    data: {clientIds: data},
+                    dataType: 'json',
+                    success: function (data) {
+                        layer.msg(data.msg, {icon: 1});
+                        if (data.status) {
+                            location.replace(location.href);
+                        }
+                    }
+
+                });
+
+
+            });
+        }
+
+        function showBatchToAssignModal() {
+
+
+            $("#batchAssignModal").modal('show');
+
+        }
+        function batchToAssign() {
+
+            var data = tableCheck.getData();
+                //捉到所有被选中的，发异步进行删除
+            var staff_id=$("#assign_staff").val();
+                $.ajax({
+                    url: "{{url('admin/batchToAssign')}}",
+                    type: 'post',
+                    data: {clientIds: data,staffId:staff_id},
+                    dataType: 'json',
+                    success: function (data) {
+                        layer.msg(data.msg, {icon: 1});
+                        if (data.status) {
+                            location.replace(location.href);
+                        }
+                    }
+
+                });
+
+
+
+        }
+
+
 
     </script>
 

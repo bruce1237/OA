@@ -131,7 +131,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*************************-*******************/
     /*****************client客户部*************/
     /*******************************************/
-    Route::get('clientManage/{type?}',['uses'=>'clientController@index']);
+    Route::any('clientManage/{type?}',['uses'=>'clientController@index']);
 //    Route::get('pendingVisitClient',['uses'=>'clientController@pendingVisitClient']);
     Route::post('getClientDetail',['uses'=>'clientController@getClientDetail']);
     Route::post('acknowledgeClient',['uses'=>'clientController@acknowledgeClient']);
@@ -143,7 +143,12 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('getClientList',['uses'=>'clientController@getClientList']);
     Route::post('toPool',['uses'=>'clientController@toPool']);
     Route::post('clientQualificationUploads',['uses'=>'clientController@qualificatesUpload']);
-    Route::post('rmClientQLFfile',['uses'=>'clientController@rmclentQLFfile']);
+    Route::post('rmClientQLFfile',['uses'=>'clientController@rmClentQLFfile']);
+    Route::post('rmCompanyQLFfile',['uses'=>'clientController@rmCompanyQLFfile']);
+    Route::post('getStaffByDepart',['uses'=>'clientController@getStaffByDepart']);
+    Route::post('batchToPool',['uses'=>'clientController@batchToPool']);
+    Route::post('batchToAssign',['uses'=>'clientController@batchToAssign']);
+    Route::post('abc',['uses'=>'clientController@abc']);
 
 
 

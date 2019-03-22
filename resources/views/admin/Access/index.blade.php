@@ -310,7 +310,7 @@
                    $("#selectedControllerName").html(data.controllerName);
                    $("#funcsList").html('');
                    $.each(data.msg,function(key,item){
-                       $("#funcsList").append('<li class="list-group-item" >' + item.function +
+                       $("#funcsList").append('<li class="list-group-item" id='+item.id+'>' + item.function +
                            '<span class="badge" style="float: right"><button onclick="delCF(1,'+item.id+')"><i class="icon iconfont"></i></button></span></li>');
 
                    });
@@ -450,12 +450,14 @@
     }
 
     function delCF(type,id){
+        var controller_id = $("#currentControllerID").val();
         $.ajax({
            'url':"{{url('admin/delCF')}}",
            'type':'post',
            'data':{'type':type,'id':id},
            'dataType':'json',
            success:function(data){
+               showFunctions(controller_id);
                layer.msg(data.msg,{icon:data.icon});
            }
         });

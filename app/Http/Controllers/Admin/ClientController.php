@@ -13,74 +13,53 @@ use App\Model\Visit;
 use App\Model\VisitStatus;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
 
 class ClientController extends Controller
 {
-    private $_pageSize=15;
+    private $_pageSize = 15;
 
-    public function index($type="all")
+    public function index(Request $request, $type = "all")
     {
+
 
         //get staff level, use staff_level to decided what and how to display required info
         $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
         $staffId = Auth::guard('admin')->user()->staff_id; //get staff id
         $staffName = Auth::guard('admin')->user()->name; //get staff id
 
-        $assignableStaffs = Staff::join('departments','departments.id','=','staff.department_id')
-            ->where('departments.assignable','=','1')
+        $assignableStaffs = Staff::join('departments', 'departments.id', '=', 'staff.department_id')
+            ->where('departments.assignable', '=', '1')
             ->get();
 
 
 //        $staffLevel=3; //部门经理级别 测试用
+        $departments = array();
+        if ($staffLevel == '3') {
+            $departments = Department::where('assignable', '=', '1')->get();
+        }
         $clientSource = InfoSource::all(); //get infoSource data
         $visitStatus = VisitStatus::all(); //get visitStatus data
         $firms = Firm::all(); //get firm data
-        $func = $type."ClientList";
-        $clients = call_user_func([$this,$func],$staffId, $staffLevel);
-//            $this->allClientList($staffId, $staffLevel); //get the full client according to the staffLevel
+        $func = $type . "ClientList";
 
+        $clients = call_user_func([$this, $func], $staffId, $staffLevel, $request);
 
 
         //use one unified combined variable to store all the data for the view use, so the view() statement will be shorter and easier to read
         $data = [
             'staffId' => $staffId,
             'staffName' => $staffName,
-            'staffLevel' =>$staffLevel,
+            'departments' => $departments,
+            'staffLevel' => $staffLevel,
             'assignableStaffs' => $assignableStaffs,
             'clients' => $clients,
             'firms' => $firms,
             'clientSource' => $clientSource,
             'visitStatus' => $visitStatus,
+            'search' => $request->post(),
         ];
         return view('admin/client/index', ['data' => $data]);
-    }
-
-    private function allClientList($staffId, $staffLevel)
-    {
-        $clientList = '';
-        switch ($staffLevel) {
-            case "0": //普通员工
-                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
-                    ->where('clients.client_status', '=', '1')
-                    ->orderby('updated_at', 'desc')
-                    ->paginate($this->_pageSize);
-                break;
-            case "3": //部门经理
-                $clientList = Client::where('clients.client_status', '=', '1')->paginate($this->_pageSize);
-                break;
-        }
-        foreach ($clientList as $key => $client) {
-            $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
-            $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
-            $clientList[$key]['visit_status'] = $visitNextDate ? $visitNextDate->visit_status : '';
-        }
-
-        $clients['list_name'] = '全部客户信息';
-        $clients['bg'] = 'bg-info';
-        $clients['clients'] = $clientList;
-        return $clients;
     }
 
     /**
@@ -92,11 +71,11 @@ class ClientController extends Controller
     {
         try {
             Visit::create($request->post());
-            Client::find($request->post('visit_client_id'))->update(['client_next_date'=>$request->post('visit_next_date'),'client_visit_status'=>$request->post('visit_status')]);
+            Client::find($request->post('visit_client_id'))->update(['client_next_date' => $request->post('visit_next_date'), 'client_visit_status' => $request->post('visit_status')]);
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "添加成功";
             $this->returnData['code'] = 1;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->returnData['msg'] = "添加失败";
         }
         return $this->returnData;
@@ -109,8 +88,14 @@ class ClientController extends Controller
      */
     public function addCompany(Request $request)
     {
+
         try {
-            Company::create($request->post());
+            $company = Company::create($request->post());
+            $companyId = $company->company_id;
+            foreach ($request->file() as $file) {
+                $file->storeAs("/company/QLF/{$companyId}/", $file->getClientOriginalName(), 'CRM');
+            }
+
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "添加成功";
             $this->returnData['code'] = 1;
@@ -170,6 +155,7 @@ class ClientController extends Controller
      */
     public function getClientDetail(Request $request)
     {
+
         //get client info by client id
         $client = Client::where('clients.client_id', '=', $request->post('client_id'))
             ->where('clients.client_status', '=', '1')->first();
@@ -190,9 +176,11 @@ class ClientController extends Controller
         $client->client_enquiries = '<span class="badge badge-success">' . $client->client_enquiries . '</span>';
 
         $companies = Company::where('company_client_id', '=', $client->client_id)->get(); //get the company info
+
         $visit = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->get(); //get all the visit records
 
         $clientQlfs = Storage::disk('CRM')->files("client/QLF/{$client->client_id}/");
+
         $client['qlf'] = $clientQlfs;
 
         if ($client) {
@@ -203,6 +191,7 @@ class ClientController extends Controller
         } else {
             $this->returnData['msg'] = '获取客户信息失败';
         }
+
         return $this->returnData;
     }
 
@@ -219,10 +208,12 @@ class ClientController extends Controller
      */
     public function acknowledgeClient(Request $request)
     {
+//
         $client = Client::find($request->post('client_id')); //get the staff info
         if (!$client->client_assign_to) { //Pool Client
             $client->client_assign_to = Auth::guard('admin')->user()->staff_id;
             $this->returnData['data'] = 'refresh';
+            $client->client_new_enquiries = '1'; //make the freshly getted client from pool as new client
         } else {
             $client->client_new_enquiries = '0'; //change the client_new_enquires to 0
         }
@@ -246,220 +237,24 @@ class ClientController extends Controller
     {
         $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level; // get staffLevel
         $data = $request->post(); //assign the post data into variable
-        if($staffLevel >=3){
-            if(Client::find($data['client_id'])->update($data)){
+        if ($staffLevel >= 3) {
+            if (Client::find($data['client_id'])->update($data)) {
                 $this->returnData['status'] = true;
                 $this->returnData['msg'] = "客户信息修改成功";
                 $this->returnData['code'] = 1;
             }
-        }else{
+        } else {
             $this->requestApproval($data);
         }
 
         return $this->returnData;
     }
 
-    /**
-     * usage: get company info
-     * @param Request $request
-     * @return array
-     */
-    public function getCompanyInfo(Request $request)
+    private function requestApproval($data)
     {
-
-
-        if ($this->returnData['data'] = Company::find($request->post('company_id'))) {
-            $this->returnData['status'] = true;
-        } else {
-            $this->returnData['msg'] = "获取公司信息失败";
-        }
-        return $this->returnData;
-    }
-
-    /**
-     * usage: modify the company info
-     * @param Request $request
-     * @return array
-     */
-    public function modifyCompany(Request $request)
-    {
-        if (Company::find($request->post('company_id'))->update($request->post())) {
-            $this->returnData['status'] = true;
-            $this->returnData['msg'] = "修改公司信息成功";
-            $this->returnData['code'] = 1;
-        } else {
-            $this->returnData['msg'] = "修改公司信息失败";
-        }
-        return $this->returnData;
-    }
-
-    /**
-     * usage: assign client into Pool
-     * @param Request $request
-     * @return array
-     */
-    public function toPool(Request $request)
-    {
-        $client = Client::find($request->post('client_id')); //get client data
-        //rule for assign client into pool
-        //1. client has been created at least 3 days ago,
-        //2. the client has never made an purchase from us
-        if (date("Y-m-d", strtotime("{$client->created_at}+3 day")) < date("Y-m-d") && $client->client_level <= 0) {
-            $client->client_assign_to = '0'; // use this to indicate the client in the pool
-
-            if ($client->save()) {
-                $this->returnData['status'] = true;
-                $this->returnData['msg'] = "成功放入公海";
-                $this->returnData['code'] = 1;
-            } else {
-                $this->returnData['msg'] = "放入公海失败";
-            }
-        } else {
-            $this->returnData['msg'] = "不可以放入公海";
-            $this->returnData['code'] = 5;
-        }
-        return $this->returnData;
-    }
-
-    /**
-     * Usage: this function as agent, according to the input variable value, decided to call different clientList
-     * @param Request $request
-     * @return array
-     */
-    public function getClientList(Request $request)
-    {
-        //get staff level
-        $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
-        $staffId = Auth::guard('admin')->user()->staff_id; //get staff id
-        $func = $request->post('type') . "ClientList"; //structure the func string for callback
-
-        //call back different function to get different client list
-        if ($clientList = call_user_func([$this, $func], $staffId, $staffLevel)) {
-            $this->returnData['status'] = true;
-            $this->returnData['data'] = $clientList;
-        } else {
-            $this->returnData['msg'] = "获取客户类表失败";
-        }
-        return $this->returnData;
-    }
-
-    /**
-     * usage: get pending list, as the this function need to be call somewhere else, soi has to set to public
-     * @param $staffId
-     * @param $staffLevel
-     * @return mixed
-     */
-    public function pendingClientList($staffId, $staffLevel)
-    {
-        $clientList = array();
-        switch ($staffLevel) {
-            case "0": //普通员工
-                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
-                    ->where('clients.client_status', '=', '1')
-                    ->where('client_next_date','=',date("Y-m-d"))
-                    ->paginate($this->_pageSize);
-                break;
-            case "3": //部门经理
-                $clientList = Client::where('clients.client_status', '=', '1')
-                    ->where('clients.client_assign_to', '>', '0')
-                    ->where('client_next_date','=',date("Y-m-d"))
-                    ->paginate($this->_pageSize);
-                break;
-        }
-
-        $clients['list_name'] = '待回访客户信息';
-        $clients['bg'] = 'bg-warning';
-        $clients['clients'] = $clientList;
-
-        return $clients;
-    }
-    public function overdueClientList($staffId, $staffLevel)
-    {
-        $clientList = array();
-        switch ($staffLevel) {
-            case "0": //普通员工
-                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
-                    ->where('clients.client_status', '=', '1')
-                    ->where('client_next_date','<=',date("Y-m-d"))
-                    ->paginate($this->_pageSize);
-                break;
-            case "3": //部门经理
-                $clientList = Client::where('clients.client_status', '=', '1')
-                    ->where('clients.client_assign_to', '>', '0')
-                    ->where('client_next_date','<=',date("Y-m-d"))
-                    ->paginate($this->_pageSize);
-                break;
-        }
-
-        $clients['list_name'] = '逾期访客户信息';
-        $clients['bg'] = 'bg-primary';
-        $clients['clients'] = $clientList;
-
-        return $clients;
-    }
-
-    /**
-     * usage: get pool client list
-     * @param $staffId
-     * @param $staffLevel
-     * @return mixed
-     */
-    private function poolClientList($staffId, $staffLevel)
-    {
-        $clientList = Client::where('client_assign_to', '=', '0')
-            ->where('client_status', '=', '1')
-            ->orderBy('updated_at', 'desc')
-            ->paginate($this->_pageSize);
-        foreach ($clientList as $key => $client) {
-            $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
-            $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
-            $clientList[$key]['visit_status'] = $visitNextDate ? $visitNextDate->visit_status : '';
-        }
-        $clients['list_name'] = '公海信息';
-        $clients['bg'] = 'bg-primary';
-        $clients['clients'] = $clientList;
-        return $clients;
-    }
-
-    /**
-     * Usage: freshly assigned/added client
-     * @param $staffId
-     * @param $staffLevel
-     * @return mixed
-     */
-    private function newClientList($staffId, $staffLevel)
-    {
-        $clientList = '';
-        switch ($staffLevel) {
-            case "0": //普通员工
-                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
-                    ->where('clients.client_status', '=', '1')
-                    ->where('clients.client_new_enquiries', '=', '1')
-                    ->paginate($this->_pageSize);
-                break;
-            case "3": //部门经理
-                $clientList = Client::where('clients.client_status', '=', '1')
-                    ->where('clients.client_new_enquiries', '=', '1')
-                    ->where('clients.client_assign_to', '=', '-1')
-                    ->paginate($this->_pageSize);
-                break;
-        }
-
-        foreach ($clientList as $key => $client) {
-            $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
-            $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
-            $clientList[$key]['visit_status'] = $visitNextDate ? $visitNextDate->visit_status : '';
-        }
-        $clients['list_name'] = '新客户信息';
-        $clients['bg'] = 'bg-danger';
-        $clients['clients'] = $clientList;
-        return $clients;
-    }
-
-    private function requestApproval($data){
         if (Client::find($data['client_id'])->client_mobile == $data['client_mobile']) { //check is try to modify the client mobile data
             //not modify client mobile data
-            if (Client::updateOrCreate(['client_id' =>$data['client_id']], $data)) { //update the client info
+            if (Client::updateOrCreate(['client_id' => $data['client_id']], $data)) { //update the client info
                 $this->returnData['status'] = true;
                 $this->returnData['msg'] = "客户信息修改成功";
                 $this->returnData['code'] = 1;
@@ -489,16 +284,150 @@ class ClientController extends Controller
         }
     }
 
-    public function qualificatesUpload(Request $request){
+    /**
+     * usage: get company info
+     * @param Request $request
+     * @return array
+     */
+    public function getCompanyInfo(Request $request)
+    {
+        $company = Company::find($request->post('company_id'));
+
+        $company['qlf'] = Storage::disk('CRM')->files("company/QLF/{$company->company_id}/");
+
+
+        if ($company->company_id) {
+            $this->returnData['data'] = $company;
+            $this->returnData['status'] = true;
+        } else {
+            $this->returnData['msg'] = "获取公司信息失败";
+        }
+        return $this->returnData;
+    }
+
+    /**
+     * usage: modify the company info
+     * @param Request $request
+     * @return array
+     */
+    public function modifyCompany(Request $request)
+    {
+        $companyId = $request->post('company_id');
+        foreach ($request->file() as $file) {
+            $file->storeAs("/company/QLF/{$companyId}/", $file->getClientOriginalName(), 'CRM');
+        }
+
+        if (Company::find($companyId)->update($request->post())) {
+            $this->returnData['status'] = true;
+            $this->returnData['msg'] = "修改公司信息成功";
+            $this->returnData['code'] = 1;
+        } else {
+            $this->returnData['msg'] = "修改公司信息失败";
+        }
+        return $this->returnData;
+    }
+
+    /**
+     * Usage: this function as agent, according to the input variable value, decided to call different clientList
+     * @param Request $request
+     * @return array
+     */
+//    public function getClientList(Request $request)
+//    {
+//        //get staff level
+//        $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
+//        $staffId = Auth::guard('admin')->user()->staff_id; //get staff id
+//        $func = $request->post('type') . "ClientList"; //structure the func string for callback
+//
+//        //call back different function to get different client list
+//        if ($clientList = call_user_func([$this, $func], $staffId, $staffLevel)) {
+//            $this->returnData['status'] = true;
+//            $this->returnData['data'] = $clientList;
+//        } else {
+//            $this->returnData['msg'] = "获取客户类表失败";
+//        }
+//        return $this->returnData;
+//    }
+
+    /**
+     * usage: assign client into Pool
+     * @param Request $request
+     * @return array
+     */
+    public function toPool(Request $request)
+    {
+
+       $this->moveToPool($request->post('client_id'));
+       return $this->returnData;
+    }
+
+    /**
+     * usage: get pending list, as the this function need to be call somewhere else, soi has to set to public
+     * @param $staffId
+     * @param $staffLevel
+     * @return mixed
+     */
+    public function pendingClientList($staffId, $staffLevel, Request $request = null)
+    {
+        $clientList = array();
+        switch ($staffLevel) {
+            case "0": //普通员工
+                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
+                    ->where('clients.client_status', '=', '1')
+                    ->where('client_next_date', '=', date("Y-m-d"))
+                    ->paginate($this->_pageSize);
+                break;
+            case "3": //部门经理
+                $clientList = Client::where('clients.client_status', '=', '1')
+                    ->where('clients.client_assign_to', '>', '0')
+                    ->where('client_next_date', '=', date("Y-m-d"))
+                    ->paginate($this->_pageSize);
+                break;
+        }
+
+        $clients['list_name'] = '待回访客户信息';
+        $clients['bg'] = 'bg-warning';
+        $clients['clients'] = $clientList;
+
+        return $clients;
+    }
+
+    public function overdueClientList($staffId, $staffLevel, Request $request = null)
+    {
+        $clientList = array();
+        switch ($staffLevel) {
+            case "0": //普通员工
+                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
+                    ->where('clients.client_status', '=', '1')
+                    ->where('client_next_date', '<=', date("Y-m-d"))
+                    ->paginate($this->_pageSize);
+                break;
+            case "3": //部门经理
+                $clientList = Client::where('clients.client_status', '=', '1')
+                    ->where('clients.client_assign_to', '>', '0')
+                    ->where('client_next_date', '<=', date("Y-m-d"))
+                    ->paginate($this->_pageSize);
+                break;
+        }
+
+        $clients['list_name'] = '逾期访客户信息';
+        $clients['bg'] = 'bg-primary';
+        $clients['clients'] = $clientList;
+
+        return $clients;
+    }
+
+    public function qualificatesUpload(Request $request)
+    {
         $clientQAFolder = Storage::disk('CRM')->directories();
 
 //        $request->file()->getClientOriginalName()
-        foreach ($request->file() as $file){
-            if($file->storeAs("/client/QLF/{$request->post('client_id')}",$file->getClientOriginalName(),'CRM')){
+        foreach ($request->file() as $file) {
+            if ($file->storeAs("/client/QLF/{$request->post('client_id')}", $file->getClientOriginalName(), 'CRM')) {
                 $this->returnData['status'] = true;
                 $this->returnData['msg'] = "客户资质上传成功";
                 $this->returnData['code'] = 1;
-            }else{
+            } else {
                 $this->returnData['msg'] = "客户资质上传失败";
             }
             return $this->returnData;
@@ -506,18 +435,255 @@ class ClientController extends Controller
 
     }
 
-    public function rmclentQLFfile(Request $request){
+    public function rmClentQLFfile(Request $request)
+    {
         $clientId = $request->post('client_id');
         $fileName = $request->post('file_name');
 
-        if(Storage::disk('CRM')->delete("/client/QLF/{$clientId}/{$fileName}")){
+        if (Storage::disk('CRM')->delete("/client/QLF/{$clientId}/{$fileName}")) {
             $this->returnData['status'] = true;
-            $this->returnData['msg']="删除成功";
-            $this->returnData['code'] =1;
-        }else{
-            $this->returnData['msg']="删除失败";
+            $this->returnData['msg'] = "删除成功";
+            $this->returnData['code'] = 1;
+        } else {
+            $this->returnData['msg'] = "删除失败";
         }
         return $this->returnData;
+    }
+
+    public function rmCompanyQLFfile(Request $request)
+    {
+        $companyId = $request->post('company_id');
+        $fileName = $request->post('file_name');
+
+        if (Storage::disk('CRM')->delete("/company/QLF/{$companyId}/{$fileName}")) {
+            $this->returnData['status'] = true;
+            $this->returnData['msg'] = "删除成功";
+            $this->returnData['code'] = 1;
+        } else {
+            $this->returnData['msg'] = "删除失败";
+        }
+        return $this->returnData;
+    }
+
+    public function getStaffByDepart(Request $request)
+    {
+        try {
+            $staffs = Staff::where('department_id', '=', $request->post('departId'))->get();
+
+            $this->returnData['status'] = true;
+            $this->returnData['data'] = $staffs;
+        } catch (\Exception $e) {
+            $this->returnData['msg'] = "获取员工列表失败";
+        }
+        return $this->returnData;
+    }
+
+    private function allClientList($staffId, $staffLevel, Request $request = null)
+    {
+        $clientList = '';
+        switch ($staffLevel) {
+            case "0": //普通员工
+                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
+                    ->where('clients.client_status', '=', '1')
+                    ->orderby('updated_at', 'desc')
+                    ->paginate($this->_pageSize);
+                break;
+            case "3": //部门经理
+                $clientList = Client::where('clients.client_status', '=', '1')->paginate($this->_pageSize);
+                break;
+        }
+        foreach ($clientList as $key => $client) {
+            $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
+            $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
+            $clientList[$key]['visit_status'] = $visitNextDate ? $visitNextDate->visit_status : '';
+        }
+
+        $clients['list_name'] = '全部客户信息';
+        $clients['bg'] = 'bg-info';
+        $clients['clients'] = $clientList;
+        return $clients;
+    }
+
+    /**
+     * usage: get pool client list
+     * @param $staffId
+     * @param $staffLevel
+     * @return mixed
+     */
+    private function poolClientList($staffId, $staffLevel, Request $request = null)
+    {
+        $clientList = Client::where('client_assign_to', '=', '0')
+            ->where('client_status', '=', '1')
+            ->orderBy('updated_at', 'desc')
+            ->paginate($this->_pageSize);
+        foreach ($clientList as $key => $client) {
+            $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
+            $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
+            $clientList[$key]['visit_status'] = $visitNextDate ? $visitNextDate->visit_status : '';
+        }
+        $clients['list_name'] = '公海信息';
+        $clients['bg'] = 'bg-primary';
+        $clients['clients'] = $clientList;
+        return $clients;
+    }
+
+    /**
+     * Usage: freshly assigned/added client
+     * @param $staffId
+     * @param $staffLevel
+     * @return mixed
+     */
+    private function newClientList($staffId, $staffLevel, Request $request = null)
+    {
+        $clientList = '';
+        switch ($staffLevel) {
+            case "0": //普通员工
+                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
+                    ->where('clients.client_status', '=', '1')
+                    ->where('clients.client_new_enquiries', '=', '1')
+                    ->paginate($this->_pageSize);
+                break;
+            case "3": //部门经理
+                $clientList = Client::where('clients.client_status', '=', '1')
+                    ->where('clients.client_new_enquiries', '=', '1')
+                    ->paginate($this->_pageSize);
+                break;
+        }
+
+        foreach ($clientList as $key => $client) {
+            $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
+            $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
+            $clientList[$key]['visit_status'] = $visitNextDate ? $visitNextDate->visit_status : '';
+        }
+        $clients['list_name'] = '新客户信息';
+        $clients['bg'] = 'bg-danger';
+        $clients['clients'] = $clientList;
+        return $clients;
+    }
+
+    private function searchClientList($staffId, $staffLevel, Request $request = null)
+    {
+
+
+        $searchData = $request->post();
+
+        unset($searchData['_token']);
+
+        $orderBy=['client_next_date','desc'];
+
+        if(isset($searchData['order_by'])){
+            $orderBy = explode(',',$searchData['order_by']);
+        }
+
+
+        $clientList = Client::where(function ($query) use ($searchData, $staffId, $staffLevel) {
+            if (key_exists('client_name', $searchData) && $searchData['client_name']) {
+                $query->where('client_name', 'like', $searchData['client_name'] . "%");
+            }
+            if (key_exists('client_mobile', $searchData) && $searchData['client_mobile']) {
+                $query->where('client_mobile', 'like', $searchData['client_mobile'] . "%");
+            }
+            if (key_exists('client_visit_status', $searchData) && $searchData['client_visit_status']) {
+                $query->where('client_visit_status', '=', $searchData['client_visit_status']);
+            }
+            if (key_exists('client_created_from', $searchData) && $searchData['client_created_from'] && $searchData['client_created_to']) {
+                $query->where('created_at', '>=', $searchData['client_created_from']);
+                $query->where('created_at', '<=', $searchData['client_created_to']);
+            }
+            if (key_exists('client_visit_from', $searchData) && $searchData['client_visit_from'] && $searchData['client_visit_to']) {
+                $query->where('client_next_date', '>=', $searchData['client_visit_from']);
+                $query->where('client_next_date', '<=', $searchData['client_visit_to']);
+            }
+            if (key_exists('staff_id', $searchData) && $searchData['staff_id']) {
+                $query->where('client_assign_to', '=', $searchData['staff_id']);
+            }else{
+                $query->where('client_assign_to', '=', $staffId);
+            }
+            if (key_exists('search_clientType', $searchData) && null !== $searchData['search_clientType']) {
+                switch ($searchData['search_clientType']) {
+                    case "0": //公海客户
+                        $query->where('client_assign_to', '=', "0");
+                        break;
+                    case "1": //自己客户
+                        if ($staffLevel == "0") {
+                            $query->where('client_assign_to', '=', $staffId);
+                        }elseif($staffLevel=="3"){
+                            $query->where('client_assign_to', '<>', "0");
+                        }
+                        break;
+                    case "2": //全部客户部
+                        if ($staffLevel == "0") {
+                            $query->whereIn('client_assign_to', [0, $staffId]);
+                        }
+                        break;
+                }
+
+            }
+
+
+        })->where('client_status', '=', '1')
+            ->orderBy($orderBy[0],$orderBy[1])
+            ->paginate($this->_pageSize);
+
+
+        $clients['list_name'] = '搜索结果客户信息';
+        $clients['bg'] = 'bg-danger';
+        $clients['clients'] = $clientList;
+
+
+        return $clients;
+    }
+
+    public function batchToPool(Request $request){
+
+        $clients = $request->post('clientIds');
+        foreach($clients as $client){
+            $this->moveToPool($client);
+        }
+        $this->returnData['status'] = true;
+        $this->returnData['msg'] = "成功放入公海";
+        $this->returnData['code'] = 1;
+        return $this->returnData;
+    }
+
+    private function moveToPool($client_id){
+        $client = Client::find($client_id); //get client data
+        //rule for assign client into pool
+        //1. client has been created at least 3 days ago,
+        //2. the client has never made an purchase from us
+        if (date("Y-m-d", strtotime("{$client->created_at}+3 day")) < date("Y-m-d") && $client->client_level <= 0) {
+            $client->client_assign_to = '0'; // use this to indicate the client in the pool
+
+            if ($client->save()) {
+                $this->returnData['status'] = true;
+                $this->returnData['msg'] = "成功放入公海";
+                $this->returnData['code'] = 1;
+                return true;
+            } else {
+                $this->returnData['msg'] = "放入公海失败";
+                return false;
+            }
+        } else {
+            $this->returnData['msg'] = "不可以放入公海";
+            $this->returnData['code'] = 5;
+            return false;
+        }
+
+    }
+    public function batchToAssign(Request $request){
+        $clients = $request->post('clientIds');
+        $staffId = $request->post('staffId');
+
+        foreach($clients as $client){
+            $this->assignClient($client,$staffId);
+        }
+        $this->returnData['status'] = true;
+        $this->returnData['msg'] = "指派成功";
+        $this->returnData['code'] = 1;
+        return $this->returnData;
+    }
+    private function assignClient($client_id,$staff_id){
+        Client::find($client_id)->update(['client_assign_to'=>$staff_id]);
     }
 
 
