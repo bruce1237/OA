@@ -16,7 +16,6 @@
                 <tbody>
 
                 @foreach($data['staffList'] as $staff)
-
                     <tr class="{{$data['staffList']->trBg[$staff->getOriginal('department_id')]}}">
                         <th scope="row">{{$staff->staff_name}}</th>
                         <td></td>
