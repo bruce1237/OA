@@ -38,7 +38,6 @@ class StaffController extends Controller
             $assignableDepartmentsIds[] = $department->id;
         }
 
-
         $this->_orderBy = ['department_id', 'asc'];
         $this->_where = [
             ['key' => 'department_id',
@@ -86,9 +85,12 @@ class StaffController extends Controller
     private function staffList()
     {
         $assignableDepartIds = Department::where('assignable','=','1')->select('id')->get()->toArray();
-        $staffs = Staff::whereIn('department_id',$assignableDepartIds)->select('*, department_id as dept_id')->orderBy('department_id','asc')->get();
-        dd($staffs);
-        $staffs['trBg']=['table-info',
+        $staffs = Staff::whereIn('department_id',$assignableDepartIds)
+            ->orderBy('department_id','asc')->get();
+
+
+
+        $staffs->trBg=['table-info',
             'table-primary',
             'table-success',
             'table-info',
@@ -98,6 +100,7 @@ class StaffController extends Controller
             'table-primary',
             'table-success',
         ];
+
         return $staffs;
 
 

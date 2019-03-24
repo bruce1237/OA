@@ -17,9 +17,9 @@
 
                 @foreach($data['staffList'] as $staff)
 
-                    <tr class="{{$data['staffList']['trBg'][$staff->department_id]}}">
-                        <th scope="row">Primary</th>
-                        <td>Cell</td>
+                    <tr class="{{$data['staffList']->trBg[$staff->getOriginal('department_id')]}}">
+                        <th scope="row">{{$staff->staff_name}}</th>
+                        <td></td>
                         <td>Cell</td>
                     </tr>
                 @endforeach
