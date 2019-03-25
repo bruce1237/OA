@@ -169,6 +169,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::get('setSalesTarget',['uses'=>'staffController@setTargetIndex']);
     Route::post('updateSalesTarget',['uses'=>'staffController@updateSalesTarget']);
     Route::post('getSalesDetails',['uses'=>'staffController@getSalesDetails']);
+    Route::get('currentMonthSales',['uses'=>'staffController@currentMonthSales']);
 
 
 

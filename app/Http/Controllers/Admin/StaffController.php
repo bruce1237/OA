@@ -1,167 +1,246 @@
 <?php
 
-namespace App\Http\Controllers\Admin;
+    namespace App\Http\Controllers\Admin;
 
 
-use App\Http\Controllers\Controller;
-use App\Model\Department;
-use App\Model\Sales;
-use App\Model\SalesTarget;
-use App\Model\Staff;
-use Illuminate\Http\Request;
+    use App\Http\Controllers\Controller;
+    use App\Model\Department;
+    use App\Model\Sales;
+    use App\Model\SalesTarget;
+    use App\Model\Staff;
+    use Illuminate\Http\Request;
 
-class StaffController extends Controller
-{
-    private $_where = array();
-    private $_orderBy = array();
-    private $_groupBy = array();
-    private $_data = array();
+    class StaffController extends Controller {
 
-    //
-    public function setTargetIndex()
-    {
-        $staffList = $this->staffList();
+        private $_where = array();
+        private $_orderBy = array();
+        private $_groupBy = array();
+        private $_data = array();
 
-        $data =[
-            'staffList'=>$staffList
-        ];
+        //
+        public function setTargetIndex() {
 
-        return view('admin/Staff/setTargetIndex',['data'=>$data]);
-    }
+            $staffList = $this->staffList();
 
-    private function staffListABD(){
-        //get staff list by department
-        $this->_orderBy = ['department_id', 'asc'];
-        $this->_where[] = ['key' => 'assignable',
-            'op' => '=',
-            'value' => '1'];
+            $data = [
+                'staffList' => $staffList
+            ];
 
-        $assignableDepartments = $this->getList("App\Model\Department");
-        foreach ($assignableDepartments as $department) {
-            $assignableDepartmentsIds[] = $department->id;
+            return view('admin/Staff/setTargetIndex', ['data' => $data]);
         }
 
-        $this->_orderBy = ['department_id', 'asc'];
-        $this->_where = [
-            ['key' => 'department_id',
-                'op' => 'in',
-                'value' => $assignableDepartmentsIds,
-            ],
-            ['key' => 'staff_status',
+        private function staffListABD() {
+
+            //get staff list by department
+            $this->_orderBy = ['department_id', 'asc'];
+            $this->_where[] = ['key' => 'assignable',
                 'op' => '=',
-                'value' =>'1',
-            ]
-        ];
+                'value' => '1'];
 
-        return  $this->getList('App\Model\Staff');
-    }
+            $assignableDepartments = $this->getList("App\Model\Department");
+            foreach ($assignableDepartments as $department) {
+                $assignableDepartmentsIds[] = $department->id;
+            }
 
-    private function getListABD($model)
-    {
-        $where = $this->_where;
-        $orderBy = $this->_orderBy;
-        $groupBy = $this->_groupBy;
+            $this->_orderBy = ['department_id', 'asc'];
+            $this->_where = [
+                ['key' => 'department_id',
+                    'op' => 'in',
+                    'value' => $assignableDepartmentsIds,
+                ],
+                ['key' => 'staff_status',
+                    'op' => '=',
+                    'value' => '1',
+                ]
+            ];
+
+            return $this->getList('App\Model\Staff');
+        }
+
+        private function getListABD($model) {
+
+            $where = $this->_where;
+            $orderBy = $this->_orderBy;
+            $groupBy = $this->_groupBy;
 
 
-        $result = $model::where(function ($query) use ($where, $orderBy, $groupBy) {
-            if (isset($where) && null != $where) {
-                foreach ($where as $condition) {
-                    switch ($condition['op']) {
-                        case "in":
-                            $query->whereIn($condition['key'], $condition['value']);
-                            break;
-                        default:
-                            $query->where($condition['key'], $condition['op'], $condition['value']);
-                            break;
+            $result = $model::where(function ($query) use ($where, $orderBy, $groupBy) {
+
+                if (isset($where) && null != $where) {
+                    foreach ($where as $condition) {
+                        switch ($condition['op']) {
+                            case "in":
+                                $query->whereIn($condition['key'], $condition['value']);
+                                break;
+                            default:
+                                $query->where($condition['key'], $condition['op'], $condition['value']);
+                                break;
+                        }
                     }
                 }
-            }
-        })->get();
-        $this->_where = $this->_orderBy = $this->_groupBy = array();
-        return $result;
+            })->get();
+            $this->_where = $this->_orderBy = $this->_groupBy = array();
+            return $result;
 
-    }
-
-
-
-    private function staffList()
-    {
-        $assignableDepartIds = Department::where('assignable','=','1')->select('id')->get()->toArray();
-        $staffs = Staff::whereIn('department_id',$assignableDepartIds)
-            ->where('staff_status','=','1')
-            ->orderBy('department_id','asc')
-            ->groupBy('staff_id')
-            ->get();
-        $FiveMonthAgo = date("Y-m",strtotime(date("Y-m-d")."-5 month"));
-
-        $salesArr=array();
-        foreach ($staffs as $staff) {
-            $sales = SalesTarget::where('staff_id','=',$staff->staff_id)
-                ->where('month','>=',$FiveMonthAgo)
-                ->orderBy('month','desc')
-                ->get();
-
-            foreach($sales as $sale){
-                $salesArr[$sale->month]['target']=$sale->target;
-                $salesArr[$sale->month]['achieved']=$sale->achieved;
-                $salesArr[$sale->month]['percentage']=number_format(($sale->achieved/($sale->target?$sale->target:1))*100,2);
-            }
-           $staff->sales = $salesArr;
         }
 
-        $staffs->trBg=['table-info',
-            'table-primary',
-            'table-success',
-            'table-info',
-            'table-primary',
-            'table-success',
-            'table-info',
-            'table-primary',
-            'table-success',
-        ];
 
+        private function staffList() {
 
-
-
-        return $staffs;
-
-
-    }
-
-    public function updateSalesTarget(Request $request){
-      $data = $request->post();
-      $currentMonth = date("Y-m");
-      try{
-          foreach ($data as $staff_id => $target){
-              SalesTarget::updateOrCreate(['staff_id'=>$staff_id,'month'=>$currentMonth],['target'=>$target]);
-          }
-          $this->returnData['status'] = true;
-          $this->returnData['msg'] = "更新成功";
-          $this->returnData['code'] =1;
-      }catch(\Exception $e){
-          $this->returnData['msg'] = "更新失败";
-      }
-      return  $this->returnData;
-    }
-
-    public function getSalesDetails(Request $request){
-        try{
-            $sales = Sales::where('staff_id','=',$request->post('staff_id'))
-                ->where('date','like',$request->post('month')."%")
+            $assignableDepartIds = Department::where('assignable', '=', '1')->select('id')->get()->toArray();
+            $staffs = Staff::whereIn('department_id', $assignableDepartIds)
+                ->where('staff_status', '=', '1')
+                ->orderBy('department_id', 'asc')
+                ->groupBy('staff_id')
                 ->get();
-           if(sizeof($sales)){
-               $this->returnData['data']=$sales;
-               $this->returnData['status']=true;
-               $this->returnData['code']=1;
-           }else{
-               $this->returnData['msg']="无销售记录";
-           }
+            $FiveMonthAgo = date("Y-m", strtotime(date("Y-m-d") . "-5 month"));
 
-        }catch(\Exception $e){
-            $this->returnData['msg']="获取销售记录失败";
+            $salesArr = array();
+            foreach ($staffs as $staff) {
+                $sales = SalesTarget::where('staff_id', '=', $staff->staff_id)
+                    ->where('month', '>=', $FiveMonthAgo)
+                    ->orderBy('month', 'desc')
+                    ->get();
+
+                foreach ($sales as $sale) {
+                    $salesArr[$sale->month]['target'] = $sale->target;
+                    $salesArr[$sale->month]['achieved'] = $sale->achieved;
+                    $salesArr[$sale->month]['percentage'] = number_format(($sale->achieved / ($sale->target ? $sale->target : 1)) * 100, 2);
+                }
+                $staff->sales = $salesArr;
+            }
+
+            $staffs->trBg = ['table-info',
+                'table-primary',
+                'table-success',
+                'table-info',
+                'table-primary',
+                'table-success',
+                'table-info',
+                'table-primary',
+                'table-success',
+            ];
+
+
+            return $staffs;
+
+
         }
-        return $this->returnData;
-    }
+
+        public function updateSalesTarget(Request $request) {
+
+            $data = $request->post();
+            $currentMonth = date("Y-m");
+            try {
+                foreach ($data as $staff_id => $target) {
+                    SalesTarget::updateOrCreate(['staff_id' => $staff_id, 'month' => $currentMonth], ['target' => $target]);
+                }
+                $this->returnData['status'] = true;
+                $this->returnData['msg'] = "更新成功";
+                $this->returnData['code'] = 1;
+            } catch (\Exception $e) {
+                $this->returnData['msg'] = "更新失败";
+            }
+            return $this->returnData;
+        }
+
+        public function getSalesDetails(Request $request) {
+
+            try {
+                $sales = Sales::where('staff_id', '=', $request->post('staff_id'))
+                    ->where('date', 'like', $request->post('month') . "%")
+                    ->get();
+                if (sizeof($sales)) {
+                    $this->returnData['data'] = $sales;
+                    $this->returnData['status'] = true;
+                    $this->returnData['code'] = 1;
+                } else {
+                    $this->returnData['msg'] = "无销售记录";
+                }
+
+            } catch (\Exception $e) {
+                $this->returnData['msg'] = "获取销售记录失败";
+            }
+            return $this->returnData;
+        }
+
+        public function currentMonthSales() {
+
+            $currentMonth = date('m');
+            $currentYear = date('Y');
+            $currentDate = date('d');
+            $currentDay = date('N');
+            $sales = array();
+            for ($i = 1; $i <= $currentDate; $i++) {
+                $day = date('N', strtotime("{$currentYear}-{$currentMonth}-{$i}"));
+                if ($day != 6 && $day != 7) {
+                    $workDay[] = $i . "号";
+                }
+            }
+            $salesRecords = Sales::where('date', 'like', "{$currentYear}-{$currentMonth}%")
+                ->orderBy('department_id', 'asc')
+                ->orderBy('date', 'asc')
+                ->get();
+
+            foreach ($salesRecords as $record) {
+                $salesTarget = SalesTarget::where('month', '=', "{$currentYear}-{$currentMonth}")
+                    ->where('staff_id', '=', $record->staff_id)
+                    ->first();
+                $sales[$record->staff_id]['staff_name'] = $record->staff_name;
+                $sales[$record->staff_id]['target'] = $salesTarget->target;
+                $sales[$record->staff_id]['achieved'] = 0;
+                $sales[$record->staff_id]['achievedPect'] = 0;
+                $sales[$record->staff_id]['depart_achieved'] = 0;
+                $sales[$record->staff_id]['department_id'] = $record->department_id;
+                $sales[$record->staff_id]['sales'][$record->date] = $record->sales;
+            }
+
+$departId=0;
+            $departAchieved=0;
+            foreach ($sales as $key => $sale) {
+                $count =0;
+                for ($i = 1; $i <= $currentDate; $i++) {
+                    $day = sprintf("%02d", $i);
+                    $loopdate = "{$currentYear}-{$currentMonth}-{$day}";
+                    $weekday = date("N", strtotime($loopdate));
+                    if ($weekday != 6 && $weekday != 7) {
+                        if (!key_exists($loopdate, $sales[$key]['sales'])) {
+                            $count++;
+                            if($count==1){
+                                $sales[$key]['sale'][$loopdate] = "yellow";
+                            }elseif($count>1 && $count<=2){
+                                $sales[$key]['sale'][$loopdate] = "red";
+                            }else{
+                                $sales[$key]['sale'][$loopdate] = "black";
+                            }
+                        } else {
+                            $sales[$key]['sale'][$loopdate] = $sales[$key]['sales'][$loopdate];
+                            $sales[$key]['achieved'] += $sales[$key]['sales'][$loopdate];
+                            $count =0;
+
+                        }
+                    }
+                }
+                $sales[$key]['achievedPect'] += round(($sales[$key]['achieved']/$sales[$key]['target'])*100,2);
+                if(!$departId){
+                    $departId=$sale['department_id'];
+                    $sales[$key]['new']=0;
+                    $departAchieved =$sales[$key]['achieved'];
+                }else{
+                    if($departId!=$sale['department_id']){
+                        $sales[$key]['new']=1;
+                        $departId=$sale['department_id'];
+                        $departAchieved =$sales[$key]['achieved'];
+                    }else{
+                        $sales[$key]['new']=0;
+                        $departAchieved +=$sales[$key]['achieved'];
+                    }
+                }
+                $sales[$key]['depart_achieved']=$departAchieved;
+            }
+
+            dd($sales);
+        }
 //    public function currentMonthSales(){
 //        $currentMonthOnly = date('m');
 //        $currentMonthOnly = date('01');
@@ -241,4 +320,4 @@ class StaffController extends Controller
 //        return view('admin/Staff/currentMonthSales',['sales'=>$salesArr,'workdate'=>$workdate]);
 //
 //    }
-}
+    }

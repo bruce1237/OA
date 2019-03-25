@@ -85,6 +85,7 @@ class SalesController extends Controller
 
 
         }
+//dd($salesRecord);
         return $salesRecord;
 
     }
