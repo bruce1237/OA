@@ -44,6 +44,8 @@ class HomeController extends Controller
         //get monthly sales for the sales report chart
         $monthlySales = $salesObj->monthlySales();
 
+
+
         //get the birthday list from database
         $birthday = $this->birthDayReminder();
 
@@ -101,6 +103,7 @@ class HomeController extends Controller
     public function birthDayReminder() {
         //format the current month in to two digits number with dash at each end
         $currentMonth = sprintf("-%02d-", date("m"));
+
 
         //return the list of staff obj which they have birthday at current month
         return Staff::where('staff_dob', 'like', '%' . $currentMonth . '%')->get();

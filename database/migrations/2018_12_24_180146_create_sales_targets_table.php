@@ -15,7 +15,7 @@ class CreateSalesTargetsTable extends Migration
     {
         Schema::create('sales_targets', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('staff_id')->unique()->comment("员工号");
+            $table->integer('staff_id')->comment("员工号");
             $table->string('month')->comment("月份");
             $table->decimal('target',9,2)->nullable()->default(0)->comment("当月目标");
             $table->decimal('achieved',9,2)->comment("完成额度");

@@ -114,13 +114,13 @@ style="left: 0px;"
                         @section('pSection4')
                             {{--业绩统计--}}
                             <fieldset class="layui-elem-field">
-                                <legend>业绩统计</legend>
+                                <legend>{{date('Y-m')}}业绩统计</legend>
                                 <div class="layui-field-box">
                                     <table class="table" style="white-space:nowrap;" border=1>
                                         <thead>
                                         <tr>
                                             <th>姓名</th>
-                                            <th>{{date('m')}}任务</th>
+                                            <th>任务</th>
                                             @php
                                                 $today = date('d');
 
@@ -138,6 +138,7 @@ style="left: 0px;"
                                         @php $dailySales=[]; $grandTarget = $grandAchieved = $grandAchievedRate = $totalTarget=$totalAchieved=$toatlAchievedRate = $department_id=0;@endphp
 
                                         @foreach($monthlySales as $key =>$sales)
+
 
 
                                             @if($department_id!=0 && $department_id !=$sales['department_id'])

@@ -19,6 +19,7 @@ class SalesController extends Controller
     public function __construct()
     {
         $this->currentMonth  = date("Y-m");
+
     }
 
 
@@ -75,13 +76,15 @@ class SalesController extends Controller
 
 
             foreach ($salesTarget as $k => $v) {
-                $salesRecord[$v['staff_id']]['target'] = $v['target']?$v['target']:0;
-                $salesRecord[$v['staff_id']]['achieved'] = $v['achieved']?$v['achieved']:0;
+                if($v['staff_id'] == $value['staff_id']){
+
+                    $salesRecord[$v['staff_id']]['target'] = $v['target']?$v['target']:0;
+                    $salesRecord[$v['staff_id']]['achieved'] = $v['achieved']?$v['achieved']:0;
+                }
             }
 
 
         }
-
         return $salesRecord;
 
     }

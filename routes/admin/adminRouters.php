@@ -167,6 +167,8 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************设置员工业绩目标*************/
     /*******************************************/
     Route::get('setSalesTarget',['uses'=>'staffController@setTargetIndex']);
+    Route::post('updateSalesTarget',['uses'=>'staffController@updateSalesTarget']);
+    Route::post('getSalesDetails',['uses'=>'staffController@getSalesDetails']);
 
 
 
