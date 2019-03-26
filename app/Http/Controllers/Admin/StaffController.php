@@ -131,7 +131,6 @@ class StaffController extends Controller
         return $this->returnData;
     }
 
-
     /**
      * calculate and show the current month sales figures
      * @return array
@@ -268,9 +267,5 @@ class StaffController extends Controller
         //assign the necessary data into a single array: $data
         $data = ['sales' => $sales, 'trBg' => $this->_trBg, 'workDays' => $workDays, 'daySales' => $day_sales];
         return $data;
-
     }
-
-
-
 }
