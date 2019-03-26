@@ -111,126 +111,77 @@ style="left: 0px;"
                         @section('pSection3')
 
                         @show
+
                         @section('pSection4')
                             {{--业绩统计--}}
-                            <fieldset class="layui-elem-field">
-                                <legend>{{date('Y-m')}}业绩统计</legend>
-                                <div class="layui-field-box">
-                                    <table class="table" style="white-space:nowrap;" border=1>
-                                        <thead>
-                                        <tr>
-                                            <th>姓名</th>
-                                            <th>任务</th>
-                                            @php
-                                                $today = date('d');
+                            <table class="table table-striped table-sm">
+                                <thead>
+                                <tr class="bg-warning">
+                                    <th>姓名</th>
+                                    <th>任务</th>
+                                    @foreach($monthlySales['workDays'] as $workDay)
+                                        <th>{{$workDay}}</th>
+                                    @endforeach
+                                    <th>完成</th>
+                                    <th>完成度</th>
+                                </tr>
 
-                                                for($i=1;$i<=$today;$i++){
-                                                    echo "<th>".sprintf("%02d", $i)."</th>";
-                                                }
-                                            @endphp
-                                            <th>总计</th>
-                                            <th>达成率</th>
+                                </thead>
+                                <tbody>
+                                @php $lastKey =0; @endphp
+                                @foreach($monthlySales['sales'] as $key=>$sale)
+                                    @if($sale['new'])
+                                        <tr class="bg-info">
+                                            <td >合计:</td>
+                                            @foreach($monthlySales['daySales'][$monthlySales['sales'][$lastKey]['department_id']] as $key=>$day)
+                                                <td>{{$day}}
+                                                    @if($key =='achievedPect')
+                                                        %
+                                                    @endif</td>
+                                            @endforeach
                                         </tr>
-                                        </thead>
-                                        <tbody>
+                                    @endif
+                                    <tr>
+                                        <td>{{$sale['staff_name']}}</td>
+                                        <td>{{$sale['target']}}</td>
+                                        @foreach($sale['sale'] as $dailySales)
+                                            @if(is_string($dailySales))
+                                                <td bgcolor="{{$dailySales}}">
+                                            @else
+                                                <td bgcolor="green">{{$dailySales}}
+                                                    @endif
+                                                </td>
+                                                @endforeach
+                                                <td>{{$sale['achieved']}}</td>
+                                                <td>{{$sale['achievedPect']}}%</td>
+                                    </tr>
 
-
-                                        @php $dailySales=[]; $grandTarget = $grandAchieved = $grandAchievedRate = $totalTarget=$totalAchieved=$toatlAchievedRate = $department_id=0;@endphp
-
-                                        @foreach($monthlySales as $key =>$sales)
-
-
-
-                                            @if($department_id!=0 && $department_id !=$sales['department_id'])
-
-                                                <tr bgcolor="#deb887">
-                                                    <th>共计</th>
-                                                    <td>{{$totalTarget}}</td>
-                                                    <td colspan="{{$i-1}}"></td>
-                                                    <th>{{$totalAchieved}}</th>
-                                                    <th>{{$toatlAchievedRate}}%</th>
-                                                </tr>
-
-                                                @php $totalTarget=$totalAchieved=$toatlAchievedRate =0; @endphp
-
+                                    @php $lastKey = $key; @endphp
+                                @endforeach
+                                <tr class="bg-info">
+                                    <td >合计:</td>
+                                    @foreach($monthlySales['daySales'][$monthlySales['sales'][$lastKey]['department_id']] as $key=>$day)
+                                        <td>{{$day}}
+                                            @if($key =='achievedPect')
+                                                %
                                             @endif
+                                        </td>
+                                    @endforeach
+                                </tr>
+                                <tr class="bg-primary">
+                                    <td>共计:</td>
+                                    @foreach($monthlySales['daySales']['total'] as $key=>$sale)
+                                        <td>{{$sale}}
+                                            @if($key =='achievedPect')
+                                                %
+                                            @endif
+                                        </td>
+                                    @endforeach
 
-                                            <tr bgcolor="#dcdcdc">
-                                                <td>{{$sales['staff_name']}}</td>
-                                                <td>{{$sales['target']}}</td>
+                                </tr>
+                                </tbody>
+                            </table>
 
-                                                @php $b=0; $department_id =$sales['department_id'];@endphp
-
-                                                @for($i=1;$i<=$today;$i++)
-                                                    @php
-                                                        $a=0;
-                                                        foreach ($sales['sales'] as $daySales){
-                                                            if(array_key_exists(date("Y-m-").sprintf("%02d",$i), $daySales)){
-                                                                $a=1; //the date is existed in the salesReport, so set up a flag to indicate there is a sales of the day
-                                                                $b=0; //as the sales is existed, reset the sales flag
-                                                                echo "<td bgcolor='#70ad47'>".$daySales[date("Y-m-").sprintf("%02d",$i)]."</td>";
-                                                                if(array_key_exists($i,$dailySales)){
-                                                                    $dailySales[$i] += $daySales[date("Y-m-").sprintf("%02d",$i)];
-                                                                }else{
-                                                                    $dailySales[$i] = $daySales[date("Y-m-").sprintf("%02d",$i)];
-                                                                }
-                                                            }
-                                                        }
-                                                    if($a==0){
-                                                        $b++;//the date of the sales is not existed, so add flag to change the bgcolor
-                                                        if($b==1) $bgcolor = "yellow";
-                                                        if($b==2) $bgcolor = "red";
-                                                        if($b>=3) $bgcolor = "black";
-                                                        echo "<td bgcolor=$bgcolor>&nbsp;&nbsp;&nbsp;&nbsp;</td>";
-                                                    }
-                                                    @endphp
-                                                @endfor
-                                                <td>{{$sales['achieved']}}</td>
-                                                <td>{{round($sales['achieved']*100/$sales['target'],2)}}%</td>
-                                                @php
-                                                    $totalTarget+=$sales['target'];
-                                                    $totalAchieved += $sales['achieved'];
-                                                    $toatlAchievedRate +=round($sales['achieved']*100/$sales['target'],2);
-
-                                                    $grandTarget +=$sales['target'];
-                                                    $grandAchieved += $sales['achieved'];
-                                                    $grandAchievedRate +=round($sales['achieved']*100/$sales['target'],2);
-
-
-                                                @endphp
-                                            </tr>
-                                        @endforeach
-
-
-                                        <tr bgcolor="#deb887">
-                                            <th>共计</th>
-                                            <td>{{$totalTarget}}</td>
-                                            <td colspan="{{$i-1}}"></td>
-                                            <th>{{$totalAchieved}}</th>
-                                            <th>{{$toatlAchievedRate}}%</th>
-                                        </tr>
-
-                                        <tr bgcolor="orange">
-                                            <th>总计</th>
-                                            <td>{{$grandTarget}}</td>
-                                            @for ($i = 1; $i <= $today; $i++)
-                                                @if (array_key_exists($i, $dailySales))
-                                                    <td>{{$dailySales[$i]}}</td>
-                                                @else
-                                                    <td>--</td>
-                                                @endif
-
-                                            @endfor
-
-                                            <th>{{$grandAchieved}}</th>
-                                            <th>{{$grandAchievedRate}}%</th>
-                                        </tr>
-
-                                        </tbody>
-                                    </table>
-
-                                </div>
-                            </fieldset>
                         @show
 
 

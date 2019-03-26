@@ -39,10 +39,10 @@ class HomeController extends Controller
 
         /*******get sales figures******************/
         //create sales object
-        $salesObj = new SalesController();
+        $staffObj = new StaffController();
 
         //get monthly sales for the sales report chart
-        $monthlySales = $salesObj->monthlySales();
+        $monthlySales = $staffObj->currentMonthSales();
 
 
 

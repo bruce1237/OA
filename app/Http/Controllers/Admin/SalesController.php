@@ -62,33 +62,33 @@ class SalesController extends Controller
         return SalesTarget::where('staff_id', '=', $staffId)->where('month', '=', $this->currentMonth)->update(['achieved' => $achieved]);
     }
 
-    public function monthlySales() {
-
-        $salesTarget = SalesTarget::where('month','=',date($this->currentMonth))->get();
-        $sales = Sales::where('date', 'like', date($this->currentMonth)."%")->orderBy('department_id')->orderBy('date')->get();
-
-        $salesRecord = array();
-
-        foreach ($sales as $key => $value) {
-            $salesRecord[$value['staff_id']]['staff_name'] = $value['staff_name'];
-            $salesRecord[$value['staff_id']]['sales'][] = [$value['date'] => $value['sales']];
-            $salesRecord[$value['staff_id']]['department_id'] = $value['department_id'];
-
-
-            foreach ($salesTarget as $k => $v) {
-                if($v['staff_id'] == $value['staff_id']){
-
-                    $salesRecord[$v['staff_id']]['target'] = $v['target']?$v['target']:0;
-                    $salesRecord[$v['staff_id']]['achieved'] = $v['achieved']?$v['achieved']:0;
-                }
-            }
-
-
-        }
-//dd($salesRecord);
-        return $salesRecord;
-
-    }
+//    public function monthlySales() {
+//
+//        $salesTarget = SalesTarget::where('month','=',date($this->currentMonth))->get();
+//        $sales = Sales::where('date', 'like', date($this->currentMonth)."%")->orderBy('department_id')->orderBy('date')->get();
+//
+//        $salesRecord = array();
+//
+//        foreach ($sales as $key => $value) {
+//            $salesRecord[$value['staff_id']]['staff_name'] = $value['staff_name'];
+//            $salesRecord[$value['staff_id']]['sales'][] = [$value['date'] => $value['sales']];
+//            $salesRecord[$value['staff_id']]['department_id'] = $value['department_id'];
+//
+//
+//            foreach ($salesTarget as $k => $v) {
+//                if($v['staff_id'] == $value['staff_id']){
+//
+//                    $salesRecord[$v['staff_id']]['target'] = $v['target']?$v['target']:0;
+//                    $salesRecord[$v['staff_id']]['achieved'] = $v['achieved']?$v['achieved']:0;
+//                }
+//            }
+//
+//
+//        }
+////dd($salesRecord);
+//        return $salesRecord;
+//
+//    }
 
 
 }
