@@ -126,6 +126,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('infoStatic',['uses'=>'infoAssignController@infoStatic']);
     Route::get('templateManage',['uses'=>'templateController@index']);
     Route::post('modifyTemplate',['uses'=>'templateController@templateModify']);
+    Route::post('uploadClientInfoFile',['uses'=>'infoAssignController@uploadClientInfoFile']);
 
 
     /*************************-*******************/

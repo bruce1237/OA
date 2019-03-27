@@ -1,0 +1,46 @@
+@startuml
+abstract class csvReader{
+# fileResource : FileResource
+# startingLine : Int
+# colTitle : Array
++ __construct(filePath : string) : fileResource
+# {abstract} readFile(): array
+}
+
+note left of csvReader: use colTitle to indicate\nthe cols' property shuch as name or mobile
+note bottom of csvReader: return of readFile is an database filed as key,\ncsv value as valued array
+class baiduReader {
+# fileResource : FileResource
+# startingLine : Int
+# colTitle : Array
+
+}
+csvReader <|- baiduReader
+@enduml
+
+@startuml
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+Object[] elementData
+size()
+}
+
+enum TimeUnit {
+DAYS
+HOURS
+MINUTES
+}
+
+@enduml

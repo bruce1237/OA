@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
+use App\Lib\baiduCsvReader;
 use App\Model\Client;
 use App\Model\Department;
 use App\Model\Firm;
@@ -10,8 +11,8 @@ use App\Model\InfoSource;
 use App\Model\InfoStatic;
 use App\Model\Staff;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class InfoAssignController extends Controller
 {
@@ -21,18 +22,25 @@ class InfoAssignController extends Controller
      */
     public function index()
     {
+//$this->runTimer("StartMEM".memory_get_usage());
         $today = date("Y-m-d"); //get today date for the info assign statistic usage
         $currentMonth = date("Y-m") . "%"; // get the month for the assign statistic usage
-
+//$this->runTimer('before get InfoSource');
         $client_source = InfoSource::all(); //get infoSource data
+//$this->runTimer('after get infosource');
+        $staffAssignedInfoCount = array();
+
+
         $departs = Department::where('assignable', '=', '1')->select('id')->get(); //get assignable department data
+//$this->runTimer('after get department');
         $departIds = array(); //create variable to store the departs id
         foreach ($departs as $depart) {
             array_push($departIds, $depart->id);
         }
+//$this->runTimer('after departs as depart foreach');
         //get the staffs data from the staff table which are info assignable
         $staffs = Staff::whereIn('department_id', $departIds)->orderBy('department_id')->orderBy('staff_id')->get();
-
+//$this->runTimer('after get staff');
         //get the staff info assign statistic data from the database
         //there are two different ways to do so
         //$staff_info_static = DB::select("SELECT staff_id, count(assign_date=? or null) as today_count,
@@ -45,40 +53,73 @@ class InfoAssignController extends Controller
             ->groupBy('client_assign_to')
             ->get();
 
+
+//$this->runTimer('after get staff_info_static');
         //restructure the staff data to meet info statistic requirements
         foreach ($staffs as $key => $staff) {
             foreach ($staff_info_static as $static) {
                 if ($staff['staff_id'] == $static->client_assign_to) {
                     $staffs[$key]['today'] = $static->today_count;
                     $staffs[$key]['month'] = $static->month_count;
+                    $staffAssignedInfoCount[$staff->staff_id] = ['today' => $static->today_count,
+                        'month' => $static->month_count];
                 }
             }
         }
+
+
+//$this->runTimer('after staffs as staff foreach');
         $firms = Firm::all(); //get all the firm data
+//$this->runTimer('after get Firms');
         //data of clients who are not been assigned, in other word is new client or exist client with new request
         $pendingClients = Client::where('client_assign_to', '=', '-1')
             ->where('client_new_enquiries', '=', '1')
             ->orderBy('updated_at', 'desc')
             ->get();
+//$this->runTimer('after get pending Clients');
         //restructure the pending client data, to put the first line of enquiries into the pendingClient data
         foreach ($pendingClients as $key => $pendingClient) {
             $pendingClients[$key]->client_enquiries = explode("\r\n", $pendingClient->client_enquiries)[0];
         }
+//$this->runTimer('after pendingClients as pendingclient foreach');
         //data of clients who has been assigned but not been acknowledged by the relative staff
-        $freshlyAssignClients = Client::where('client_new_enquiries', '1')->where('client_assign_to', '>', 0)->orderBy('updated_at', 'desc')->get();
+        $freshlyAssignClients = Client::where('client_new_enquiries', '=', '1')->where('client_assign_to', '>', 0)
+            ->join('Staff', 'clients.client_assign_to', '=', 'Staff.staff_id')
+            ->select('clients.*', 'Staff.staff_name')
+            ->orderBy('clients.updated_at', 'desc')->get();
+
+//dd($staffAssignedInfoCount);
+//        dd($freshlyAssignClients);
+//$this->runTimer('after get freshlyAssignClients');
         //restructure the freshly assigned client data, to put the first line of enquiries into the pendingClient data
         foreach ($freshlyAssignClients as $key => $freshlyAssignClient) {
             $freshlyAssignClients[$key]->client_enquiries = explode("\r\n", $freshlyAssignClient->client_enquiries)[0];
+//            $freshlyAssignClients[$key]->today =key_exists($freshlyAssignClient->getOriginal('client_assign_to'),$staffAssignedInfoCount)?$staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['today']:0;
+//            $freshlyAssignClients[$key]->month =key_exists($freshlyAssignClient->getOriginal('client_assign_to'),$staffAssignedInfoCount)?$staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['month']:0;
+            $freshlyAssignClients[$key]->today = $staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['today'];
+            $freshlyAssignClients[$key]->month = $staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['month'];
         }
+
+//        dd($freshlyAssignClients);
+
+//$this->runTimer('after freshlyAssignClients foreach');
+
+        $staffSelectOption = '';
+        foreach ($staffs as $staff) {
+            $staffSelectOption .= "<option value={$staff->staff_id}>{$staff->staff_name}({$staff->department_id}) {$staff->today}/ {$staff->month}</option>";
+        }
+
 
         $data = [
             'client_sources' => $client_source,
             'staffs' => $staffs,
+            'staffSelectOption' => $staffSelectOption,
             'pendingClients' => $pendingClients,
             'staff_info_static' => $staff_info_static,
             'firms' => $firms,
             'freshlyAssignClients' => $freshlyAssignClients,
         ];
+//$this->runTimer("StartMEM".memory_get_usage());
         return view('admin/infoAssign/index', ['data' => $data]);
     }
 
@@ -97,8 +138,8 @@ class InfoAssignController extends Controller
 //        $staffLevel = Staff::find($staffId)->staff_level;
 
 
-        if(null==($request->post('overwrite')) || !$request->post('overwrite')){
-            if ($client->client_new_enquiries=='0') { //check if the client is new client or client has new enquires and NOT been assigned staff acknowledged
+        if (null == ($request->post('overwrite')) || !$request->post('overwrite')) {
+            if ($client->client_new_enquiries == '0') { //check if the client is new client or client has new enquires and NOT been assigned staff acknowledged
 
                 $this->returnData['msg'] = "客户已被认领,重新分配失败";
                 return $this->returnData;
@@ -106,10 +147,10 @@ class InfoAssignController extends Controller
         }
 
         if ($client->getOriginal('client_assign_to') >= 0) { //reassign client if the client has been assigned, delete the old assign statistic data
-                InfoStatic::where('staff_id', '=', $client->getOriginal('client_assign_to'))->where('client_id', '=', $client_id)->delete();
+            InfoStatic::where('staff_id', '=', $client->getOriginal('client_assign_to'))->where('client_id', '=', $client_id)->delete();
         }
         //create new record for the client assign activity
-        InfoStatic::create(['staff_id' =>$request->post('staff_id'),
+        InfoStatic::create(['staff_id' => $request->post('staff_id'),
             'client_id' => $request->post('client_id'),
             'info_source' => $client->client_source,
             'assigned_at' => date("Y-m-d")]);
@@ -149,4 +190,29 @@ class InfoAssignController extends Controller
         }
         return $this->returnData;
     }
+
+    public function uploadClientInfoFile(Request $request)
+    {
+        $uploadFile = $request->file('file');
+        $newFileName = uniqid() . "." . $uploadFile->getClientOriginalExtension();
+
+        if (!$uploadFile->storeAs('Temp/', $newFileName, 'CRM')) {
+            $this->returnData['msg'] = "文件上传错误, 请重试";
+        }
+
+        $fileRes =public_path('storage\crm\temp\\') . $newFileName;
+        $obj = new baiduCsvReader($fileRes,$request->post('sourceId'),$request->post('firmId'));
+
+
+
+
+
+        if (!Storage::disk('CRM')->delete("Temp/{$newFileName}")) {
+            $this->returnData['msg'] = "移除上传文件错误, 请重试";
+        }
+
+        return $this->returnData;
+    }
+
+
 }

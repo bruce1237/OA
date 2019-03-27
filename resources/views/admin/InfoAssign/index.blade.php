@@ -1,8 +1,8 @@
 @extends ('admin/layout/basic')
 
 @section('shortcut')
-    <a href="javascript:void(0);" onclick="edit_position()">导入信息Excel</a>
-    <a href="javascript:void(0);" onclick="edit_position()">自动分配信息</a>
+    <a href="javascript:void(0);" data-toggle="modal" data-target="#importInfoModal">导入信息Excel</a>
+    <a href="javascript:void(0);" onclick="autoDistribute()">自动分配信息</a>
 @endsection
 
 @section('content')
@@ -167,11 +167,12 @@
                                         <select class="form-control" id="staff_id_{{$pendingClient->client_id}}"
                                                 onchange="assignInfo({{$pendingClient->client_id}})">
                                             <option selected disabled>请选择</option>
-                                            @foreach($data['staffs'] as $staff)
-                                                <option value="{{$staff->staff_id}}">{{$staff->staff_name}}
-                                                    ({{$staff->department_id}}) {{$staff->today}}
-                                                    / {{$staff->month}}</option>
-                                            @endforeach
+                                            {!! $data['staffSelectOption'] !!}
+                                            {{--@foreach($data['staffs'] as $staff)--}}
+                                            {{--<option value="{{$staff->staff_id}}">{{$staff->staff_name}}--}}
+                                            {{--({{$staff->department_id}}) {{$staff->today}}--}}
+                                            {{--/ {{$staff->month}}</option>--}}
+                                            {{--@endforeach--}}
                                         </select>
                                     </div>
 
@@ -187,9 +188,9 @@
     </div>
 
     <div class="row">
-        <div class="col-8">已分配信息列表
+        <div class="col-8">
             <div class="card border-success mb-3">
-                <div class="card-header">待分配信息</div>
+                <div class="card-header">已分配信息列表</div>
                 <div class="card-body">
                     <table class="table table-hover table-sm">
                         <thead>
@@ -216,16 +217,18 @@
                                     <div class="input-group input-group-sm mb-3">
                                         <select class="form-control" id="reAssignstaff_id_{{$freshClient->client_id}}"
                                                 onchange="reAssignInfo({{$freshClient->client_id}})">
-
-                                            @foreach($data['staffs'] as $staff)
-                                                <option
-                                                @if($staff->staff_name   == $freshClient->client_assign_to)
-                                                  selected
-                                                @endif
-                                              value="{{$staff->staff_id}}">{{$staff->staff_name}}
-                                                    ({{$staff->department_id}}) {{$staff->today}}
-                                                    / {{$staff->month}}</option>
-                                            @endforeach
+                                            <option selected
+                                                    value="{{$freshClient->client_assign_to}}">{{$freshClient->staff_name}}</option>
+                                            {!! $data['staffSelectOption']!!}
+                                            {{--@foreach($data['staffs'] as $staff)--}}
+                                            {{--<option--}}
+                                            {{--@if($staff->staff_name   == $freshClient->client_assign_to)--}}
+                                            {{--selected--}}
+                                            {{--@endif--}}
+                                            {{--value="{{$staff->staff_id}}">{{$staff->staff_name}}--}}
+                                            {{--({{$staff->department_id}}) {{$staff->today}}--}}
+                                            {{--/ {{$staff->month}}</option>--}}
+                                            {{--@endforeach--}}
                                         </select>
                                     </div>
 
@@ -247,9 +250,7 @@
                 <div class="card-body text-primary">
                     <div class="input-group input-group-sm mb-3">
                         <select class="form-control" id="staffId">
-                            @foreach($data['staffs'] as $staff)
-                                <option value="{{$staff->staff_id}}">{{$staff->staff_name}}</option>
-                            @endforeach
+                            {!!  $data['staffSelectOption'] !!}
                         </select>
 
                         <div class="input-group-prepend">
@@ -279,18 +280,84 @@
     </div>
 
 
+    <div class="modal fade" tabindex="-1" role="dialog" id="importInfoModal">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">信息导入</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="input-group mb-3">
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="infoFile" onchange="getUploadFileName()">
+                            <label class="custom-file-label" for="infoFile">选择文件</label>
+                        </div>
+
+                        <select class="custom-select" id="sourceId">
+                            @foreach($data['client_sources'] as $source)
+                                <option value ={{$source->info_source_id}}>{{$source->info_source_name}}</option>
+                            @endforeach
+                        </select>
+
+                        <select class="custom-select" id="firmId">
+                            @foreach($data['firms'] as $firm)
+                                <option value ={{$firm->firm_name}}>{{$firm->firm_name}}</option>
+                            @endforeach
+                        </select>
+
+                    </div>
+                    <h4 id="uploadFileNameForLabel"></h4>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" onclick="uploadFile()">上传</button>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+
+        function getUploadFileName(){
+            var filePathName = $("#infoFile").val();
+            var selectedFile= filePathName.replace("C:\\fakepath\\",'已选: ');
+
+            $("#uploadFileNameForLabel").html(selectedFile);
+        }
+
+        function uploadFile(){
+            var data = new FormData();
+            data.append('sourceId',$("#sourceId").val());
+            data.append('firmId',$("#firmId").val());
+            data.append('file',$("#infoFile")[0].files[0]);
+
+            $.ajax({
+                url:"{{url('admin/uploadClientInfoFile')}}",
+                data:data,
+                type:'post',
+                dataType:'json',
+                processData:false,
+                contentType:false,
+                success:function(data){
+                    layer.msg(data.msg,{icon:data.code});
+                }
+            });
+        }
+
         function newClient() {
 
             var data = new FormData($("#newClientForm")[0]);
             $.ajax({
-                url:"{{url('admin/newClient')}}",
-                type:'post',
-                data:data,
-                dataType:'Json',
-                contentType:false,
-                processData:false,
-                success:function(data){
+                url: "{{url('admin/newClient')}}",
+                type: 'post',
+                data: data,
+                dataType: 'Json',
+                contentType: false,
+                processData: false,
+                success: function (data) {
                     location.replace(location.href);
                     layer.msg(data.msg, {icon: data.code});
                 }
@@ -298,12 +365,12 @@
         }
 
         function reAssignInfo(clientId) {
-            var staffId = $("#reAssignstaff_id_"+clientId).val();
+            var staffId = $("#reAssignstaff_id_" + clientId).val();
             assign(clientId, staffId);
         }
 
         function assignInfo(clientId) {
-            var staffId = $("#staff_id_"+clientId).val();
+            var staffId = $("#staff_id_" + clientId).val();
 
             assign(clientId, staffId);
         }
@@ -316,7 +383,7 @@
                 data: {client_id: clientId, staff_id: staffId},
                 dataType: 'json',
                 success: function (data) {
-                    layer.msg(data.msg,{icon: 1});
+                    layer.msg(data.msg, {icon: 1});
 
 
                     location.replace(location.href);
@@ -336,16 +403,16 @@
                 dataType: 'json',
                 success: function (data) {
                     $("#staticResult").html('');
-                    if(data.status){
-                        $.each(data.data,function(key,item){
+                    if (data.status) {
+                        $.each(data.data, function (key, item) {
 
-                              $("#staticResult").append('<div class="alert alert-primary" role="alert">'
-                                  +item.info_source+':' +item.count+
-                                  '</div>');
+                            $("#staticResult").append('<div class="alert alert-primary" role="alert">'
+                                + item.info_source + ':' + item.count +
+                                '</div>');
 
                         });
 
-                    }else{
+                    } else {
                         $("#staticResult").html(data.msg);
                     }
                 }

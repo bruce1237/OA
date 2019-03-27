@@ -1,3 +1,7 @@
+@extends ('admin/layout/basic');
 
-
-@php dump($a)@endphp
+@section('content')
+    @for($i=0;$i<$count;$i++)
+    {{$i}}
+    @endfor
+    @endsection

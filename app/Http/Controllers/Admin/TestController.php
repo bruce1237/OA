@@ -18,20 +18,23 @@ use PhpOffice\PhpWord\Writer\PDF\TCPDF;
 class TestController extends Controller
 {
     public function tt(){
-        $rendererName =  Settings::PDF_RENDERER_TCPDF;
+
+        return view('admin/test/index',['count'=>10]);
+
+//        $rendererName =  Settings::PDF_RENDERER_TCPDF;
         $rendererLibraryPath = 'D:\website\OA\vendor\phpoffice\phpword\src\PhpWord\Writer\PDF';
 //        dd(file_exists('D:\website\OA\public/write.csv'));
 
-        Settings::setPdfRendererPath($rendererLibraryPath);
-        Settings::setPdfRendererName('TCPDF');
+//        Settings::setPdfRendererPath($rendererLibraryPath);
+//        Settings::setPdfRendererName('TCPDF');
 //        Settings::setPdfRenderer($rendererName,$rendererLibraryPath);
 
 
-    $template = Template::find(1);
+//    $template = Template::find(1);
 //    $filename = storage_path('contractTemplates\\'.$template->template_file);
 //    $filename = storage_path('contractTemplates\tmp333.doc');
 
-        $newfilename = storage_path('contractTemplates\tmp44333.doc');
+//        $newfilename = storage_path('contractTemplates\tmp44333.doc');
 
 
 
@@ -171,7 +174,7 @@ class TestController extends Controller
 
 //Settings::setPdfRendererPath(Tcpdf);
 //Settings::setPdfRendererName('TCPDF');
-        $filename = storage_path('contractTemplates\tmp777.doc');
+//        $filename = storage_path('contractTemplates\tmp777.doc');
 //        $word = IOFactory::load($filename);
 
 
