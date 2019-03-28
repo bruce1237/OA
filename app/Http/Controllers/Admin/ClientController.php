@@ -129,7 +129,7 @@ class ClientController extends Controller
         return $this->returnData;
     }
 
-    private function createClient($data)
+    public function createClient($data)
     {
 
 

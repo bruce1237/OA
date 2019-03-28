@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
-use App\Lib\baiduCsvReader;
+use App\Lib\clientImport\csvProcessor;
 use App\Model\Client;
 use App\Model\Department;
 use App\Model\Firm;
@@ -201,14 +201,16 @@ class InfoAssignController extends Controller
         }
 
         $fileRes =public_path('storage\crm\temp\\') . $newFileName;
-        $obj = new baiduCsvReader($fileRes,$request->post('sourceId'),$request->post('firmId'));
-
-
-
-
+        if(csvProcessor::process($fileRes,$request->post('sourceId'),$request->post('firmId'))){
+            $this->returnData['status'] = true;
+            $this->returnData['msg'] = "导入成功";
+            $this->returnData['code'] = 1;
+        }else{
+            $this->returnData['msg'] = "处理上传文件失败";
+        }
 
         if (!Storage::disk('CRM')->delete("Temp/{$newFileName}")) {
-            $this->returnData['msg'] = "移除上传文件错误, 请重试";
+            $this->returnData['msg'] .= "移除上传文件错误, 请重试";
         }
 
         return $this->returnData;

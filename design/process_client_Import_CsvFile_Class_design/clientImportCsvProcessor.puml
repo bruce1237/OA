@@ -1,46 +1,31 @@
 @startuml
+note bottom of csvReader: read the csv and write to the database
 abstract class csvReader{
-# fileResource : FileResource
-# startingLine : Int
-# colTitle : Array
-+ __construct(filePath : string) : fileResource
-# {abstract} readFile(): array
+    # infoSourceId : int
+    # firmId : int
+    # fileResource : resource
+    # headerLine : int
+    # colTitle : array
+    # csvArray : array
+    # _csvStructure : array
+    # _csvArray : array
+    # __construct(filePath : string)
+    + {static} process():bool
+    # processing():bool
+    # readCsv():bool
+    # str2Arr():array
+    # writeToDatabase():bool
 }
 
-note left of csvReader: use colTitle to indicate\nthe cols' property shuch as name or mobile
-note bottom of csvReader: return of readFile is an database filed as key,\ncsv value as valued array
-class baiduReader {
-# fileResource : FileResource
-# startingLine : Int
-# colTitle : Array
 
-}
-csvReader <|- baiduReader
-@enduml
 
-@startuml
-
-abstract class AbstractList
-abstract AbstractCollection
-interface List
-interface Collection
-
-List <|-- AbstractList
-Collection <|-- AbstractCollection
-
-Collection <|- List
-AbstractCollection <|- AbstractList
-AbstractList <|-- ArrayList
-
-class ArrayList {
-Object[] elementData
-size()
+note bottom of csvReaderBaidu: <b>colTitle:</b> convert csv filed into database field\n<b>headerLine: </b>Indicate which line is the header of the csv file
+class csvReaderBaidu {
+    ..rewrite..
+    # headerLine : int
+    # colTitle : array
+    + __construct()
 }
 
-enum TimeUnit {
-DAYS
-HOURS
-MINUTES
-}
-
+csvReader <|-csvReaderBaidu : < extends
 @enduml

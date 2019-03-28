@@ -140,7 +140,9 @@
 
         <div class="col-9">
             <div class="card border-info mb-3">
-                <div class="card-header">待分配信息</div>
+                <div class="card-header">待分配信息
+
+                </div>
                 <div class="card-body">
                     <table class="table table-hover table-sm">
                         <thead>
@@ -165,7 +167,7 @@
                                 <td>
                                     <div class="input-group input-group-sm mb-3">
                                         <select class="form-control" id="staff_id_{{$pendingClient->client_id}}"
-                                                onchange="assignInfo({{$pendingClient->client_id}})">
+                                                onchange="assignInfo(this,{{$pendingClient->client_id}})">
                                             <option selected disabled>请选择</option>
                                             {!! $data['staffSelectOption'] !!}
                                             {{--@foreach($data['staffs'] as $staff)--}}
@@ -216,7 +218,7 @@
                                 <td>
                                     <div class="input-group input-group-sm mb-3">
                                         <select class="form-control" id="reAssignstaff_id_{{$freshClient->client_id}}"
-                                                onchange="reAssignInfo({{$freshClient->client_id}})">
+                                                onchange="reAssignInfo(this,{{$freshClient->client_id}})">
                                             <option selected
                                                     value="{{$freshClient->client_assign_to}}">{{$freshClient->staff_name}}</option>
                                             {!! $data['staffSelectOption']!!}
@@ -298,13 +300,13 @@
 
                         <select class="custom-select" id="sourceId">
                             @foreach($data['client_sources'] as $source)
-                                <option value ={{$source->info_source_id}}>{{$source->info_source_name}}</option>
+                                <option value={{$source->info_source_id}}>{{$source->info_source_name}}</option>
                             @endforeach
                         </select>
 
                         <select class="custom-select" id="firmId">
                             @foreach($data['firms'] as $firm)
-                                <option value ={{$firm->firm_name}}>{{$firm->firm_name}}</option>
+                                <option value={{$firm->firm_name}}>{{$firm->firm_name}}</option>
                             @endforeach
                         </select>
 
@@ -321,28 +323,32 @@
 
     <script>
 
-        function getUploadFileName(){
+        function getUploadFileName() {
             var filePathName = $("#infoFile").val();
-            var selectedFile= filePathName.replace("C:\\fakepath\\",'已选: ');
+            var selectedFile = filePathName.replace("C:\\fakepath\\", '已选: ');
 
             $("#uploadFileNameForLabel").html(selectedFile);
         }
 
-        function uploadFile(){
+        function uploadFile() {
             var data = new FormData();
-            data.append('sourceId',$("#sourceId").val());
-            data.append('firmId',$("#firmId").val());
-            data.append('file',$("#infoFile")[0].files[0]);
+            data.append('sourceId', $("#sourceId").val());
+            data.append('firmId', $("#firmId").val());
+            data.append('file', $("#infoFile")[0].files[0]);
 
             $.ajax({
-                url:"{{url('admin/uploadClientInfoFile')}}",
-                data:data,
-                type:'post',
-                dataType:'json',
-                processData:false,
-                contentType:false,
-                success:function(data){
-                    layer.msg(data.msg,{icon:data.code});
+                url: "{{url('admin/uploadClientInfoFile')}}",
+                data: data,
+                type: 'post',
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                    if (data.status) {
+                        $("importInfoModal").modal('hide');
+                        location.replace(location.href);
+                    }
                 }
             });
         }
@@ -358,24 +364,29 @@
                 contentType: false,
                 processData: false,
                 success: function (data) {
-                    location.replace(location.href);
                     layer.msg(data.msg, {icon: data.code});
+                    if (data.status) {
+                        location.replace(location.href);
+                    }
+
                 }
             });
         }
 
-        function reAssignInfo(clientId) {
+        function reAssignInfo(obj, clientId) {
             var staffId = $("#reAssignstaff_id_" + clientId).val();
-            assign(clientId, staffId);
+            assign(obj, clientId, staffId, 'reassign');
         }
 
-        function assignInfo(clientId) {
+        function assignInfo(obj, clientId) {
+
             var staffId = $("#staff_id_" + clientId).val();
 
-            assign(clientId, staffId);
+            assign(obj, clientId, staffId, 'assign');
+
         }
 
-        function assign(clientId, staffId) {
+        function assign(obj, clientId, staffId, AssignType) {
 
             $.ajax({
                 url: "{{url('admin/assignInfo')}}",
@@ -383,10 +394,13 @@
                 data: {client_id: clientId, staff_id: staffId},
                 dataType: 'json',
                 success: function (data) {
-                    layer.msg(data.msg, {icon: 1});
+                    if (data.status && AssignType == 'assign') {
+                        $(obj).parents("tr").remove();
 
+                    }
+                    layer.msg(data.msg, {icon: data.code});
 
-                    location.replace(location.href);
+                    // location.replace(location.href);
                 }
             });
         }
