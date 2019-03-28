@@ -30,8 +30,6 @@ class xlsxProcessor extends FileProcessor {
      * Used For: read the xlsx file
      */
     protected function readFile(): bool {
-        // TODO: Implement readFile() method.
-
         $reader = new Xlsx(); //instant the reader
         $spreadsheet = $reader->load($this->fullFilePathName); //load the xlsx file into reader
         $worksheet = $spreadsheet->getActiveSheet(); //get the activeSheed
