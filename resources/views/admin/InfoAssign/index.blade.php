@@ -419,20 +419,18 @@
                     $("#staticResult").html('');
                     if (data.status) {
                         $.each(data.data, function (key, item) {
-
                             $("#staticResult").append('<div class="alert alert-primary" role="alert">'
                                 + item.info_source + ':' + item.count +
                                 '</div>');
-
                         });
-
                     } else {
                         $("#staticResult").html(data.msg);
                     }
                 }
             });
-
-
+        }
+        function autoDistribute(){
+            layer.msg("禁用中....",{icon:4});
         }
 
     </script>

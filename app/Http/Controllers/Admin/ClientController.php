@@ -15,12 +15,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class ClientController extends Controller
-{
+class ClientController extends Controller {
     private $_pageSize = 15;
 
-    public function index(Request $request, $type = "all")
-    {
+    public function index(Request $request, $type = "all") {
 
 
         //get staff level, use staff_level to decided what and how to display required info
@@ -67,8 +65,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function AddClientVisitData(Request $request)
-    {
+    public function AddClientVisitData(Request $request) {
         try {
             Visit::create($request->post());
             Client::find($request->post('visit_client_id'))->update(['client_next_date' => $request->post('visit_next_date'), 'client_visit_status' => $request->post('visit_status')]);
@@ -86,8 +83,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function addCompany(Request $request)
-    {
+    public function addCompany(Request $request) {
 
         try {
             $company = Company::create($request->post());
@@ -110,8 +106,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function addClient(Request $request)
-    {
+    public function addClient(Request $request) {
         $data = $request->post();
         $staff = Staff::find(Auth::guard('admin')->user()->staff_id);
         if (Department::find($staff->getOriginal('department_id'))->getOriginal('assignable')) {
@@ -129,13 +124,9 @@ class ClientController extends Controller
         return $this->returnData;
     }
 
-    public function createClient($data)
-    {
-
-
+    public function createClient($data) {
         $data['client_added_by'] = Auth::guard('admin')->user()->name;
         $data['client_new_enquiries'] = '1';
-
         $client = Client::where('client_mobile', '=', $data['client_mobile'])->first();
         if ($client) {
             $data['client_enquiries'] = $data['client_enquiries'] . "(" . date("Y-m-d") . ") " . PHP_EOL . $client->client_enquiries;
@@ -153,8 +144,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function getClientDetail(Request $request)
-    {
+    public function getClientDetail(Request $request) {
 
         //get client info by client id
         $client = Client::where('clients.client_id', '=', $request->post('client_id'))
@@ -206,8 +196,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function acknowledgeClient(Request $request)
-    {
+    public function acknowledgeClient(Request $request) {
 //
         $client = Client::find($request->post('client_id')); //get the staff info
         if (!$client->client_assign_to) { //Pool Client
@@ -233,8 +222,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function modifyClientInfo(Request $request)
-    {
+    public function modifyClientInfo(Request $request) {
         $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level; // get staffLevel
         $data = $request->post(); //assign the post data into variable
         if ($staffLevel >= 3) {
@@ -250,8 +238,7 @@ class ClientController extends Controller
         return $this->returnData;
     }
 
-    private function requestApproval($data)
-    {
+    private function requestApproval($data) {
         if (Client::find($data['client_id'])->client_mobile == $data['client_mobile']) { //check is try to modify the client mobile data
             //not modify client mobile data
             if (Client::updateOrCreate(['client_id' => $data['client_id']], $data)) { //update the client info
@@ -289,8 +276,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function getCompanyInfo(Request $request)
-    {
+    public function getCompanyInfo(Request $request) {
         $company = Company::find($request->post('company_id'));
 
         $company['qlf'] = Storage::disk('CRM')->files("company/QLF/{$company->company_id}/");
@@ -310,8 +296,7 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function modifyCompany(Request $request)
-    {
+    public function modifyCompany(Request $request) {
         $companyId = $request->post('company_id');
         foreach ($request->file() as $file) {
             $file->storeAs("/company/QLF/{$companyId}/", $file->getClientOriginalName(), 'CRM');
@@ -354,11 +339,35 @@ class ClientController extends Controller
      * @param Request $request
      * @return array
      */
-    public function toPool(Request $request)
-    {
+    public function toPool(Request $request) {
 
-       $this->moveToPool($request->post('client_id'));
-       return $this->returnData;
+        $this->moveToPool($request->post('client_id'));
+        return $this->returnData;
+    }
+
+    private function moveToPool($client_id) {
+        $client = Client::find($client_id); //get client data
+        //rule for assign client into pool
+        //1. client has been created at least 3 days ago,
+        //2. the client has never made an purchase from us
+        if (date("Y-m-d", strtotime("{$client->created_at}+3 day")) < date("Y-m-d") && $client->client_level <= 0) {
+            $client->client_assign_to = '0'; // use this to indicate the client in the pool
+
+            if ($client->save()) {
+                $this->returnData['status'] = true;
+                $this->returnData['msg'] = "成功放入公海";
+                $this->returnData['code'] = 1;
+                return true;
+            } else {
+                $this->returnData['msg'] = "放入公海失败";
+                return false;
+            }
+        } else {
+            $this->returnData['msg'] = "不可以放入公海";
+            $this->returnData['code'] = 5;
+            return false;
+        }
+
     }
 
     /**
@@ -367,8 +376,7 @@ class ClientController extends Controller
      * @param $staffLevel
      * @return mixed
      */
-    public function pendingClientList($staffId, $staffLevel, Request $request = null)
-    {
+    public function pendingClientList($staffId, $staffLevel, Request $request = null) {
         $clientList = array();
         switch ($staffLevel) {
             case "0": //普通员工
@@ -392,8 +400,7 @@ class ClientController extends Controller
         return $clients;
     }
 
-    public function overdueClientList($staffId, $staffLevel, Request $request = null)
-    {
+    public function overdueClientList($staffId, $staffLevel, Request $request = null) {
         $clientList = array();
         switch ($staffLevel) {
             case "0": //普通员工
@@ -417,8 +424,7 @@ class ClientController extends Controller
         return $clients;
     }
 
-    public function qualificatesUpload(Request $request)
-    {
+    public function qualificatesUpload(Request $request) {
         $clientQAFolder = Storage::disk('CRM')->directories();
 
 //        $request->file()->getClientOriginalName()
@@ -435,8 +441,7 @@ class ClientController extends Controller
 
     }
 
-    public function rmClentQLFfile(Request $request)
-    {
+    public function rmClentQLFfile(Request $request) {
         $clientId = $request->post('client_id');
         $fileName = $request->post('file_name');
 
@@ -450,8 +455,7 @@ class ClientController extends Controller
         return $this->returnData;
     }
 
-    public function rmCompanyQLFfile(Request $request)
-    {
+    public function rmCompanyQLFfile(Request $request) {
         $companyId = $request->post('company_id');
         $fileName = $request->post('file_name');
 
@@ -465,8 +469,7 @@ class ClientController extends Controller
         return $this->returnData;
     }
 
-    public function getStaffByDepart(Request $request)
-    {
+    public function getStaffByDepart(Request $request) {
         try {
             $staffs = Staff::where('department_id', '=', $request->post('departId'))->get();
 
@@ -478,8 +481,39 @@ class ClientController extends Controller
         return $this->returnData;
     }
 
-    private function allClientList($staffId, $staffLevel, Request $request = null)
-    {
+    public function batchToPool(Request $request) {
+
+        $clients = $request->post('clientIds');
+        foreach ($clients as $client) {
+            $this->moveToPool($client);
+        }
+        $this->returnData['status'] = true;
+        $this->returnData['msg'] = "成功放入公海";
+        $this->returnData['code'] = 1;
+        return $this->returnData;
+    }
+
+    public function batchToAssign(Request $request) {
+        $clients = $request->post('clientIds');
+        $loggedStaffId = Auth::guard('admin')->user()->staff_id;
+        $staffLevel = Staff::find($loggedStaffId)->staff_level;
+
+        $staffId = $staffLevel ? $request->post('staffId') : $loggedStaffId;
+
+        foreach ($clients as $client) {
+            $this->assignClient($client, $staffId);
+        }
+        $this->returnData['status'] = true;
+        $this->returnData['msg'] = "指派成功";
+        $this->returnData['code'] = 1;
+        return $this->returnData;
+    }
+
+    private function assignClient($client_id, $staff_id) {
+        Client::find($client_id)->update(['client_assign_to' => $staff_id]);
+    }
+
+    private function allClientList($staffId, $staffLevel, Request $request = null) {
         $clientList = '';
         switch ($staffLevel) {
             case "0": //普通员工
@@ -510,8 +544,7 @@ class ClientController extends Controller
      * @param $staffLevel
      * @return mixed
      */
-    private function poolClientList($staffId, $staffLevel, Request $request = null)
-    {
+    private function poolClientList($staffId, $staffLevel, Request $request = null) {
         $clientList = Client::where('client_assign_to', '=', '0')
             ->where('client_status', '=', '1')
             ->orderBy('updated_at', 'desc')
@@ -533,8 +566,7 @@ class ClientController extends Controller
      * @param $staffLevel
      * @return mixed
      */
-    private function newClientList($staffId, $staffLevel, Request $request = null)
-    {
+    private function newClientList($staffId, $staffLevel, Request $request = null) {
         $clientList = '';
         switch ($staffLevel) {
             case "0": //普通员工
@@ -561,17 +593,16 @@ class ClientController extends Controller
         return $clients;
     }
 
-    private function searchClientList($staffId, $staffLevel, Request $request = null)
-    {
+    private function searchClientList($staffId, $staffLevel, Request $request = null) {
         $searchData = $request->post();
         unset($searchData['_token']);
-        $orderBy=['client_next_date','desc'];
-        if(isset($searchData['order_by'])){
-            $orderBy = explode(',',$searchData['order_by']);
+        $orderBy = ['client_next_date', 'desc'];
+        if (isset($searchData['order_by'])) {
+            $orderBy = explode(',', $searchData['order_by']);
         }
         $clientList = Client::where(function ($query) use ($searchData, $staffId, $staffLevel) {
             if (key_exists('client_name', $searchData) && $searchData['client_name']) {
-                $query->where('client_name', 'like', "%".$searchData['client_name'] . "%");
+                $query->where('client_name', 'like', "%" . $searchData['client_name'] . "%");
             }
             if (key_exists('client_mobile', $searchData) && $searchData['client_mobile']) {
                 $query->where('client_mobile', 'like', $searchData['client_mobile'] . "%");
@@ -589,8 +620,8 @@ class ClientController extends Controller
             }
             if (key_exists('staff_id', $searchData) && $searchData['staff_id']) {
                 $query->where('client_assign_to', '=', $searchData['staff_id']);
-            }else{
-                if($staffLevel=="0"){
+            } else {
+                if ($staffLevel == "0") {
                     $query->where('client_assign_to', '=', $staffId);
                 }
             }
@@ -602,7 +633,7 @@ class ClientController extends Controller
                     case "1": //自己客户
                         if ($staffLevel == "0") {
                             $query->where('client_assign_to', '=', $staffId);
-                        }elseif($staffLevel=="3"){
+                        } elseif ($staffLevel == "3") {
                             $query->where('client_assign_to', '<>', "0");
                         }
                         break;
@@ -617,7 +648,7 @@ class ClientController extends Controller
 
 
         })->where('client_status', '=', '1')
-            ->orderBy($orderBy[0],$orderBy[1])
+            ->orderBy($orderBy[0], $orderBy[1])
             ->paginate($this->_pageSize);
 
 
@@ -627,61 +658,6 @@ class ClientController extends Controller
 
 
         return $clients;
-    }
-
-    public function batchToPool(Request $request){
-
-        $clients = $request->post('clientIds');
-        foreach($clients as $client){
-            $this->moveToPool($client);
-        }
-        $this->returnData['status'] = true;
-        $this->returnData['msg'] = "成功放入公海";
-        $this->returnData['code'] = 1;
-        return $this->returnData;
-    }
-
-    private function moveToPool($client_id){
-        $client = Client::find($client_id); //get client data
-        //rule for assign client into pool
-        //1. client has been created at least 3 days ago,
-        //2. the client has never made an purchase from us
-        if (date("Y-m-d", strtotime("{$client->created_at}+3 day")) < date("Y-m-d") && $client->client_level <= 0) {
-            $client->client_assign_to = '0'; // use this to indicate the client in the pool
-
-            if ($client->save()) {
-                $this->returnData['status'] = true;
-                $this->returnData['msg'] = "成功放入公海";
-                $this->returnData['code'] = 1;
-                return true;
-            } else {
-                $this->returnData['msg'] = "放入公海失败";
-                return false;
-            }
-        } else {
-            $this->returnData['msg'] = "不可以放入公海";
-            $this->returnData['code'] = 5;
-            return false;
-        }
-
-    }
-    public function batchToAssign(Request $request){
-        $clients = $request->post('clientIds');
-        $loggedStaffId = Auth::guard('admin')->user()->staff_id;
-        $staffLevel = Staff::find($loggedStaffId)->staff_level;
-
-        $staffId = $staffLevel?$request->post('staffId'):$loggedStaffId;
-
-        foreach($clients as $client){
-            $this->assignClient($client,$staffId);
-        }
-        $this->returnData['status'] = true;
-        $this->returnData['msg'] = "指派成功";
-        $this->returnData['code'] = 1;
-        return $this->returnData;
-    }
-    private function assignClient($client_id,$staff_id){
-        Client::find($client_id)->update(['client_assign_to'=>$staff_id]);
     }
 
 

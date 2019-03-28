@@ -3,78 +3,44 @@
  * Created by PhpStorm.
  * User: Administrator
  * Date: 2019-03-28
- * Time: 9:45
+ * Time: 16:13
+ * Used: extend the file Processor and complete the readFile function
  */
 
 namespace App\Lib\clientImport;
 
 
-use App\Http\Controllers\Admin\ClientController;
-
-abstract class csvProcessor
-{
-    protected $infoSourceId;
-    protected $firmId;
-    protected $fileResource;
-    protected $headerLine;
-    protected $colTitle = array();
-    protected $csvArray = array();
-    protected $_csvStructure;
-    protected $_csvArray;
-
-    protected function __construct($FullFilePathName, $infoSourceId, $firmId)
-    {
-        $this->infoSourceId = $infoSourceId;
-        $this->firmId = $firmId;
-        $this->fileResource = fopen($FullFilePathName, "r");
+class csvProcessor extends FileProcessor {
+    public function __construct($FullFilePathName, $infoSourceId, $firmId) {
+        parent::__construct($FullFilePathName, $infoSourceId, $firmId);
+        $this->headerLine = 3; //indicate line number of the header/title
+        $this->colTitle = [ //file header corresponding to the database table filed
+            '姓名' => 'client_name',
+            '手机号' => 'client_mobile',
+            '商标名称' => 'client_enquiries',
+            '日期' => 'enquiry_date'];
     }
 
-    /**+
-     * @param $filePathName : csv file path with full file name
-     * @param $sourceId :  refers to database info_source_id
-     * @param $firmId : which of firm is assigned to those csv client
+    /**
      * @return bool
+     * Used For:read the csv file and put into array
+     * NOTE: can not read other encoded csv but UTF-8
+     * fgetcsv() not working perfect on Chinese characters,
+     * so use fgets() instead
      */
-    public static function process($filePathName, $sourceId, $firmId):bool
-    {
-        switch ($sourceId) {
-            //baidu
-            case 4:
-            case 22:
-                $processor = new csvProcessorBaidu($filePathName, $sourceId, $firmId);
-                return $processor->processing();
-                break;
-            default:
-
-                return false;
-                break;
-        }
-    }
-
-    protected function processing(): bool
-    {
-        // TODO: Implement process() method.
-
-        if (!$this->readCsv()) {
-            return false;
-        }
-        return $this->writeToDatabase();
-
-    }
-
-    protected function readCsv(): bool
-    {
-        // TODO: Implement readCsv() method.
-        $lineCount = 0;
-        while ($line = fgets($this->fileResource)) {
-            $lineArray = $this->str2Arr($line);
-            if ($lineCount == $this->headerLine) { //the header
-                foreach ($lineArray as $col => $value) {
-                    if (key_exists($value, $this->colTitle)) {
-                        $this->_csvStructure[$col] = $this->colTitle[$value];
+    protected function readFile(): bool {
+        $lineCount = 0; //init the line count: start from line 1
+        $fileResource = fopen($this->fullFilePathName, "r"); //get file resource
+        while ($line = fgets($fileResource)) { //walk through the file line by line
+            $lineArray = $this->str2Arr($line); //convert the line content into array
+            if ($lineCount == $this->headerLine) { //reading the header line
+                foreach ($lineArray as $col => $value) { //go through the file header array
+                    if (key_exists($value, $this->colTitle)) { //if the header matches the designed database filed, then
+                        $this->_csvStructure[$col] = $this->colTitle[$value]; // save it into the csvStructure
                     }
                 }
-                try {
+
+                try { //combine the enquiries and the dateTime of this enquires into one piece of info
                     foreach ($this->_csvStructure as $key => $value) {
                         if ($value == "client_enquiries") {
                             $enquiryKey = $key;
@@ -83,62 +49,34 @@ abstract class csvProcessor
                             $enquiryDateKey = $key;
                         }
                         if ($value == "client_mobile") {
-                            $mobileKey = $key;
+                            $mobileKey = $key; //used to filter/sanitize the value
                         }
                     }
                 } catch (\Exception $e) {
                     //can not find relative filed/information from he file
-
                     return false;
                 }
-
-                unset($this->_csvStructure[$enquiryKey]);
-                unset($this->_csvStructure[$enquiryDateKey]);
+                unset($this->_csvStructure[$enquiryKey]); //get rid of the no longer / unnecessary keys
+                unset($this->_csvStructure[$enquiryDateKey]); ////get rid of the no longer / unnecessary keys
             }
 
-            if ($lineCount > $this->headerLine) {
-                $lineArray[$mobileKey] = filter_var($lineArray[$mobileKey], FILTER_SANITIZE_NUMBER_INT);
-                $this->_csvArray[$lineCount]['client_enquiries'] = $lineArray[$enquiryKey] . " (" . $lineArray[$enquiryDateKey] . ")";
-                foreach ($this->_csvStructure as $key => $value) {
+            if ($lineCount > $this->headerLine) { //here is the main content starts
+                $lineArray[$mobileKey] = filter_var($lineArray[$mobileKey], FILTER_SANITIZE_NUMBER_INT); //filter/sanitize the value: remove none numeric value
+                $this->_csvArray[$lineCount]['client_enquiries'] = $lineArray[$enquiryKey] . " (" . $lineArray[$enquiryDateKey] . ")"; //combine the enquiry and date into one
+                foreach ($this->_csvStructure as $key => $value) { //walk through the structure array to assign each csv file value into corresponding database filed
                     $this->_csvArray[$lineCount][$value] = $lineArray[$key];
                 }
-                $this->_csvArray[$lineCount]['client_assign_to'] = -1;
-                $this->_csvArray[$lineCount]['client_belongs_company'] = $this->firmId;
-                $this->_csvArray[$lineCount]['client_source'] = $this->infoSourceId;
+                //add some extra files
+                $this->_csvArray[$lineCount]['client_assign_to'] = -1; //this indicate those are new / unassigned client
+                $this->_csvArray[$lineCount]['client_belongs_company'] = $this->firmId; // indicate the client's belongs to which firm
+                $this->_csvArray[$lineCount]['client_source'] = $this->infoSourceId; //indicate the client come from which source
             }
             $lineCount++;
         }
-        if (!$this->_csvArray) {
+        if (!$this->_csvArray) { // if the csvArray which holds the value of the whole csv file is empty, then it must be something wrong with the file
             return false;
         }
         return true;
     }
 
-    protected  function str2Arr($str) : array
-    {
-        $str = str_replace("\n", "", $str);
-        $str = str_replace("\r", "", $str);
-        return explode(',', $str);
-    }
-
-    protected function writeToDatabase(): bool
-    {
-        if (!$this->_csvArray) {
-            return false;
-        }
-
-
-        $clientObj = new ClientController();
-        $count = 0;
-
-        foreach ($this->_csvArray as $client) {
-            $clientObj->createClient($client);
-            $count++;
-        }
-
-        if ($count != sizeof($this->_csvArray)) {
-            return false;
-        }
-        return true;
-    }
 }

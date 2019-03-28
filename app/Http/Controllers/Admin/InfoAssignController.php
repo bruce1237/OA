@@ -14,14 +14,12 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
-class InfoAssignController extends Controller
-{
+class InfoAssignController extends Controller {
     /**
      * show the info assignment page with all the necessary value
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      */
-    public function index()
-    {
+    public function index() {
 //$this->runTimer("StartMEM".memory_get_usage());
         $today = date("Y-m-d"); //get today date for the info assign statistic usage
         $currentMonth = date("Y-m") . "%"; // get the month for the assign statistic usage
@@ -128,8 +126,7 @@ class InfoAssignController extends Controller
      * @param Request $request
      * @return array
      */
-    public function assignInfo(Request $request)
-    {
+    public function assignInfo(Request $request) {
 
 
         $client_id = (int)$request->post('client_id'); //get client id from the post data
@@ -171,8 +168,7 @@ class InfoAssignController extends Controller
      * @param Request $request
      * @return array
      */
-    public function infoStatic(Request $request)
-    {
+    public function infoStatic(Request $request) {
         //get statistic data from database
         $static_result = DB::table('info_statics')
             ->selectRaw('info_source, count(*) as count')
@@ -191,21 +187,19 @@ class InfoAssignController extends Controller
         return $this->returnData;
     }
 
-    public function uploadClientInfoFile(Request $request)
-    {
+    public function uploadClientInfoFile(Request $request) {
         $uploadFile = $request->file('file');
         $newFileName = uniqid() . "." . $uploadFile->getClientOriginalExtension();
-
         if (!$uploadFile->storeAs('Temp/', $newFileName, 'CRM')) {
             $this->returnData['msg'] = "文件上传错误, 请重试";
         }
+        $fileRes = public_path('storage\crm\temp\\') . $newFileName;
 
-        $fileRes =public_path('storage\crm\temp\\') . $newFileName;
-        if(csvProcessor::process($fileRes,$request->post('sourceId'),$request->post('firmId'))){
+        if (csvProcessor::process($fileRes, $request->post('sourceId'), $request->post('firmId'))) {
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "导入成功";
             $this->returnData['code'] = 1;
-        }else{
+        } else {
             $this->returnData['msg'] = "处理上传文件失败";
         }
 

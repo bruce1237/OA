@@ -1,0 +1,46 @@
+@startuml
+abstract class OrderProcessor{
+    # orderRequiredInfo : array
+   {abstract} # generateOrder(OrderData : array) : array
+   {abstract} # getOrder(OrderId : int) : array
+   {abstract} # updateOrder(OrderId : int) : bool
+   {abstract} # validateOrder() : bool
+   + {static} getInstance(OrderType : int) : OrderProcessorObj
+}
+
+LogoOrderProcessor -^ OrderProcessor : < extends
+class LogoOrderProcessor{
+}
+PatternOrderProcessor --^ OrderProcessor : < extends
+class PatternOrderProcessor{
+
+}
+
+@enduml
+
+@startuml
+
+abstract class AbstractList
+abstract AbstractCollection
+interface List
+interface Collection
+
+List <|-- AbstractList
+Collection <|-- AbstractCollection
+
+Collection <|- List
+AbstractCollection <|- AbstractList
+AbstractList <|-- ArrayList
+
+class ArrayList {
+Object[] elementData
+size()
+}
+
+enum TimeUnit {
+DAYS
+HOURS
+MINUTES
+}
+
+@enduml
