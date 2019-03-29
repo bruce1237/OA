@@ -32,7 +32,7 @@ class xlsxProcessor extends FileProcessor {
     protected function readFile(): bool {
         $reader = new Xlsx(); //instant the reader
         $spreadsheet = $reader->load($this->fullFilePathName); //load the xlsx file into reader
-        $worksheet = $spreadsheet->getActiveSheet(); //get the activeSheed
+        $worksheet = $spreadsheet->getActiveSheet(); //get the activeSheet
         $highestRow = $worksheet->getHighestRow(); // e.g. 10 // get the last row number
 
         for ($col = 'A'; $col != 'AA'; $col++) { //go through the header and end AA column
