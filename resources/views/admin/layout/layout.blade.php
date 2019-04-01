@@ -129,55 +129,62 @@ style="left: 0px;"
                                 </thead>
                                 <tbody>
                                 @php $lastKey =0; @endphp
-                                @foreach($monthlySales['sales'] as $key=>$sale)
-                                    @if($sale['new'])
-                                        <tr class="bg-info">
-                                            <td >合计:</td>
-                                            @foreach($monthlySales['daySales'][$monthlySales['sales'][$lastKey]['department_id']] as $key=>$day)
+                                @if($monthlySales['sales'])
+                                    @foreach($monthlySales['sales'] as $key=>$sale)
+                                        @if($sale['new'])
+                                            <tr class="bg-info">
+                                                <td>合计:</td>
+                                                @foreach($monthlySales['daySales'][$monthlySales['sales'][$lastKey]['department_id']] as $key=>$day)
+                                                    <td>{{$day}}
+                                                        @if($key =='achievedPect')
+                                                            %
+                                                        @endif</td>
+                                                @endforeach
+                                            </tr>
+                                        @endif
+                                        <tr>
+                                            <td>{{$sale['staff_name']}}</td>
+                                            <td>{{$sale['target']}}</td>
+                                            @foreach($sale['sale'] as $dailySales)
+                                                @if(is_string($dailySales))
+                                                    <td bgcolor="{{$dailySales}}">
+                                                @else
+                                                    <td bgcolor="green">{{$dailySales}}
+                                                        @endif
+                                                    </td>
+                                                    @endforeach
+                                                    <td>{{$sale['achieved']}}</td>
+                                                    <td>{{$sale['achievedPect']}}%</td>
+                                        </tr>
+
+                                        @php $lastKey = $key; @endphp
+                                    @endforeach
+                                @endif
+                                <tr class="bg-info">
+                                    <td>合计:</td>
+                                    @if($monthlySales['daySales'])
+                                        @foreach($monthlySales['daySales'][$monthlySales['sales'][$lastKey]['department_id']] as $key=>$day)
+                                            @if($day)
                                                 <td>{{$day}}
                                                     @if($key =='achievedPect')
                                                         %
-                                                    @endif</td>
-                                            @endforeach
-                                        </tr>
-                                    @endif
-                                    <tr>
-                                        <td>{{$sale['staff_name']}}</td>
-                                        <td>{{$sale['target']}}</td>
-                                        @foreach($sale['sale'] as $dailySales)
-                                            @if(is_string($dailySales))
-                                                <td bgcolor="{{$dailySales}}">
-                                            @else
-                                                <td bgcolor="green">{{$dailySales}}
                                                     @endif
                                                 </td>
-                                                @endforeach
-                                                <td>{{$sale['achieved']}}</td>
-                                                <td>{{$sale['achievedPect']}}%</td>
-                                    </tr>
-
-                                    @php $lastKey = $key; @endphp
-                                @endforeach
-                                <tr class="bg-info">
-                                    <td >合计:</td>
-                                    @foreach($monthlySales['daySales'][$monthlySales['sales'][$lastKey]['department_id']] as $key=>$day)
-                                        <td>{{$day}}
-                                            @if($key =='achievedPect')
-                                                %
                                             @endif
-                                        </td>
-                                    @endforeach
+                                        @endforeach
+                                    @endif
                                 </tr>
                                 <tr class="bg-primary">
                                     <td>共计:</td>
-                                    @foreach($monthlySales['daySales']['total'] as $key=>$sale)
-                                        <td>{{$sale}}
-                                            @if($key =='achievedPect')
-                                                %
-                                            @endif
-                                        </td>
-                                    @endforeach
-
+                                    @if($monthlySales['daySales'])
+                                        @foreach($monthlySales['daySales']['total'] as $key=>$sale)
+                                            <td>{{$sale}}
+                                                @if($key =='achievedPect')
+                                                    %
+                                                @endif
+                                            </td>
+                                        @endforeach
+                                    @endif
                                 </tr>
                                 </tbody>
                             </table>
@@ -269,8 +276,6 @@ style="left: 0px;"
         var dateTime = date.toLocaleString();
         $("#currentDateTime").html(dateTime);
     }
-
-
 
 
     function delTodo(todoId) {

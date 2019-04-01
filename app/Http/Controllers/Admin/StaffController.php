@@ -266,6 +266,7 @@ class StaffController extends Controller
         }
         //assign the necessary data into a single array: $data
         $data = ['sales' => $sales, 'trBg' => $this->_trBg, 'workDays' => $workDays, 'daySales' => $day_sales];
+//        dd($data);
         return $data;
     }
 }

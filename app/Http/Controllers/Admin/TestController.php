@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Model\Client;
+use App\Model\phone;
 use App\Model\Template;
+use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +21,13 @@ use PhpOffice\PhpWord\Writer\PDF\TCPDF;
 class TestController extends Controller
 {
     public function tt(){
+
+//        $clients = Client::positions()->where('position_id',1)->get();
+//        $user = \App\Model\user::find(1)->phone;
+        $user = phone::find(1)->user;
+
+
+        dd($user);
 
         return view('admin/test/index',['count'=>10]);
 

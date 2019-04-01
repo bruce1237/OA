@@ -43,6 +43,10 @@ class ClientController extends Controller {
 
         $clients = call_user_func([$this, $func], $staffId, $staffLevel, $request);
 
+        $services = new TemplateController();
+        $services = $services->getServices();
+
+//dd($services);
 
         //use one unified combined variable to store all the data for the view use, so the view() statement will be shorter and easier to read
         $data = [
@@ -56,6 +60,7 @@ class ClientController extends Controller {
             'clientSource' => $clientSource,
             'visitStatus' => $visitStatus,
             'search' => $request->post(),
+            'services'=>$services,
         ];
         return view('admin/client/index', ['data' => $data]);
     }

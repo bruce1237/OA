@@ -24,7 +24,7 @@
                         <tr class="{{$data['staffList']->trBg[$staff->getOriginal('department_id')]}}">
                             <th scope="row">{{$staff->staff_name}}</th>
                             <td>
-                                <input type="text" name="{{$staff->staff_id}}" value=" {{($staff->sales)[$month0]['target']}}"/></td>
+                                <input type="text" name="{{$staff->staff_id}}" value="@if(key_exists($month0,$staff->sales)){{$staff->sales[$month0]['target']}}@endif"/></td>
                             <td onclick='getSalesDetails({{$staff->staff_id}},"{{$month1}}")'>
                                 {{($staff->sales)[$month1]['target']}}/{{($staff->sales)[$month1]['achieved']}}
                                 <span

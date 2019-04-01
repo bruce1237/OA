@@ -1,5 +1,4 @@
 @startuml
-
 (orderProcessor)->(orderRecorder)
 (orderProcessor)<-->(logoOrderProcessor)
 (orderProcessor)<-->(patternOrderProcessor)

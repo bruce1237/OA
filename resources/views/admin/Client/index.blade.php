@@ -44,10 +44,10 @@
                         <button class="layui-btn layui-btn-danger" onclick="batchToPool()"><i class="layui-icon"></i>批量放入公海
                         </button>
                         @if($data['staffLevel'])
-                        <button class="layui-btn layui-btn-success" onclick="showBatchToAssignModal()"><i
-                                class="layui-icon"></i>批量指派
-                        </button>
-                            @else
+                            <button class="layui-btn layui-btn-success" onclick="showBatchToAssignModal()"><i
+                                    class="layui-icon"></i>批量指派
+                            </button>
+                        @else
                             <button class="layui-btn layui-btn-success" onclick="batchToAssign()"><i
                                     class="layui-icon"></i>批量领取
                             </button>
@@ -697,7 +697,8 @@
                                 <span class="input-group-text" id="basic-addon1">选择部门</span>
                             </div>
                             <select class="form-control" name="department" id="search_department" aria-label="Small"
-                                    aria-describedby="inputGroup-sizing-sm" onchange="getStaffByDepart('search_department','search_staff')">
+                                    aria-describedby="inputGroup-sizing-sm"
+                                    onchange="getStaffByDepart('search_department','search_staff')">
                                 <option value=0 selected>选择部门</option>
                                 @foreach($data['departments'] as $department)
                                     <option
@@ -827,7 +828,8 @@
                             <span class="input-group-text" id="basic-addon1">选择部门</span>
                         </div>
                         <select class="form-control" name="department" id="assign_department" aria-label="Small"
-                                aria-describedby="inputGroup-sizing-sm" onchange="getStaffByDepart('assign_department','assign_staff')">
+                                aria-describedby="inputGroup-sizing-sm"
+                                onchange="getStaffByDepart('assign_department','assign_staff')">
                             <option value=0 selected>选择部门</option>
                             @foreach($data['departments'] as $department)
                                 <option
@@ -854,16 +856,141 @@
         </div>
     </div>
 
-    <script type="text/javascript" language="javascript" class="init">
-        $(document).ready(function () {
-            $("#clientListTable").DataTable();
-        });
-    </script>
+    <div class="modal fade" id="orderModal">
+        <div class="modal-dialog modal-lg" role="document" >
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="OrderModelTitle"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="orderModalForm">
+
+                    选择公司:
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                         id="OrderModelCompanyId"></div>
+                    <br/><br/>
+
+                    <div class="input-group input-group-sm mb-3">
+                        联系人: &nbsp;<div class="btn-group  btn-group-toggle" data-toggle="buttons"
+                                        id="OrderModelContact"></div>&nbsp;
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">姓名</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_contact_name" name="order_contact_name"
+                               placeholder="联系人姓名" aria-label="Username" aria-describedby="basic-addon1">
+
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">电话</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_contact_number" name="order_contact_number"
+                               placeholder="联系人电话" aria-label="Username" aria-describedby="basic-addon1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">地址</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_contact_address" name="order_contact_address"
+                               placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">邮编</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_contact_post_code"
+                               name="order_contact_post_code" placeholder="联系人地址" aria-label="Username"
+                               aria-describedby="basic-addon1">
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3">
+                        邮寄地址: &nbsp;<div class="btn-group  btn-group-toggle" data-toggle="buttons"
+                                         id="OrderModelContact"></div>&nbsp;
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">姓名</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_post_addressee" name="order_post_addressee"
+                               placeholder="联系人姓名" aria-label="Username" aria-describedby="basic-addon1">
+
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">电话</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_post_contact" name="order_post_contact"
+                               placeholder="联系人电话" aria-label="Username" aria-describedby="basic-addon1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">地址</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_post_address" name="order_post_address"
+                               placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">邮编</span>
+                        </div>
+                        <input type="text" class="form-control" id="order_post_code" name="order_post_code"
+                               placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
+                    </div>
+
+                    发票类型:
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" id="OrderModelCompany">
+                        <label class="btn btn-outline-success active">
+                            <input type="radio" name="order_tax_type" value="0" autocomplete="off" checked> 无票
+                        </label>
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="order_tax_type" value="1" autocomplete="off"> 普票
+                        </label>
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="order_tax_type" value="2" autocomplete="off"> 专票
+                        </label>
+
+                    </div>
+                    对方公司是否开票:
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" id="OrderModelCompany">
+                        <label class="btn btn-outline-success active">
+                            <input type="radio" name="order_taxable" value="0" autocomplete="off" checked> 无票
+                        </label>
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="order_taxable" value="1" autocomplete="off"> 有票
+                        </label>
+                    </div>
+                    <hr/>
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <label class="input-group-text" for="inputGroupSelect01">添加服务</label>
+                        </div>
+                        <select class="custom-select" id="service">
+                            @foreach($data['services'] as $services)
+
+                                @foreach($services as $service=>$serviceId)
+                                    @if(is_int($serviceId) || $serviceId=='disabled' )
+                                        <option value="{{$serviceId}}"
+                                                {{$serviceId}} cost="@if(key_exists($service."cost",$services)){{$services[$service."cost"]}}@endif">{{$service}}</option>
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        </select>
+                        <div class="input-group-prepend">
+                            <button class="btn btn-outline-success" type="button" onclick="addService()">添加</button>
+                        </div>
+                    </div>
+
+                    <div id="orderModelServiceSection"></div>
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <input type="text" id="OrderModalServiceCount" value="0"/>
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-primary" onclick="generateOrder()">确认</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
 
     <script>
 
 
         function getClientDetail(client_id) {
+
+            layer.msg('获取中....!', {icon: 6});
+
             $.ajax({
                 url: "{{url('admin/getClientDetail')}}",
                 type: 'post',
@@ -874,10 +1001,15 @@
                         layer.msg(data.msg, {icon: data.code});
                         return false;
                     }
+
                     resetClientInfo();
                     $("#client_id").val(data.data.client_id);
                     var clientName = data.data.client_name == null ? "" : data.data.client_name;
-                    $("#clientDetailHeader").html('(' + data.data.client_id + ') ' + clientName + ' ' + data.data.client_mobile + ' <button class="btn btn-warning btn-sm " onclick="modifyClientInfo(' + data.data.client_id + ')">修改客户信息</button></span> <button class="btn btn-info btn-sm " onclick="showAddCompanyModal(' + data.data.client_id + ')">添加公司</button> <button class="btn btn-danger btn-sm " onclick="toPool(' + data.data.client_id + ')">放入公海</button>');
+                    $("#clientDetailHeader").html('(' + data.data.client_id + ') ' + clientName + ' ' + data.data.client_mobile +
+                        ' <button class="btn btn-warning btn-sm " onclick="modifyClientInfo(' + data.data.client_id + ')">修改客户信息</button></span> ' +
+                        '<button class="btn btn-info btn-sm " onclick="showAddCompanyModal(' + data.data.client_id + ')">添加公司</button>' +
+                        ' <button class="btn btn-danger btn-sm " onclick="toPool(' + data.data.client_id + ')">放入公海</button> ' +
+                        '<button class="btn btn-dark btn-sm " onclick="showOrderModel(' + data.data.client_id + ')">添加订单</button>');
                     if (!data.data.client_assign_to || (data.data.client_assign_to == "{{\Illuminate\Support\Facades\Auth::guard('admin')->user()->name}}") && data.data.client_new_enquiries != '0') {
                         $("#clientDetailHeader").append('<span id="acknowledgeButton"><button class="btn btn-success btn-sm float-right" onclick="acknowledgeClient(' + data.data.client_id + ')">认领</button></span>&nbsp;');
                     }
@@ -891,7 +1023,7 @@
                     assignClientInfo(data);
                     $("#reassignStaff").show();
                     $("#uploadClientQlf").show();
-
+                    layer.close(layer.msg());
                 }
             });
         }
@@ -1236,8 +1368,8 @@
 
         }
 
-        function getStaffByDepart(departControl,staffControl) {
-            var depart_id = $("#"+departControl).val();
+        function getStaffByDepart(departControl, staffControl) {
+            var depart_id = $("#" + departControl).val();
             $.ajax({
                 url: "{{url('admin/getStaffByDepart')}}",
                 type: 'post',
@@ -1248,9 +1380,9 @@
                         layer.msg(data.msg, {icon: data.code});
                         return false;
                     }
-                    $("#"+staffControl).html('');
+                    $("#" + staffControl).html('');
                     $.each(data.data, function (item, staff) {
-                        $("#"+staffControl).append('<option value="' + staff.staff_id + '">' + staff.staff_name + '</option>');
+                        $("#" + staffControl).append('<option value="' + staff.staff_id + '">' + staff.staff_name + '</option>');
                     });
                 }
             });
@@ -1288,31 +1420,111 @@
             $("#batchAssignModal").modal('show');
 
         }
+
         function batchToAssign() {
 
             var data = tableCheck.getData();
-                //捉到所有被选中的，发异步进行删除
-            var staff_id=$("#assign_staff").val()?$("#assign_staff").val():{{$data['staffId']}};
-                $.ajax({
-                    url: "{{url('admin/batchToAssign')}}",
-                    type: 'post',
-                    data: {clientIds: data,staffId:staff_id},
-                    dataType: 'json',
-                    success: function (data) {
-                        layer.msg(data.msg, {icon: 1});
-                        if (data.status) {
-                            location.replace(location.href);
-                        }
+            //捉到所有被选中的，发异步进行删除
+            var staff_id = $("#assign_staff").val() ? $("#assign_staff").val() :{{$data['staffId']}};
+            $.ajax({
+                url: "{{url('admin/batchToAssign')}}",
+                type: 'post',
+                data: {clientIds: data, staffId: staff_id},
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {icon: 1});
+                    if (data.status) {
+                        location.replace(location.href);
                     }
+                }
 
-                });
-
+            });
 
 
         }
 
+        function showOrderModel(client_id) {
+            $.ajax({
+                url: "{{url('admin/getClientDetail')}}",
+                type: 'post',
+                data: {'client_id': client_id},
+                dataType: 'Json',
+                success: function (data) {
+                    if (!data) {
+                        lay.msg(data.msg, {icon: data.code});
+                        return false;
+                    }
+                    $("#OrderModelTitle").html('(' + data.data.client_id + ') ' + data.data.client_name + ' 添加订单');
+                    $("#OrderModelCompany").html('');
+                    $.each(data.company, function (key, company) {
+                        $("#OrderModelCompany").append('  <label class="btn btn-outline-success btn-sm">\n' +
+                            '                                <input type="radio" name="orderClientCompany" id="orderClientCompany" autocomplete="off" value="' + company.company_id + '">' + company.company_name +
+                            '                            </label>');
+                    });
+                    $("#OrderModelContact").html(' <label class="btn btn-outline-success btn-sm" onclick="OrderfilleClientDetail(\'' + data.data.client_name + '\',\'' + data.data.client_mobile + '\',\'' + data.data.client_address + '\',\'' + data.data.client_post_code + '\')">\n' +
+                        '                            <input type="checkbox" name="order_contact_id" value ="' + data.data.client_id + '" > ' + data.data.client_name +
+                        '                        </label> ');
 
 
+                }
+            });
+
+
+            $("#orderModal").modal('show');
+        }
+
+        function OrderfilleClientDetail(clientName, clientMobile, clientAddress, clientPostCode) {
+            $("#order_contact_name").val(clientName != "null" ? clientName : '');
+            $("#order_contact_number").val(clientMobile);
+            $("#order_contact_address").val(clientAddress != "null" ? clientAddress : '');
+            $("#order_contact_post_code").val(clientPostCode != "null" ? clientPostCode : '');
+            $("#order_post_addressee").val(clientName != "null" ? clientName : '');
+            $("#order_post_contact").val(clientMobile);
+            $("#order_post_address").val(clientAddress != "null" ? clientAddress : '');
+            $("#order_post_code").val(clientPostCode != "null" ? clientPostCode : '');
+
+        }
+
+        function addService() {
+
+            var count = Number($("#OrderModalServiceCount").val()) + 1;
+            var service = $("#service").find("option:selected").text();
+            var serviceId = $("#service").val();
+            var cost = $("#service").find("option:selected").attr('cost');
+
+
+            var serviceDiv = '<div class="input-group input-group-sm mb-3" id="service_details_' + count + '">\n' +
+                '                            <div class="input-group-prepend">\n' +
+                '                                <span class="input-group-text"  id="order_service_category_' + count + '">' + service + '</span>\n' +
+                '<input type="hidden" id="order_service_category_id_'+count+'" value="'+serviceId+'"/>\n'+
+                '                            </div>\n' +
+                '                            <input type="text" class="form-control" id="order_service_name_' + count + '" placeholder="产品名称" aria-label="Small" aria-describedby="inputGroup-sizing-sm">\n' +
+                '\n' +
+                '                            <input type="text" class="form-control" id="order_service_price_' + count + '" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm">\n' +
+                '                            <div class="input-group-prepend">\n' +
+                '                                <span class="input-group-text" id="order_service_cost_' + count + '">' + cost + '</span>' +
+                '                            </div>' +
+                '<iframe name="iframe'+count+'" src="/storage/CRM/Order/Temp/'+serviceId+'.php"></iframe>\n' +
+                '<button class="btn btn-outline-secondary btn-sm" type="button" onclick="removeService(' + count + ')">移除</button>\n' +
+                '                        </div>';
+
+            $("#orderModelServiceSection").append(serviceDiv);
+            $("#OrderModalServiceCount").val(count);
+
+        }
+
+        function removeService(divId) {
+            $("#service_details_" + divId).remove();
+        }
+
+        function generateOrder(){
+            var data = new FormData();
+            data.append('')
+
+
+            var iframeObj=$(window.frames["iframe1"].document);
+            alert(iframeObj.find("#name123").serialize());
+        }
     </script>
 
 
