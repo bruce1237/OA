@@ -8,6 +8,7 @@ use App\Model\Company;
 use App\Model\Department;
 use App\Model\Firm;
 use App\Model\InfoSource;
+use App\Model\PaymentMethod;
 use App\Model\Staff;
 use App\Model\Visit;
 use App\Model\VisitStatus;
@@ -45,6 +46,9 @@ class ClientController extends Controller {
 
         $services = new TemplateController();
         $services = $services->getServices();
+
+
+
 
 //dd($services);
 
@@ -514,6 +518,18 @@ class ClientController extends Controller {
         return $this->returnData;
     }
 
+    public function getPaymentMethodByFirm(Request $request){
+        try{
+            $payments = PaymentMethod::where('firm_id','=',$request->post('firm_id'))->get();
+            $this->returnData['status'] = true;
+            $this->returnData['data'] = $payments;
+        }catch(\Exception $e){
+            $this->returnData['msg'] = $e->getMessage();
+        }
+
+        return $this->returnData;
+    }
+
     private function assignClient($client_id, $staff_id) {
         Client::find($client_id)->update(['client_assign_to' => $staff_id]);
     }
@@ -664,6 +680,7 @@ class ClientController extends Controller {
 
         return $clients;
     }
+
 
 
 }

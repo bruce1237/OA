@@ -171,6 +171,7 @@ class InfoDepartController extends Controller
                 break;
             case "update":
 
+
                 return $model::find($id)->update($data);
                 break;
             case "delete":

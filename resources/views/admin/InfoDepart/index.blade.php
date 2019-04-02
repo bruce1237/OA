@@ -437,14 +437,15 @@
                 <hr>
 
                 @foreach($data['paymentMethod'] as $payment_method)
+
                     <div class="input-group input-group-sm mb-3">
                         <input type="text" class="form-control"
-                               id="payment_method_{{$payment_method['$payment_method_id']}}" placeholder="付款方式"
+                               id="payment_method_{{$payment_method['payment_method_id']}}" placeholder="付款方式"
                                aria-label="Recipient's username" aria-describedby="basic-addon2"
                                value= {{$payment_method['payment_method_name']}}>
                         <div class="input-group-append">
                             <select class="custom-select custom-select-sm"
-                                    id="firm_id_{{$payment_method['$payment_method_id']}}">
+                                    id="firm_id_{{$payment_method['payment_method_id']}}">
 
                                 @foreach($data['firms'] as $firm)
                                     @if($firm['firm_id']==$payment_method['firm_id'])
@@ -647,8 +648,7 @@
 
                     data = {
                         payment_method_name: $("#" + tableName + '_' + inputId).val(),
-                        firm_id: $("#firm_" + inputId + "_0").val(),
-
+                        firm_id: $("#firm_id_" + inputId).val(),
                         key_1: $("#key_" + inputId + "_1").val(),
                         key_2: $("#key_" + inputId + "_2").val(),
                         key_3: $("#key_" + inputId + "_3").val(),
@@ -659,9 +659,8 @@
                         value_3: $("#value_" + inputId + "_3").val(),
                         value_4: $("#value_" + inputId + "_4").val(),
                         value_5: $("#value_" + inputId + "_5").val()
-
                     };
-                    // alert(JSON.stringify(data));
+
                     break;
                 case "order_status_name":
                     data = {order_status_name: $("#" + tableName + '_' + inputId).val()};

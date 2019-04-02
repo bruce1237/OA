@@ -141,7 +141,15 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('getStaffByDepart', ['uses' => 'clientController@getStaffByDepart']);
     Route::post('batchToPool', ['uses' => 'clientController@batchToPool']);
     Route::post('batchToAssign', ['uses' => 'clientController@batchToAssign']);
-    Route::post('abc', ['uses' => 'clientController@abc']);
+    Route::post('getPaymentMethodByFirm', ['uses' => 'clientController@getPaymentMethodByFirm']);
+
+
+    /*************************-*******************/
+    /*****************Order 订单部分*************/
+    /*******************************************/
+    Route::post('generateOrder', ['uses' => 'orderController@generateOrder']);
+
+
 
 
     /*************************-*******************/

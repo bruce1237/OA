@@ -857,7 +857,7 @@
     </div>
 
     <div class="modal fade" id="orderModal">
-        <div class="modal-dialog modal-lg" role="document" >
+        <div class="modal-dialog modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="OrderModelTitle"></h5>
@@ -866,11 +866,21 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form id="orderModalForm">
 
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                         id="OrderModelfirms">
+                        @foreach($data['firms'] as $firm)
+                            <label class="btn btn-outline-success"
+                                   onclick="getPaymentMethodByFirm({{$firm->firm_id}})">
+                                <input type="radio" id="firm_id" name="order_firm" value="{{$firm->firm_id}}"
+                                       autocomplete="off"> {{$firm->firm_name}}
+                            </label>
+                        @endforeach
+                    </div>
                     选择公司:
                     <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
-                         id="OrderModelCompanyId"></div>
+                         id="OrderModelCompany"></div>
+
                     <br/><br/>
 
                     <div class="input-group input-group-sm mb-3">
@@ -885,12 +895,14 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">电话</span>
                         </div>
-                        <input type="text" class="form-control" id="order_contact_number" name="order_contact_number"
+                        <input type="text" class="form-control" id="order_contact_number"
+                               name="order_contact_number"
                                placeholder="联系人电话" aria-label="Username" aria-describedby="basic-addon1">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">地址</span>
                         </div>
-                        <input type="text" class="form-control" id="order_contact_address" name="order_contact_address"
+                        <input type="text" class="form-control" id="order_contact_address"
+                               name="order_contact_address"
                                placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">邮编</span>
@@ -906,7 +918,8 @@
                         <div class="input-group-prepend">
                             <span class="input-group-text" id="basic-addon1">姓名</span>
                         </div>
-                        <input type="text" class="form-control" id="order_post_addressee" name="order_post_addressee"
+                        <input type="text" class="form-control" id="order_post_addressee"
+                               name="order_post_addressee"
                                placeholder="联系人姓名" aria-label="Username" aria-describedby="basic-addon1">
 
                         <div class="input-group-prepend">
@@ -927,27 +940,50 @@
                     </div>
 
                     发票类型:
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" id="OrderModelCompany">
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                         id="OrderModelTaxType">
                         <label class="btn btn-outline-success active">
-                            <input type="radio" name="order_tax_type" value="0" autocomplete="off" checked> 无票
+                            <input type="radio" name="order_tax_type" value="无票" autocomplete="off" checked> 无票
                         </label>
                         <label class="btn btn-outline-success">
-                            <input type="radio" name="order_tax_type" value="1" autocomplete="off"> 普票
+                            <input type="radio" name="order_tax_type" value="普票" autocomplete="off"> 普票
                         </label>
                         <label class="btn btn-outline-success">
-                            <input type="radio" name="order_tax_type" value="2" autocomplete="off"> 专票
+                            <input type="radio" name="order_tax_type" value="专票" autocomplete="off"> 专票
                         </label>
 
                     </div>
-                    对方公司是否开票:
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons" id="OrderModelCompany">
+                    对方开票:
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                         id="OrderModelTaxable">
                         <label class="btn btn-outline-success active">
-                            <input type="radio" name="order_taxable" value="0" autocomplete="off" checked> 无票
+                            <input type="radio" name="order_taxable" value="无票" autocomplete="off" checked> 无票
                         </label>
                         <label class="btn btn-outline-success">
-                            <input type="radio" name="order_taxable" value="1" autocomplete="off"> 有票
+                            <input type="radio" name="order_taxable" value="普票" autocomplete="off"> 普票
+                        </label>
+                        <label class="btn btn-outline-success">
+                            <input type="radio" name="order_taxable" value="专票" autocomplete="off"> 专票
                         </label>
                     </div>
+
+                    付款方式:
+                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                         id="OrderModelPayments"></div>
+                    <hr/>
+
+                    <form id="supportFileForm" enctype="multipart/form-data">
+                        <div class="input-group input-group-sm mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">相关文件</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" name="supportFiles" class="custom-file-input" id="supportFiles"
+                                       multiple="multiple">
+                                <label class="custom-file-label" for="inputGroupFile01">选择文件</label>
+                            </div>
+                        </div>
+                    </form>
                     <hr/>
                     <div class="input-group input-group-sm mb-3">
                         <div class="input-group-prepend">
@@ -969,9 +1005,10 @@
                         </div>
                     </div>
 
-                    <div id="orderModelServiceSection"></div>
 
-                    </form>
+                    <div id="orderModelServiceSection"></div>
+                    <textarea class="form-control"  id="orderModelMemo" placeholder="订单备注"></textarea>
+
                 </div>
                 <div class="modal-footer">
                     <input type="text" id="OrderModalServiceCount" value="0"/>
@@ -985,7 +1022,6 @@
 
 
     <script>
-
 
         function getClientDetail(client_id) {
 
@@ -1462,7 +1498,7 @@
                             '                            </label>');
                     });
                     $("#OrderModelContact").html(' <label class="btn btn-outline-success btn-sm" onclick="OrderfilleClientDetail(\'' + data.data.client_name + '\',\'' + data.data.client_mobile + '\',\'' + data.data.client_address + '\',\'' + data.data.client_post_code + '\')">\n' +
-                        '                            <input type="checkbox" name="order_contact_id" value ="' + data.data.client_id + '" > ' + data.data.client_name +
+                        '                            <input type="checkbox" id="company_id" value ="' + data.data.client_id + '" > ' + data.data.client_name +
                         '                        </label> ');
 
 
@@ -1496,7 +1532,7 @@
             var serviceDiv = '<div class="input-group input-group-sm mb-3" id="service_details_' + count + '">\n' +
                 '                            <div class="input-group-prepend">\n' +
                 '                                <span class="input-group-text"  id="order_service_category_' + count + '">' + service + '</span>\n' +
-                '<input type="hidden" id="order_service_category_id_'+count+'" value="'+serviceId+'"/>\n'+
+                '<input type="hidden" id="order_service_category_id_' + count + '" value="' + serviceId + '"/>\n' +
                 '                            </div>\n' +
                 '                            <input type="text" class="form-control" id="order_service_name_' + count + '" placeholder="产品名称" aria-label="Small" aria-describedby="inputGroup-sizing-sm">\n' +
                 '\n' +
@@ -1504,7 +1540,7 @@
                 '                            <div class="input-group-prepend">\n' +
                 '                                <span class="input-group-text" id="order_service_cost_' + count + '">' + cost + '</span>' +
                 '                            </div>' +
-                '<iframe name="iframe'+count+'" src="/storage/CRM/Order/Temp/'+serviceId+'.php"></iframe>\n' +
+                '<iframe name="iframe' + count + '" src="/storage/CRM/Order/Temp/' + serviceId + '.php"></iframe>\n' +
                 '<button class="btn btn-outline-secondary btn-sm" type="button" onclick="removeService(' + count + ')">移除</button>\n' +
                 '                        </div>';
 
@@ -1517,14 +1553,99 @@
             $("#service_details_" + divId).remove();
         }
 
-        function generateOrder(){
-            var data = new FormData();
-            data.append('')
+        function getPaymentMethodByFirm(firmId) {
+
+            $.ajax({
+                url: "{{url('admin/getPaymentMethodByFirm')}}",
+                type: 'post',
+                data: {firm_id: firmId},
+                dataType: 'json',
+                success: function (data) {
+                    if (!data.status) {
+                        layer.msg(data.msg, {icon: data.code});
+                        return false;
+                    }
+                    $("#OrderModelPayments").html('');
+                    $.each(data.data, function (key, item) {
+                        $("#OrderModelPayments").append('<label class="btn btn-outline-success ">\n' +
+                            '                                <input type="radio" name="order_payment" value="' + item.payment_method_id + '" autocomplete="off" checked> ' + item.payment_method_name + '\n' +
+                            '                            </label>');
+                    });
 
 
-            var iframeObj=$(window.frames["iframe1"].document);
-            alert(iframeObj.find("#name123").serialize());
+                }
+            });
         }
+
+        function generateOrder() {
+            var count = Number($("#OrderModalServiceCount").val());
+
+            var services = [];
+            for (var i = 1; i <= count; i++) {
+                var service = {};
+
+                if ($("#order_service_category_id_" + i).val() != undefined) {
+                    var serviceId = $("#order_service_category_id_" + i).val();
+                    var serviceName = $("#order_service_name_" + i).val();
+                    var servicePrice = $("#order_service_price_" + i).val();
+                    var iframeObj = $(window.frames["iframe" + i].document);
+                    var serviceAttributes = iframeObj.find("#iframeFrom" + serviceId).serializeArray();
+                    serviceAttributes = decodeURIComponent(JSON.stringify(serviceAttributes), true);
+                    // service.servcieId = serviceId;
+                    // service.serviceName = serviceName;
+                    // service.servicePrice = servicePrice;
+                    // service.serviceAttributes = serviceAttributes;
+                    services.push({serviceId,serviceName,servicePrice,serviceAttributes});
+
+                }
+            }
+
+
+
+
+            var data = {
+                firm_id: $("#firm_id").val(),
+                company_id: $("#company_id").val(),
+                order_contact_name: $("#order_contact_name").val(),
+                order_contact_number: $("#order_contact_number").val(),
+                order_contact_address: $("#order_contact_address").val(),
+                order_contact_post_code: $("#order_contact_post_code").val(),
+                order_post_addressee: $("#order_post_addressee").val(),
+                order_post_contact: $("#order_post_contact").val(),
+                order_post_address: $("#order_post_address").val(),
+                order_post_code: $("#order_post_code").val(),
+                order_tax_type: $("input[name='order_tax_type']:checked").val(),
+                order_taxable: $("input[name='order_taxable']:checked").val(),
+                order_payment: $("input[name='order_payment']:checked").val(),
+                order_memo:$("#orderModelMemo").val(),
+                services: services,
+            };
+
+
+            var dd = new FormData;
+
+            for (var i = 0; i < $("#supportFiles")[0].files.length; i++) {
+                dd.append('supportFile' + i, document.getElementById('supportFiles').files[0]);
+            }
+
+            dd.append('data', JSON.stringify(data));
+
+            $.ajax({
+                url: "{{url('admin/generateOrder')}}",
+                type: 'post',
+                // data: {"data": data,'files':files},
+                data: dd,
+                processData: false,
+                contentType: false,
+
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                }
+            });
+        }
+
+
     </script>
 
 
