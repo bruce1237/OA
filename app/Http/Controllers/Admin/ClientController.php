@@ -3,11 +3,14 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Model\Cart;
 use App\Model\Client;
 use App\Model\Company;
 use App\Model\Department;
 use App\Model\Firm;
 use App\Model\InfoSource;
+use App\Model\Order;
+use App\Model\OrderStatus;
 use App\Model\PaymentMethod;
 use App\Model\Staff;
 use App\Model\Visit;
@@ -48,9 +51,8 @@ class ClientController extends Controller {
         $services = $services->getServices();
 
 
+        $orderStatus = OrderStatus::all();
 
-
-//dd($services);
 
         //use one unified combined variable to store all the data for the view use, so the view() statement will be shorter and easier to read
         $data = [
@@ -64,7 +66,8 @@ class ClientController extends Controller {
             'clientSource' => $clientSource,
             'visitStatus' => $visitStatus,
             'search' => $request->post(),
-            'services'=>$services,
+            'services' => $services,
+            'orderStatus' => $orderStatus,
         ];
         return view('admin/client/index', ['data' => $data]);
     }
@@ -176,17 +179,42 @@ class ClientController extends Controller {
 
         $companies = Company::where('company_client_id', '=', $client->client_id)->get(); //get the company info
 
+
         $visit = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->get(); //get all the visit records
 
         $clientQlfs = Storage::disk('CRM')->files("client/QLF/{$client->client_id}/");
 
         $client['qlf'] = $clientQlfs;
 
+        //get client order details
+        $orders = Order::where('order_client_id', '=', $request->post('client_id'))->get();
+        foreach ($orders as $order) {
+
+            if (!Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level) {
+
+
+                $patten = "";
+                for ($i = 0; $i <= strlen($order->order_company_tax_ref) - 6; $i++) {
+                    $patten .= "*";
+                }
+                $order->order_company_tax_ref = substr_replace($order->order_company_tax_ref, $patten, 3, strlen($patten));// tzzzt
+            }
+
+            $order->files = str_replace("Order/REF/{$order->order_id}/", '', Storage::disk('CRM')->allFiles("Order/REF/{$order->order_id}/"));
+            $order->order_created_at = date("Y-m-d", strtotime($order->created_at));
+            $order->order_status = OrderStatus::find($order->order_status_code)->order_status_name;
+            $order->carts = Cart::where('order_id', '=', $order->order_id)->get();
+        }
+
+
         if ($client) {
             $this->returnData['status'] = true;
             $this->returnData['data'] = $client;
             $this->returnData['company'] = $companies;
             $this->returnData['visit'] = $visit;
+            $this->returnData['orders'] = $orders;
+
+
         } else {
             $this->returnData['msg'] = '获取客户信息失败';
         }
@@ -288,6 +316,14 @@ class ClientController extends Controller {
     public function getCompanyInfo(Request $request) {
         $company = Company::find($request->post('company_id'));
 
+        $patten = "";
+        for ($i = 0; $i <= strlen($company->company_tax_id) - 6; $i++) {
+            $patten .= "*";
+        }
+
+        $company->company_tax_id = substr_replace($company->company_tax_id, $patten, 3, strlen($patten));// tzzzt
+//            $company['company_tax_id'] = substr_replace($company['company_tax_id'], $patten, 3, strlen($patten));// tzzzt
+
         $company['qlf'] = Storage::disk('CRM')->files("company/QLF/{$company->company_id}/");
 
 
@@ -310,8 +346,12 @@ class ClientController extends Controller {
         foreach ($request->file() as $file) {
             $file->storeAs("/company/QLF/{$companyId}/", $file->getClientOriginalName(), 'CRM');
         }
+        $data = $request->post();
+        if (strpos($data['company_tax_id'], '*')) {
+            unset($data['company_tax_id']);
+        }
 
-        if (Company::find($companyId)->update($request->post())) {
+        if (Company::find($companyId)->update($data)) {
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "修改公司信息成功";
             $this->returnData['code'] = 1;
@@ -518,20 +558,20 @@ class ClientController extends Controller {
         return $this->returnData;
     }
 
-    public function getPaymentMethodByFirm(Request $request){
-        try{
-            $payments = PaymentMethod::where('firm_id','=',$request->post('firm_id'))->get();
+    private function assignClient($client_id, $staff_id) {
+        Client::find($client_id)->update(['client_assign_to' => $staff_id]);
+    }
+
+    public function getPaymentMethodByFirm(Request $request) {
+        try {
+            $payments = PaymentMethod::where('firm_id', '=', $request->post('firm_id'))->get();
             $this->returnData['status'] = true;
             $this->returnData['data'] = $payments;
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $this->returnData['msg'] = $e->getMessage();
         }
 
         return $this->returnData;
-    }
-
-    private function assignClient($client_id, $staff_id) {
-        Client::find($client_id)->update(['client_assign_to' => $staff_id]);
     }
 
     private function allClientList($staffId, $staffLevel, Request $request = null) {
@@ -680,7 +720,6 @@ class ClientController extends Controller {
 
         return $clients;
     }
-
 
 
 }

@@ -106,13 +106,11 @@
             <div class="card border-primary mb-3">
                 <div class="card-header bg-primary text-white">
                     <span id="clientDetailHeader"></span>
-
                     @if($data['staffLevel']>=env('DEPARTMENT_CHIEF_LEVEL'))
-
-                        <div class="input-group input-group-sm mb-3" id="reassignStaff" style="display:none ">
-                            <div class="input-group-prepend">
+                        <span class="input-group input-group-sm mb-3" id="reassignStaff" style="display:none ">
+                            <span class="input-group-prepend">
                                 <span class="input-group-text" id="inputGroup-sizing-sm">重新分配</span>
-                            </div>
+                            </span>
                             <select class="form-control" name="reassignClientTo" id="reassignClientTo"
                                     aria-label="Small"
                                     aria-describedby="inputGroup-sizing-sm" onchange="reassignClient()">
@@ -122,10 +120,8 @@
                                         value="{{$assignableStaff->staff_id}}">{{$assignableStaff->staff_name}}</option>
                                 @endforeach
                             </select>
-                        </div>
-
+                        </span>
                     @endif
-
                 </div>
                 <div class="card-body text-primary" id="clientDetailBody">
                     客户需求 <input type="hidden" id="client_id"/>
@@ -174,7 +170,7 @@
                             <div class="col-3">
                                 <div class="input-group input-group-sm mb-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text" id="inputGroup-sizing-sm">隶属公司</span>
+                                        <span class="input-group-text" id="inputGroup-sizing-sm">隶属</span>
                                     </div>
                                     <select class="form-control" name="client_belongs_company"
                                             id="client_belongs_company" aria-label="Small"
@@ -240,8 +236,8 @@
                                            aria-describedby="inputGroup-sizing-sm">
                                 </div>
                             </div>
-                            <div class="col-2">回访日期:<span id="visit_next_date"></span></div>
-                            <div class="col-2">客户等级:<span id="client_level"></span></div>
+                            <div class="col-2">回访:<span id="visit_next_date"></span></div>
+                            <div class="col-2">等级:<span id="client_level"></span></div>
                         </div>
                         <div class="row">
                             <div class="col-12" id="companies"></div>
@@ -270,7 +266,7 @@
 
             <div class="card border-success mb-3">
 
-                <div class="card-body text-success" style="height: 300px;overflow: auto">
+                <div class="card-body text-success" style="max-height: 200px;overflow: auto">
 
                     <table class="table table-sm table-hover" style="font-size:small">
                         <thead>
@@ -293,7 +289,7 @@
                             <span class="input-group-text" id="inputGroup-sizing-sm">销售状态</span>
                         </div>
 
-                        <select class="form-control" id="visit_status" aria-label="Small"
+                        <select class="custom-select" id="visit_status" aria-label="Small"
                                 aria-describedby="inputGroup-sizing-sm">
                             @foreach($data['visitStatus'] as $visitStatus)
                                 <option
@@ -309,6 +305,26 @@
                     </div>
 
 
+                </div>
+            </div>
+
+            <div class="card border-warning mb-3"><span onclick="showabc()">asdfasdf</span>
+                <div class="card-body text-warning" style="max-height:300px; overflow: auto">
+                    <table class="table table-sm table-hover" style="font-size:small">
+                        <thead>
+                        <tr>
+                            <th scope="col">订单号</th>
+                            <th scope="col">创建日期</th>
+                            <th scope="col">金额/利润</th>
+                            <th scope="col">状态</th>
+                            <th scope="col">最后更新时间</th>
+                            <th scope="col" width="50%">文件</th>
+                        </tr>
+                        </thead>
+                        <tbody id="orderList">
+
+                        </tbody>
+                    </table>
                 </div>
             </div>
 
@@ -345,7 +361,7 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">纳税识别号:</span>
+                                <span class="input-group-text">纳税识别号/个人身份证号:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" name="company_tax_id" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
@@ -434,7 +450,7 @@
 
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">纳税识别号:</span>
+                                <span class="input-group-text">纳税识别号/个人身份证号:<i class="text-danger">*</i></span>
                             </div>
                             <input type="text" id="modify_company_tax_id" name="company_tax_id" class="form-control"
                                    aria-label="Username" aria-describedby="basic-addon1">
@@ -1007,7 +1023,7 @@
 
 
                     <div id="orderModelServiceSection"></div>
-                    <textarea class="form-control"  id="orderModelMemo" placeholder="订单备注"></textarea>
+                    <textarea class="form-control" id="orderModelMemo" placeholder="订单备注"></textarea>
 
                 </div>
                 <div class="modal-footer">
@@ -1019,6 +1035,156 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="showOrderModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">订单明细
+                        <span class="badge badge-pill badge-danger"> <span id="showOrderModalOrderId"></span></span>
+                        <span class="badge badge-primary">创建: <span id="showOrderModalOrderCreatedAt"></span></span>
+                        <span class="badge badge-success">最后更新: <span id="showOrderModalUpdatedAt"></span></span></h5>
+                        <span class="badge badge-secondary"><span id="showOrderModalOrderStatus"></span></span></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="card border-primary mb-3">
+                        <div class="card-header">
+                            <span id="showOrderModalCompanyName">史学坤</span>
+                            <span id="showOrderModalOrderCompanyTaxRef">1873****539</span>
+                            <span id="showOrderModalCompanyAddress"> 吉林省白山市江源区城墙街城墙一委二组</span>
+                        </div>
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-6">
+
+                                </div>
+                                <div class="col-6">
+
+                                </div>
+                            </div>
+
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">联系方式:</span>
+                                </div>
+                                <input type="text" class="form-control" id="showOrderModalContactName" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalContactName" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalContactAddress" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                            </div>
+
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="inputGroup-sizing-sm">邮寄方式:</span>
+                                </div>
+                                <input type="text" class="form-control" id="showOrderModalPostAddressee" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalPostContact" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalPostAddress" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                            </div>
+
+
+
+
+
+                        </div>
+                    </div>
+
+                    <div class="card border-warning mb-3">
+                        <div class="card-header">  <span>客户账户信息: </span>
+                            <span id="showOrderModalCompanyAccount">6217 8580 0006 9847 330</span>
+                            <span id="showOrderModalCompanyAccountAddress">中国银行洛阳展览路支行</span></div>
+                        <div class="card-body text-success h6">
+                         <div class="row">
+                             <div class="col-5">
+                                 <div class="input-group input-group-sm mb-3">
+                                     <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">开票类型:
+                                     <span id="showOrderModalTaxType"> 普票</span>
+                                    </span>
+                                     </div>
+                                     <input type="text" id="showOrderModalOrderTaxRef" class="form-control" placeholder="发票号码" aria-label="Username" aria-describedby="basic-addon1">
+                                 </div>
+                             </div>
+                             <div class="col-7">
+                                 <div class="input-group input-group-sm mb-3">
+                                     <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">收到:
+                                     <span id="showOrderModalTaxType"> 专票</span>
+                                    </span>
+                                     </div>
+                                     <input type="text" id="showOrderModalTaxNumber" class="form-control" placeholder="收到的发票号码" aria-label="Username" aria-describedby="basic-addon1">
+                                     <input type="date" id="showOrderModalTaxReceivedDate" class="form-control" placeholder="收到发票日期" aria-label="Username" aria-describedby="basic-addon1">
+                                 </div>
+                             </div>
+                         </div>
+
+
+
+
+
+
+                         <p>付款方式:
+                             <span id="showOrderModalPaymentMethodName">支付宝</span>
+                            <span id="showOrderModalPaymentMethodDetail"></span>
+                         </p>
+
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text" id="basic-addon1">工资结算:
+                                    </span>
+                                </div>
+                                <select class="custom-select" id="showOrderModalOrderSettlement">
+                                    <option value="未结算">未结算</option>
+                                    <option value="未结算">已结算</option>
+                                </select>
+                                <input type="date" id="showOrderModalOrderSettledDate" class="form-control form-control-sm" placeholder="结算的日期" aria-label="Username" aria-describedby="basic-addon1">
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="card border-success mb-3">
+                        <div class="card-header">订单明细</div>
+                        <div class="card-body text-success">
+                            <h5 class="card-title">Success card title</h5>
+                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="modal-footer">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+
+
+                    <div class="input-group mb-3">
+                        <select class="form-control" id="showOrderModalOrderStatus">
+                            <option disabled selected>订单状态</option>
+                            @foreach($data['orderStatus'] as $status)
+                                <option value="{{$status->order_status_id}}">{{$status->order_status_name}}</option>
+                            @endforeach
+
+                        </select>
+                        <div class="input-group-append">
+                            <button class="btn btn-outline-success" type="button">更新</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
 
 
     <script>
@@ -1186,6 +1352,19 @@
             $.each(data.visit, function (key, visit) {
                 $("#visitHistory").append('<tr><td>' + visit.created_at + '</td><td>' + visit.visit_status + '</td><td>' + visit.visit_records + '</td><td>' + visit.visit_next_date + '</td><td>' + visit.visit_by_staff_name + '</td></tr>');
             });
+
+            $("#orderList").html('');
+            $.each(data.orders, function (key, order) {
+                let files = "";
+                $.each(order.files, function (key, file) {
+                    files += '<span class="badge badge-success" onclick="showOrderSupportFile(\'' + file + '\',' + order.order_id + ')">' + file + '</span> ';
+                });
+
+
+                $("#orderList").append('<tr><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_id + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_created_at + '</td><td>' + order.order_total + '/' + order.order_profit + '</td><td><span class="badge badge-secondary">' + order.order_status + '</span></td><td>' + order.updated_at + '</td><td>' + files + '</td></tr>');
+
+
+            });
         }
 
         function showCompany(companyId) {
@@ -1328,6 +1507,7 @@
             $("#clientQLFTitle").html(fileName);
             $("#clientQLFFileName").val(fileName);
             $("#clientQLFEMBD").attr('src', '/storage/CRM/Client/QLF/' + $("#client_id").val() + '/' + fileName);
+            $("#clientQlfModal").draggable();
             $("#clientQlfModal").modal('show');
         }
 
@@ -1335,7 +1515,23 @@
             $("#companyQLFTitle").html(fileName);
             $("#companyQLFFileName").val(fileName);
             $("#companyQLFEMBD").attr('src', '/storage/CRM/company/QLF/' + $("#modify_company_id").val() + '/' + fileName);
+            $("#companyQlfModal").draggable();
             $("#companyQlfModal").modal('show');
+        }
+
+        function showOrderSupportFile(fileName, orderId) {
+            $("#companyQLFTitle").html(fileName);
+            $("#companyQLFFileName").val(fileName);
+            $("#companyQLFEMBD").attr('src', '/storage/CRM/Order/REF/' + orderId + '/' + fileName);
+
+            var iframeObj = $(window.frames["companyQLFEMBD"].document);
+            iframeObj.find('img').attr('style', 'width:100%');
+            // $('img').attr('style',"width:100%");
+
+            $("#companyQlfModal").draggable();//为模态对话框添加拖拽
+            $("#companyQlfModal").modal('show');
+
+
         }
 
         function rmClientQLFFile() {
@@ -1498,7 +1694,7 @@
                             '                            </label>');
                     });
                     $("#OrderModelContact").html(' <label class="btn btn-outline-success btn-sm" onclick="OrderfilleClientDetail(\'' + data.data.client_name + '\',\'' + data.data.client_mobile + '\',\'' + data.data.client_address + '\',\'' + data.data.client_post_code + '\')">\n' +
-                        '                            <input type="checkbox" id="company_id" value ="' + data.data.client_id + '" > ' + data.data.client_name +
+                        '                            <input type="checkbox" > ' + data.data.client_name +
                         '                        </label> ');
 
 
@@ -1591,21 +1787,16 @@
                     var iframeObj = $(window.frames["iframe" + i].document);
                     var serviceAttributes = iframeObj.find("#iframeFrom" + serviceId).serializeArray();
                     serviceAttributes = decodeURIComponent(JSON.stringify(serviceAttributes), true);
-                    // service.servcieId = serviceId;
-                    // service.serviceName = serviceName;
-                    // service.servicePrice = servicePrice;
-                    // service.serviceAttributes = serviceAttributes;
-                    services.push({serviceId,serviceName,servicePrice,serviceAttributes});
+                    services.push({serviceId, serviceName, servicePrice, serviceAttributes});
 
                 }
             }
 
 
-
-
             var data = {
                 firm_id: $("#firm_id").val(),
-                company_id: $("#company_id").val(),
+                order_client_id: $("#client_id").val(),
+                company_id: $("#orderClientCompany").val(),
                 order_contact_name: $("#order_contact_name").val(),
                 order_contact_number: $("#order_contact_number").val(),
                 order_contact_address: $("#order_contact_address").val(),
@@ -1617,7 +1808,7 @@
                 order_tax_type: $("input[name='order_tax_type']:checked").val(),
                 order_taxable: $("input[name='order_taxable']:checked").val(),
                 order_payment: $("input[name='order_payment']:checked").val(),
-                order_memo:$("#orderModelMemo").val(),
+                order_memo: $("#orderModelMemo").val(),
                 services: services,
             };
 
@@ -1625,7 +1816,7 @@
             var dd = new FormData;
 
             for (var i = 0; i < $("#supportFiles")[0].files.length; i++) {
-                dd.append('supportFile' + i, document.getElementById('supportFiles').files[0]);
+                dd.append('supportFile' + i, document.getElementById('supportFiles').files[i]);
             }
 
             dd.append('data', JSON.stringify(data));
@@ -1643,6 +1834,18 @@
                     layer.msg(data.msg, {icon: data.code});
                 }
             });
+        }
+
+        function showOrderDetail(order) {
+
+            $("#showOrderModalTitle").html();
+
+
+            $("#showOrderModal").modal('show');
+        }
+
+        function showabc() {
+            $("#showOrderModal").modal('show');
         }
 
 
