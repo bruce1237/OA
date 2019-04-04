@@ -190,9 +190,7 @@ class ClientController extends Controller {
         $orders = Order::where('order_client_id', '=', $request->post('client_id'))->get();
         foreach ($orders as $order) {
 
-            if (!Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level) {
-
-
+            if ((Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level)<((int)env('DEPARTMENT_CHIEF_LEVEL'))) {
                 $patten = "";
                 for ($i = 0; $i <= strlen($order->order_company_tax_ref) - 6; $i++) {
                     $patten .= "*";
@@ -205,16 +203,13 @@ class ClientController extends Controller {
             $order->order_status = OrderStatus::find($order->order_status_code)->order_status_name;
             $order->carts = Cart::where('order_id', '=', $order->order_id)->get();
         }
-
-
+//dd($orders);
         if ($client) {
             $this->returnData['status'] = true;
             $this->returnData['data'] = $client;
             $this->returnData['company'] = $companies;
             $this->returnData['visit'] = $visit;
             $this->returnData['orders'] = $orders;
-
-
         } else {
             $this->returnData['msg'] = '获取客户信息失败';
         }
@@ -681,11 +676,12 @@ class ClientController extends Controller {
             }
             if (key_exists('staff_id', $searchData) && $searchData['staff_id']) {
                 $query->where('client_assign_to', '=', $searchData['staff_id']);
-            } else {
-                if ($staffLevel == "0") {
-                    $query->where('client_assign_to', '=', $staffId);
-                }
             }
+//            else {
+//                if ($staffLevel == "0") {
+//                    $query->where('client_assign_to', '=', $staffId);
+//                }
+//            }
             if (key_exists('search_clientType', $searchData) && null !== $searchData['search_clientType']) {
                 switch ($searchData['search_clientType']) {
                     case "0": //公海客户

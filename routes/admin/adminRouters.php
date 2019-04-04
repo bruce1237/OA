@@ -148,6 +148,8 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************Order 订单部分*************/
     /*******************************************/
     Route::post('generateOrder', ['uses' => 'orderController@generateOrder']);
+    Route::post('updateCartRef', ['uses' => 'orderController@updateCartRef']);
+    Route::post('updateOder', ['uses' => 'orderController@updateOder']);
 
 
 

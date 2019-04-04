@@ -308,7 +308,7 @@
                 </div>
             </div>
 
-            <div class="card border-warning mb-3"><span onclick="showabc()">asdfasdf</span>
+            <div class="card border-warning mb-3">
                 <div class="card-body text-warning" style="max-height:300px; overflow: auto">
                     <table class="table table-sm table-hover" style="font-size:small">
                         <thead>
@@ -635,48 +635,28 @@
             </div>
         </div>
     </div>
-    <div class="modal fade " tabindex="-1" role="dialog" id="clientQlfModal">
-        <div class="modal-dialog" role="document" style="max-width: 1200px;">
-            <div class="modal-content">
-                <form id="newClientForm">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="clientQLFTitle">客户资质</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <iframe id="clientQLFEMBD" style="width:1150px;height:600px;"></iframe>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="hidden" id="clientQLFFileName"/>
-                        <button type="button" class="btn btn-primary" onclick="rmClientQLFFile()">删除</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-    <div class="modal fade " tabindex="-1" role="dialog" id="companyQlfModal">
-        <div class="modal-dialog" role="document" style="max-width: 1200px;">
-            <div class="modal-content">
-                <form id="newClientForm">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="companyQLFTitle">公司资质</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <iframe id="companyQLFEMBD" style="width:1150px;height:600px;"></iframe>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="hidden" id="companyQLFFileName"/>
-                        <button type="button" class="btn btn-primary" onclick="rmCompanyQLFFile()">删除</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+{{--    <div class="modal fade " tabindex="-1" role="dialog" id="clientQlfModal">--}}
+{{--        <div class="modal-dialog" role="document" style="max-width: 1200px;">--}}
+{{--            <div class="modal-content">--}}
+{{--                <form id="newClientForm">--}}
+{{--                    <div class="modal-header">--}}
+{{--                        <h5 class="modal-title" id="clientQLFTitle">客户资质</h5>--}}
+{{--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
+{{--                            <span aria-hidden="true">&times;</span>--}}
+{{--                        </button>--}}
+{{--                    </div>--}}
+{{--                    <div class="modal-body">--}}
+{{--                        <iframe id="clientQLFEMBD" style="width:1150px;height:600px;"></iframe>--}}
+{{--                    </div>--}}
+{{--                    <div class="modal-footer">--}}
+{{--                        <input type="hidden" id="clientQLFFileName"/>--}}
+{{--                        <button type="button" class="btn btn-primary" onclick="rmClientQLFFile()">删除</button>--}}
+{{--                    </div>--}}
+{{--                </form>--}}
+{{--            </div>--}}
+{{--        </div>--}}
+{{--    </div>--}}
+
 
     <div class="modal fade" id="searchClientModal">
         <div class="modal-dialog modal-lg" role="document">
@@ -1027,7 +1007,7 @@
 
                 </div>
                 <div class="modal-footer">
-                    <input type="text" id="OrderModalServiceCount" value="0"/>
+                    <input type="hidden" id="OrderModalServiceCount" value="0"/>
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
                     <button type="submit" class="btn btn-primary" onclick="generateOrder()">确认</button>
                 </div>
@@ -1044,7 +1024,7 @@
                     <h5 class="modal-title">订单明细
                         <span class="badge badge-pill badge-danger"> <span id="showOrderModalOrderId"></span></span>
                         <span class="badge badge-primary">创建: <span id="showOrderModalOrderCreatedAt"></span></span>
-                        <span class="badge badge-success">最后更新: <span id="showOrderModalUpdatedAt"></span></span></h5>
+                        <span class="badge badge-success">最后更新: <span id="showOrderModalUpdatedAt"></span></span>
                         <span class="badge badge-secondary"><span id="showOrderModalOrderStatus"></span></span></h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -1059,78 +1039,78 @@
                         </div>
 
                         <div class="card-body">
-                            <div class="row">
-                                <div class="col-6">
 
-                                </div>
-                                <div class="col-6">
-
-                                </div>
-                            </div>
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">联系方式:</span>
                                 </div>
-                                <input type="text" class="form-control" id="showOrderModalContactName" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
-                                <input type="text" class="form-control" id="showOrderModalContactName" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
-                                <input type="text" class="form-control" id="showOrderModalContactAddress" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalContactName"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalContactNumber"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalContactAddress"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalContactPostCode"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
                             </div>
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">邮寄方式:</span>
                                 </div>
-                                <input type="text" class="form-control" id="showOrderModalPostAddressee" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
-                                <input type="text" class="form-control" id="showOrderModalPostContact" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
-                                <input type="text" class="form-control" id="showOrderModalPostAddress" aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalPostAddressee"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalPostContact"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalPostAddress"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
+                                <input type="text" class="form-control" id="showOrderModalPostCode"
+                                       aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
                             </div>
-
-
-
 
 
                         </div>
                     </div>
 
                     <div class="card border-warning mb-3">
-                        <div class="card-header">  <span>客户账户信息: </span>
+                        <div class="card-header"><span>客户账户信息: </span>
                             <span id="showOrderModalCompanyAccount">6217 8580 0006 9847 330</span>
                             <span id="showOrderModalCompanyAccountAddress">中国银行洛阳展览路支行</span></div>
                         <div class="card-body text-success h6">
-                         <div class="row">
-                             <div class="col-5">
-                                 <div class="input-group input-group-sm mb-3">
-                                     <div class="input-group-prepend">
+                            <div class="row">
+                                <div class="col-5">
+                                    <div class="input-group input-group-sm mb-3">
+                                        <div class="input-group-prepend">
                                     <span class="input-group-text" id="basic-addon1">开票类型:
                                      <span id="showOrderModalTaxType"> 普票</span>
                                     </span>
-                                     </div>
-                                     <input type="text" id="showOrderModalOrderTaxRef" class="form-control" placeholder="发票号码" aria-label="Username" aria-describedby="basic-addon1">
-                                 </div>
-                             </div>
-                             <div class="col-7">
-                                 <div class="input-group input-group-sm mb-3">
-                                     <div class="input-group-prepend">
+                                        </div>
+                                        <input type="text" id="showOrderModalOrderTaxRef" class="form-control"
+                                               placeholder="发票号码" aria-label="Username" aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                                <div class="col-7">
+                                    <div class="input-group input-group-sm mb-3">
+                                        <div class="input-group-prepend">
                                     <span class="input-group-text" id="basic-addon1">收到:
-                                     <span id="showOrderModalTaxType"> 专票</span>
+                                     <span id="showOrderModalTaxable"> 专票</span>
                                     </span>
-                                     </div>
-                                     <input type="text" id="showOrderModalTaxNumber" class="form-control" placeholder="收到的发票号码" aria-label="Username" aria-describedby="basic-addon1">
-                                     <input type="date" id="showOrderModalTaxReceivedDate" class="form-control" placeholder="收到发票日期" aria-label="Username" aria-describedby="basic-addon1">
-                                 </div>
-                             </div>
-                         </div>
+                                        </div>
+                                        <input type="text" id="showOrderModalTaxNumber" class="form-control"
+                                               placeholder="收到的发票号码" aria-label="Username"
+                                               aria-describedby="basic-addon1">
+                                        <input type="date" id="showOrderModalTaxReceivedDate" class="form-control"
+                                               placeholder="收到发票日期" aria-label="Username"
+                                               aria-describedby="basic-addon1">
+                                    </div>
+                                </div>
+                            </div>
 
-
-
-
-
-
-                         <p>付款方式:
-                             <span id="showOrderModalPaymentMethodName">支付宝</span>
-                            <span id="showOrderModalPaymentMethodDetail"></span>
-                         </p>
+                            <p>付款方式:
+                                <span id="showOrderModalPaymentMethodName">支付宝</span>
+                                <span id="showOrderModalPaymentMethodDetail"></span>
+                            </p>
 
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
@@ -1139,21 +1119,34 @@
                                 </div>
                                 <select class="custom-select" id="showOrderModalOrderSettlement">
                                     <option value="未结算">未结算</option>
-                                    <option value="未结算">已结算</option>
+                                    <option value="已结算">已结算</option>
                                 </select>
-                                <input type="date" id="showOrderModalOrderSettledDate" class="form-control form-control-sm" placeholder="结算的日期" aria-label="Username" aria-describedby="basic-addon1">
+                                <input type="date" id="showOrderModalOrderSettledDate"
+                                       class="form-control form-control-sm" placeholder="结算的日期" aria-label="Username"
+                                       aria-describedby="basic-addon1">
                             </div>
-
                         </div>
                     </div>
-
 
                     <div class="card border-success mb-3">
                         <div class="card-header">订单明细</div>
                         <div class="card-body text-success">
-                            <h5 class="card-title">Success card title</h5>
-                            <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                            <div id="showOrderModalOrderDetailsList"></div>
                         </div>
+                    </div>
+
+                    <div class="input-group input-group-sm mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">相关文件</span>
+                        </div>
+                        <div class="custom-file">
+                            <input type="file" class="custom-file-input" id="showOrderModalSupportFiles"
+                                   multiple="multiple">
+                            <label class="custom-file-label" for="inputGroupFile01">选择文件</label>
+                        </div>
+                    </div>
+                    <div id="showOrderModalFileList">
+
                     </div>
 
 
@@ -1167,7 +1160,7 @@
 
 
                     <div class="input-group mb-3">
-                        <select class="form-control" id="showOrderModalOrderStatus">
+                        <select class="form-control" id="showOrderModalNewOrderStatus">
                             <option disabled selected>订单状态</option>
                             @foreach($data['orderStatus'] as $status)
                                 <option value="{{$status->order_status_id}}">{{$status->order_status_name}}</option>
@@ -1175,7 +1168,8 @@
 
                         </select>
                         <div class="input-group-append">
-                            <button class="btn btn-outline-success" type="button">更新</button>
+                            <button class="btn btn-outline-success" type="button" onclick="updateOrder()">更新订单信息
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -1184,7 +1178,27 @@
     </div>
 
 
-
+    <div class="modal fade " tabindex="-1" role="dialog" id="companyQlfModal">
+        <div class="modal-dialog" role="document" style="max-width: 1200px;">
+            <div class="modal-content">
+                <form id="newClientForm">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="companyQLFTitle">公司资质</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <iframe id="companyQLFEMBD" style="width:1150px;height:600px;"></iframe>
+                    </div>
+                    <div class="modal-footer">
+                        <input type="hidden" id="companyQLFFileName"/>
+                        <button type="button" class="btn btn-primary" onclick="rmCompanyQLFFile()">删除</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 
 
     <script>
@@ -1504,35 +1518,43 @@
         }
 
         function showClientQlfFile(fileName) {
-            $("#clientQLFTitle").html(fileName);
-            $("#clientQLFFileName").val(fileName);
-            $("#clientQLFEMBD").attr('src', '/storage/CRM/Client/QLF/' + $("#client_id").val() + '/' + fileName);
-            $("#clientQlfModal").draggable();
-            $("#clientQlfModal").modal('show');
+
+            src ='/storage/CRM/Client/QLF/';
+            showFile(fileName,$("#client_id").val(),src)
+
+
         }
 
         function showCompanyQlfFile(fileName) {
-            $("#companyQLFTitle").html(fileName);
-            $("#companyQLFFileName").val(fileName);
-            $("#companyQLFEMBD").attr('src', '/storage/CRM/company/QLF/' + $("#modify_company_id").val() + '/' + fileName);
-            $("#companyQlfModal").draggable();
-            $("#companyQlfModal").modal('show');
+
+
+            src = '/storage/CRM/company/QLF/';
+            showFile(fileName,$("#modify_company_id").val(),src)
         }
 
         function showOrderSupportFile(fileName, orderId) {
-            $("#companyQLFTitle").html(fileName);
-            $("#companyQLFFileName").val(fileName);
-            $("#companyQLFEMBD").attr('src', '/storage/CRM/Order/REF/' + orderId + '/' + fileName);
 
-            var iframeObj = $(window.frames["companyQLFEMBD"].document);
-            iframeObj.find('img').attr('style', 'width:100%');
-            // $('img').attr('style',"width:100%");
-
-            $("#companyQlfModal").draggable();//为模态对话框添加拖拽
-            $("#companyQlfModal").modal('show');
-
+            src = '/storage/CRM/Order/REF/';
+            showFile(fileName,orderId,src)
 
         }
+
+        function showFile(fileName,orderId,src){
+            $("#companyQLFTitle").html(fileName);
+            $("#companyQLFFileName").val(fileName);
+            $("#companyQLFEMBD").attr('src', src + orderId + '/' + fileName);
+
+            var type = fileName.split('.')[1];
+
+            if(-1!=jQuery.inArray( type,['jpg','jpeg','pdf','png','gif'])){
+
+                $("#companyQlfModal").draggable();
+                $("#companyQlfModal").modal('show');
+            }
+        }
+
+
+
 
         function rmClientQLFFile() {
             var fileName = $("#clientQLFFileName").val();
@@ -1693,7 +1715,7 @@
                             '                                <input type="radio" name="orderClientCompany" id="orderClientCompany" autocomplete="off" value="' + company.company_id + '">' + company.company_name +
                             '                            </label>');
                     });
-                    $("#OrderModelContact").html(' <label class="btn btn-outline-success btn-sm" onclick="OrderfilleClientDetail(\'' + data.data.client_name + '\',\'' + data.data.client_mobile + '\',\'' + data.data.client_address + '\',\'' + data.data.client_post_code + '\')">\n' +
+                    $("#OrderModelContact").html(' <label class="btn btn-outline-success btn-sm" onclick="OrderfillClientDetail(\'' + data.data.client_name + '\',\'' + data.data.client_mobile + '\',\'' + data.data.client_address + '\',\'' + data.data.client_post_code + '\')">\n' +
                         '                            <input type="checkbox" > ' + data.data.client_name +
                         '                        </label> ');
 
@@ -1701,11 +1723,10 @@
                 }
             });
 
-
             $("#orderModal").modal('show');
         }
 
-        function OrderfilleClientDetail(clientName, clientMobile, clientAddress, clientPostCode) {
+        function OrderfillClientDetail(clientName, clientMobile, clientAddress, clientPostCode) {
             $("#order_contact_name").val(clientName != "null" ? clientName : '');
             $("#order_contact_number").val(clientMobile);
             $("#order_contact_address").val(clientAddress != "null" ? clientAddress : '');
@@ -1732,7 +1753,7 @@
                 '                            </div>\n' +
                 '                            <input type="text" class="form-control" id="order_service_name_' + count + '" placeholder="产品名称" aria-label="Small" aria-describedby="inputGroup-sizing-sm">\n' +
                 '\n' +
-                '                            <input type="text" class="form-control" id="order_service_price_' + count + '" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm">\n' +
+                '                            <input type="text" class="form-control" id="order_service_price_' + count + '" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm" >\n' +
                 '                            <div class="input-group-prepend">\n' +
                 '                                <span class="input-group-text" id="order_service_cost_' + count + '">' + cost + '</span>' +
                 '                            </div>' +
@@ -1837,15 +1858,141 @@
         }
 
         function showOrderDetail(order) {
+            $("#showOrderModalSupportFiles").val('');
+            $("#showOrderModalOrderId").text(order.order_id);
+            $("#showOrderModalOrderCreatedAt").text(order.order_created_at);
+            $("#showOrderModalUpdatedAt").text(order.updated_at);
+            $("#showOrderModalOrderStatus").text(order.order_status);
+            $("#showOrderModalCompanyName").text(order.order_company_name);
+            $("#showOrderModalOrderCompanyTaxRef").text(order.order_company_tax_ref);
+            $("#showOrderModalCompanyAddress").text(order.order_company_address);
+            $("#showOrderModalContactName").val(order.order_contact_name);
+            $("#showOrderModalContactNumber").val(order.order_contact_number);
+            $("#showOrderModalContactAddress").val(order.order_contact_address);
+            $("#showOrderModalContactPostCode").val(order.order_contact_post_code);
+            $("#showOrderModalPostAddressee").val(order.order_post_addressee);
+            $("#showOrderModalPostContact").val(order.order_post_contact);
+            $("#showOrderModalPostAddress").val(order.order_post_address);
+            $("#showOrderModalPostCode").val(order.order_post_code);
+            $("#showOrderModalCompanyAccount").text(order.order_company_account);
+            $("#showOrderModalCompanyAccountAddress").text(order.order_company_account_address);
+            $("#showOrderModalTaxType").text(order.order_tax_type);
+            $("#showOrderModalOrderTaxRef").val(order.order_tax_ref);
+            $("#showOrderModalTaxable").html(order.order_taxable);
+            $("#showOrderModalTaxNumber").val(order.tax_number);
+            $("#showOrderModalTaxReceivedDate").val(order.tax_received_date);
+            $("#showOrderModalPaymentMethodName").html(order.order_payment_method_name);
+            $("#showOrderModalNewOrderStatus").val(order.order_status_code);
 
-            $("#showOrderModalTitle").html();
 
 
+
+
+            var paymentdetails = $.parseJSON(order.order_payment_method_details);
+            $("#showOrderModalPaymentMethodDetail").html('');
+            $.each(paymentdetails, function (key, item) {
+                $("#showOrderModalPaymentMethodDetail").append('<h6><span class="badge badge-secondary">' + key + ': </span>' + item + '</h6>');
+            });
+            $("#showOrderModalOrderSettlement").val(order.order_settlement);
+            $("#showOrderModalOrderSettledDate").val(order.order_settled_date);
+            $("#showOrderModalFileList").html('');
+            $.each(order.files, function (key, item) {
+                $("#showOrderModalFileList").append('<span class="badge badge-success" onclick="showOrderSupportFile(\'' + item + '\',' + order.order_id + ')">' + item + '</span> ');
+            });
+
+            $("#showOrderModalOrderDetailsList").html('');
+            $.each(order.carts, function (key, item) {
+
+
+                var cartContents = '';
+
+
+                var str = jQuery.parseJSON(item.service_attributes);
+
+                $.each(str, function (k, v) {
+                    cartContents += ' <span class="badge badge-secondary">' + v.name + ':</span><span>' + v.value + '</span>';
+                });
+
+
+                var content = '<div class="card border-primary mb-3">\n' +
+                    '                                    <div class="card-body text-success">\n' +
+                    '                                        <div class="input-group input-group-sm mb-3">\n' +
+                    '                                            <div class="input-group-prepend">\n' +
+                    '                                                <span class="input-group-text" id="basic-addon1">' + item.service_category + '</span>\n' +
+                    '                                            </div>\n' +
+                    '                                            <input type="text" id="showOrderModalServiceName" class="form-control"\n' +
+                    '                                                   value="' + item.service_name + '" readonly>\n' +
+                    '                                            <div class="input-group-append">\n' +
+                    '                                                <span class="input-group-text"\n' +
+                    '                                                      id="showOrderModalServicePrice">' + item.service_price + '</span>\n' +
+                    '                                                <span class="input-group-text"\n' +
+                    '                                                      id="showOrderModalServiceCost">' + item.service_cost + '</span>\n' +
+                    '                                            </div>\n' +
+                    '                                            <input type="text" id="showOrderModalCartServiceRef' + item.cart_id + '" class="form-control"\n' +
+                    '                                                   value="' + item.service_ref + '">\n' +
+                    '                                            <div class="input-group-append">\n' +
+                    '                                                <button class="btn btn-outline-secondary" type="button" onclick="updateCart(' + item.cart_id + ')">更新</button>\n' +
+                    '                                            </div>\n' +
+                    '                                        </div>\n' +
+                    cartContents +
+                    '                                    </div>\n' +
+                    '                                </div>';
+
+                $("#showOrderModalOrderDetailsList").append(content);
+
+            });
+
+            $("#showOrderModal").draggable();
             $("#showOrderModal").modal('show');
         }
 
-        function showabc() {
-            $("#showOrderModal").modal('show');
+
+        function updateCart(cartId) {
+            var cartRef = $("#showOrderModalCartServiceRef" + cartId).val();
+            $.ajax({
+                url: "{{url('admin/updateCartRef')}}",
+                type: 'post',
+                data: {cart_id: cartId, service_ref: cartRef},
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                }
+            });
+        }
+
+        function updateOrder() {
+
+            var data = new FormData();
+            data.append('order_id',$("#showOrderModalOrderId").text());
+            data.append('order_tax_ref', $("#showOrderModalOrderTaxRef").val());
+            data.append('tax_number', $("#showOrderModalTaxNumber").val());
+            data.append('tax_received_date', $("#showOrderModalTaxReceivedDate").val());
+            data.append('order_settlement', $("#showOrderModalOrderSettlement").val());
+            data.append('order_settled_date', $("#showOrderModalOrderSettledDate").val());
+            data.append('order_status_code', $("#showOrderModalNewOrderStatus").val());
+
+            for(var i=0; i<$("#showOrderModalSupportFiles")[0].files.length;i++){
+                data.append('file'+i,$("#showOrderModalSupportFiles")[0].files[i])
+            }
+
+       $.ajax({
+          url:"{{url('admin/updateOder')}}",
+          type:'post',
+          data:data,
+          dataType:'json',
+          processData:false,
+          contentType:false,
+          success:function(data){
+              layer.msg(data.msg,{icon:data.code});
+              if(data.status){
+                  $("#showOrderModal").modal('hide');
+                  getClientDetail($("#client_id").val());
+              }
+          }
+       });
+
+
+
         }
 
 
