@@ -86,7 +86,9 @@
                                 <td>{{$client->client_mobile}}</td>
                                 <td>{{$client->created_at}}</td>
                                 <td>{{$client->client_next_date}}</td>
-                                <td>{{$client->client_visit_status}}</td>
+                                <td><span
+                                        class="badge badge-pill {{$client->visitColorCode}}">{{$client->client_visit_status}}</span>
+                                </td>
                                 <td>{{$client->client_assign_to}}</td>
                             </tr>
                         @endforeach
@@ -309,7 +311,7 @@
             </div>
 
             <div class="card border-warning mb-3">
-                <div class="card-body text-warning" style="max-height:300px; overflow: auto">
+                <div class="card-body text-primary" style="max-height:300px; overflow: auto">
                     <table class="table table-sm table-hover" style="font-size:small">
                         <thead>
                         <tr>
@@ -635,27 +637,27 @@
             </div>
         </div>
     </div>
-{{--    <div class="modal fade " tabindex="-1" role="dialog" id="clientQlfModal">--}}
-{{--        <div class="modal-dialog" role="document" style="max-width: 1200px;">--}}
-{{--            <div class="modal-content">--}}
-{{--                <form id="newClientForm">--}}
-{{--                    <div class="modal-header">--}}
-{{--                        <h5 class="modal-title" id="clientQLFTitle">客户资质</h5>--}}
-{{--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
-{{--                            <span aria-hidden="true">&times;</span>--}}
-{{--                        </button>--}}
-{{--                    </div>--}}
-{{--                    <div class="modal-body">--}}
-{{--                        <iframe id="clientQLFEMBD" style="width:1150px;height:600px;"></iframe>--}}
-{{--                    </div>--}}
-{{--                    <div class="modal-footer">--}}
-{{--                        <input type="hidden" id="clientQLFFileName"/>--}}
-{{--                        <button type="button" class="btn btn-primary" onclick="rmClientQLFFile()">删除</button>--}}
-{{--                    </div>--}}
-{{--                </form>--}}
-{{--            </div>--}}
-{{--        </div>--}}
-{{--    </div>--}}
+    {{--    <div class="modal fade " tabindex="-1" role="dialog" id="clientQlfModal">--}}
+    {{--        <div class="modal-dialog" role="document" style="max-width: 1200px;">--}}
+    {{--            <div class="modal-content">--}}
+    {{--                <form id="newClientForm">--}}
+    {{--                    <div class="modal-header">--}}
+    {{--                        <h5 class="modal-title" id="clientQLFTitle">客户资质</h5>--}}
+    {{--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
+    {{--                            <span aria-hidden="true">&times;</span>--}}
+    {{--                        </button>--}}
+    {{--                    </div>--}}
+    {{--                    <div class="modal-body">--}}
+    {{--                        <iframe id="clientQLFEMBD" style="width:1150px;height:600px;"></iframe>--}}
+    {{--                    </div>--}}
+    {{--                    <div class="modal-footer">--}}
+    {{--                        <input type="hidden" id="clientQLFFileName"/>--}}
+    {{--                        <button type="button" class="btn btn-primary" onclick="rmClientQLFFile()">删除</button>--}}
+    {{--                    </div>--}}
+    {{--                </form>--}}
+    {{--            </div>--}}
+    {{--        </div>--}}
+    {{--    </div>--}}
 
 
     <div class="modal fade" id="searchClientModal">
@@ -862,6 +864,7 @@
                     </button>
                 </div>
                 <div class="modal-body">
+                    <form id="orderModelForm">
 
                     <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
                          id="OrderModelfirms">
@@ -1004,7 +1007,7 @@
 
                     <div id="orderModelServiceSection"></div>
                     <textarea class="form-control" id="orderModelMemo" placeholder="订单备注"></textarea>
-
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <input type="hidden" id="OrderModalServiceCount" value="0"/>
@@ -1040,7 +1043,6 @@
 
                         <div class="card-body">
 
-
                             <div class="input-group input-group-sm mb-3">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text" id="inputGroup-sizing-sm">联系方式:</span>
@@ -1068,8 +1070,6 @@
                                 <input type="text" class="form-control" id="showOrderModalPostCode"
                                        aria-label="Small" aria-describedby="inputGroup-sizing-sm" readonly>
                             </div>
-
-
                         </div>
                     </div>
 
@@ -1082,9 +1082,9 @@
                                 <div class="col-5">
                                     <div class="input-group input-group-sm mb-3">
                                         <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon1">开票类型:
-                                     <span id="showOrderModalTaxType"> 普票</span>
-                                    </span>
+                                            <span class="input-group-text" id="basic-addon1">开票类型:
+                                                <span id="showOrderModalTaxType"> 普票</span>
+                                            </span>
                                         </div>
                                         <input type="text" id="showOrderModalOrderTaxRef" class="form-control"
                                                placeholder="发票号码" aria-label="Username" aria-describedby="basic-addon1">
@@ -1093,9 +1093,9 @@
                                 <div class="col-7">
                                     <div class="input-group input-group-sm mb-3">
                                         <div class="input-group-prepend">
-                                    <span class="input-group-text" id="basic-addon1">收到:
-                                     <span id="showOrderModalTaxable"> 专票</span>
-                                    </span>
+                                            <span class="input-group-text" id="basic-addon1">收到:
+                                                <span id="showOrderModalTaxable"> 专票</span>
+                                            </span>
                                         </div>
                                         <input type="text" id="showOrderModalTaxNumber" class="form-control"
                                                placeholder="收到的发票号码" aria-label="Username"
@@ -1154,17 +1154,15 @@
                 <div class="modal-footer">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
+                            <button type="button" class="btn btn-outline-danger" onclick="delOrder()">无效订单</button>
                         </div>
                     </div>
 
 
                     <div class="input-group mb-3">
                         <select class="form-control" id="showOrderModalNewOrderStatus">
-                            <option disabled selected>订单状态</option>
-                            @foreach($data['orderStatus'] as $status)
-                                <option value="{{$status->order_status_id}}">{{$status->order_status_name}}</option>
-                            @endforeach
+
 
                         </select>
                         <div class="input-group-append">
@@ -1375,7 +1373,7 @@
                 });
 
 
-                $("#orderList").append('<tr><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_id + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_created_at + '</td><td>' + order.order_total + '/' + order.order_profit + '</td><td><span class="badge badge-secondary">' + order.order_status + '</span></td><td>' + order.updated_at + '</td><td>' + files + '</td></tr>');
+                $("#orderList").append('<tr><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_id + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_created_at + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_total + '/' + order.order_profit + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')"><span class="badge badge-secondary">' + order.order_status + '</span></td><td>' + order.updated_at + '</td><td>' + files + '</td></tr>');
 
 
             });
@@ -1519,8 +1517,8 @@
 
         function showClientQlfFile(fileName) {
 
-            src ='/storage/CRM/Client/QLF/';
-            showFile(fileName,$("#client_id").val(),src)
+            src = '/storage/CRM/Client/QLF/';
+            showFile(fileName, $("#client_id").val(), src)
 
 
         }
@@ -1529,31 +1527,29 @@
 
 
             src = '/storage/CRM/company/QLF/';
-            showFile(fileName,$("#modify_company_id").val(),src)
+            showFile(fileName, $("#modify_company_id").val(), src)
         }
 
         function showOrderSupportFile(fileName, orderId) {
 
             src = '/storage/CRM/Order/REF/';
-            showFile(fileName,orderId,src)
+            showFile(fileName, orderId, src)
 
         }
 
-        function showFile(fileName,orderId,src){
+        function showFile(fileName, orderId, src) {
             $("#companyQLFTitle").html(fileName);
             $("#companyQLFFileName").val(fileName);
             $("#companyQLFEMBD").attr('src', src + orderId + '/' + fileName);
 
             var type = fileName.split('.')[1];
 
-            if(-1!=jQuery.inArray( type,['jpg','jpeg','pdf','png','gif'])){
+            if (-1 != jQuery.inArray(type, ['jpg', 'jpeg', 'pdf', 'png', 'gif'])) {
 
                 $("#companyQlfModal").draggable();
                 $("#companyQlfModal").modal('show');
             }
         }
-
-
 
 
         function rmClientQLFFile() {
@@ -1853,6 +1849,10 @@
                 dataType: 'json',
                 success: function (data) {
                     layer.msg(data.msg, {icon: data.code});
+                    if(data.status){
+                        $("#orderModal").modal('hide');
+                        clientOrderModalRest();
+                    }
                 }
             });
         }
@@ -1884,8 +1884,10 @@
             $("#showOrderModalPaymentMethodName").html(order.order_payment_method_name);
             $("#showOrderModalNewOrderStatus").val(order.order_status_code);
 
-
-
+            $("#showOrderModalNewOrderStatus").html('');
+            $.each(order.available_order_status, function(key,value){
+                $("#showOrderModalNewOrderStatus").append('<option value="'+value.order_status_id+'">'+value.order_status_name+'</option>');
+            });
 
 
             var paymentdetails = $.parseJSON(order.order_payment_method_details);
@@ -1946,7 +1948,6 @@
             $("#showOrderModal").modal('show');
         }
 
-
         function updateCart(cartId) {
             var cartRef = $("#showOrderModalCartServiceRef" + cartId).val();
             $.ajax({
@@ -1961,9 +1962,8 @@
         }
 
         function updateOrder() {
-
             var data = new FormData();
-            data.append('order_id',$("#showOrderModalOrderId").text());
+            data.append('order_id', $("#showOrderModalOrderId").text());
             data.append('order_tax_ref', $("#showOrderModalOrderTaxRef").val());
             data.append('tax_number', $("#showOrderModalTaxNumber").val());
             data.append('tax_received_date', $("#showOrderModalTaxReceivedDate").val());
@@ -1971,28 +1971,45 @@
             data.append('order_settled_date', $("#showOrderModalOrderSettledDate").val());
             data.append('order_status_code', $("#showOrderModalNewOrderStatus").val());
 
-            for(var i=0; i<$("#showOrderModalSupportFiles")[0].files.length;i++){
-                data.append('file'+i,$("#showOrderModalSupportFiles")[0].files[i])
+            for (var i = 0; i < $("#showOrderModalSupportFiles")[0].files.length; i++) {
+                data.append('file' + i, $("#showOrderModalSupportFiles")[0].files[i])
             }
 
-       $.ajax({
-          url:"{{url('admin/updateOder')}}",
-          type:'post',
-          data:data,
-          dataType:'json',
-          processData:false,
-          contentType:false,
-          success:function(data){
-              layer.msg(data.msg,{icon:data.code});
-              if(data.status){
-                  $("#showOrderModal").modal('hide');
-                  getClientDetail($("#client_id").val());
-              }
-          }
-       });
+            $.ajax({
+                url: "{{url('admin/updateOder')}}",
+                type: 'post',
+                data: data,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                    if (data.status) {
+                        $("#showOrderModal").modal('hide');
+                        getClientDetail($("#client_id").val());
+                    }
+                }
+            });
 
 
+        }
 
+        function delOrder(){
+            let orderId = $("#showOrderModalOrderId").text();
+            $.ajax({
+               url:"{{url('admin/delOrder')}}",
+                type:'post',
+                data:{order_id:orderId},
+                dataType:'json',
+                success:function(data){
+                   layer.msg(data.msg,{icon:data.code});
+                }
+
+            });
+        }
+
+        function  clientOrderModalRest(){
+            document.getElementById('orderModelForm').reset();
         }
 
 

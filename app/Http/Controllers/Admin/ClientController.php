@@ -46,7 +46,8 @@ class ClientController extends Controller {
         $func = $type . "ClientList";
 
         $clients = call_user_func([$this, $func], $staffId, $staffLevel, $request);
-
+        $clients['clients'] = $this->attachClientVisitStatusColorCode($clients['clients']);
+//dd($clients);
         $services = new TemplateController();
         $services = $services->getServices();
 
@@ -190,6 +191,7 @@ class ClientController extends Controller {
         $orders = Order::where('order_client_id', '=', $request->post('client_id'))->get();
         foreach ($orders as $order) {
 
+
             if ((Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level)<((int)env('DEPARTMENT_CHIEF_LEVEL'))) {
                 $patten = "";
                 for ($i = 0; $i <= strlen($order->order_company_tax_ref) - 6; $i++) {
@@ -201,6 +203,11 @@ class ClientController extends Controller {
             $order->files = str_replace("Order/REF/{$order->order_id}/", '', Storage::disk('CRM')->allFiles("Order/REF/{$order->order_id}/"));
             $order->order_created_at = date("Y-m-d", strtotime($order->created_at));
             $order->order_status = OrderStatus::find($order->order_status_code)->order_status_name;
+
+            $order->available_order_status = OrderStatus::where('order_status_category','=',$order->order_stage)
+                ->get();
+
+
             $order->carts = Cart::where('order_id', '=', $order->order_id)->get();
         }
 //dd($orders);
@@ -717,5 +724,29 @@ class ClientController extends Controller {
         return $clients;
     }
 
+    private function attachClientVisitStatusColorCode($clients){
+//        dd($clients);
+        foreach ($clients as $key=>$client) {
+
+            switch($client->getOriginal('client_visit_status')){
+                case "1":
+                    $clients[$key]->visitColorCode = "badge-primary";
+                    break;
+                case "2":
+                    $clients[$key]->visitColorCode = "badge-success";
+                    break;
+                case "3":
+                    $clients[$key]->visitColorCode = "badge-warning";
+                    break;
+                case "4":
+                    $clients[$key]->visitColorCode = "badge-danger";
+                    break;
+            }
+
+        }
+
+        return $clients;
+
+    }
 
 }

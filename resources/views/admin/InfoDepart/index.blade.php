@@ -90,48 +90,6 @@
 
         <div class="col-2">
             <div class="alert alert-success">
-                <h4 class="alert-heading">订单类型</h4>
-                <hr>
-
-                <div class="input-group input-group-sm mb-3">
-                    <input type="text" class="form-control" id="order_type_0" placeholder="订单类型"
-                           aria-label="Recipient's username" aria-describedby="basic-addon2">
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-primary" type="button"
-                                onclick="modify('create','order_type','0','order_type_name')">
-                            添加
-                        </button>
-
-                    </div>
-                </div>
-                <hr>
-
-                @foreach($data['orderType'] as $status)
-                    <div class="input-group input-group-sm mb-3">
-                        <input type="text" class="form-control" id="order_type_{{$status->order_type_id}}"
-                               name="visit_status_name" placeholder="信息来源" value="{{$status->order_type_name}}"
-                               aria-label="Recipient's username" aria-describedby="basic-addon2">
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-success" type="button"
-                                    onclick="modify('update','order_type', {{$status['order_type_id']}},'order_type_name')">
-                                修改
-                            </button>
-                            <button class="btn btn-outline-secondary" type="button"
-                                    onclick="modify('delete','order_type', {{$status['order_type_id']}},'order_type_name')">
-                                删除
-                            </button>
-                        </div>
-                    </div>
-                @endforeach
-
-
-                <p class="mb-0">备注信息:商标,版权,专利等主项业务.....</p>
-            </div>
-        </div>
-
-
-        <div class="col-2">
-            <div class="alert alert-success">
                 <h4 class="alert-heading">部门设置</h4>
 
                 <hr>
@@ -157,18 +115,24 @@
             </div>
         </div>
 
-    </div>
-
-    <div class="row">
-        <div class="col-2">
-            <div class="alert alert-primary">
+        <div class="col-3">
+            <div class="alert alert-success">
                 <h4 class="alert-heading">订单状态</h4>
                 <hr>
 
                 <div class="input-group input-group-sm mb-3">
                     <input type="text" class="form-control" id="order_status_0" placeholder="订单状态"
                            aria-label="Recipient's username" aria-describedby="basic-addon2">
+
                     <div class="input-group-append">
+                        <select class ="custom-select custom-select-sm" id="order_status_category_0">
+                            <option value="2">状态更新</option>
+                            <option value="0">合法性审批</option>
+                            <option value="1">有效性审批</option>
+                        </select>
+                    </div>
+                    <div class="input-group-append">
+
                         <button class="btn btn-outline-primary" type="button"
                                 onclick="modify('create','order_status','0','order_status_name')">
                             添加
@@ -181,9 +145,15 @@
                 @foreach($data['orderStatus'] as $status)
                     <div class="input-group input-group-sm mb-3">
                         <input type="text" class="form-control" id="order_status_{{$status->order_status_id}}"
-                               name="visit_status_name" placeholder="信息来源" value="{{$status->order_status_name}}"
+                               name="visit_status_name" placeholder="订单状态" value="{{$status->order_status_name}}"
                                aria-label="Recipient's username" aria-describedby="basic-addon2">
                         <div class="input-group-append">
+                            <select class ="custom-select custom-select-sm" id="order_status_category_{{$status->order_status_id}}">
+                                <option value="{{$status->getOriginal('order_status_category')}}">{{$status->order_status_category}}</option>
+                                <option value="2">状态更新</option>
+                                <option value="0">合法性审批</option>
+                                <option value="1">有效性审批</option>
+                            </select>
                             <button class="btn btn-outline-success" type="button"
                                     onclick="modify('update','order_status',{{$status->order_status_id}},'order_status_name')">
                                 修改
@@ -202,7 +172,9 @@
 
         </div>
 
+    </div>
 
+    <div class="row">
         <div class="col-3">
 
             <div class="alert alert-primary">
@@ -634,6 +606,11 @@
 
             var data = "";
             switch (field) {
+
+                case "order_status_name":
+                    data = {order_status_name: $("#order_status_"  + inputId).val(),
+                            order_status_category:$("#order_status_category_"+inputId).val()};
+                    break;
                 case "info_source_name":
                     data = {info_source_name: $("#" + tableName + '_' + inputId).val()};
                     break;
@@ -662,9 +639,7 @@
                     };
 
                     break;
-                case "order_status_name":
-                    data = {order_status_name: $("#" + tableName + '_' + inputId).val()};
-                    break;
+
                 case "service_name":
                     // var cost = $("#category").val()!=0?$("#price_0").val():'-1';
                     data = {

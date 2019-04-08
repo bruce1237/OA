@@ -45,6 +45,7 @@ class CreateOrdersTable extends Migration
             $table->date('order_settled_date')->nullable()->comment('订单结算日期');
             $table->enum('order_taxable',[0,1,2])->default(0)->comment('订单是否需要对方公司的发票:0:不需要,1需要,2已收到,只有当当前订单下面的所有需要发票的小项都已收到是才变为2');
             $table->integer('order_status_code')->comment('订单当前的状态');
+            $table->enum('order_stage',[0,1,2])->default(0)->comment('订单所处的阶段:0待审批,1合法性审批通过,2有效性审批通过');
             $table->foreign('order_status_code')->references('order_status')->on('order_status_id');
             $table->softDeletes();
             $table->timestamps();

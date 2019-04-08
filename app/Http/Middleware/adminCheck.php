@@ -23,7 +23,7 @@ class adminCheck
 
 
     public function handle($request, Closure $next) {
-        $data = ['status' => false,'msg' => "你没有授权, 无权操作!",'icon'=>2];
+        $data = ['status' => false,'msg' => "你没有授权, 无权操作!",'icon'=>2,'code'=>2];
 
 
         if (Auth::guard('admin')->check()) {
