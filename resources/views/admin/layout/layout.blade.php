@@ -265,8 +265,9 @@ style="left: 0px;"
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
+        // notificationCheck();
         setInterval(showDateTime, 1000);
-        self.setInterval("notificationCheck()", 300000);
+        self.setInterval("notificationCheck()", 15000);
 
     });
 
@@ -320,22 +321,35 @@ style="left: 0px;"
 
     function notificationCheck() {
 
+        clientChangeNotification();
 
+    }
+
+
+
+    function clientChangeNotification(){
         $.ajax({
             url: "{{url('admin/notificationCheck')}}",
             type: 'post',
             success: function (data) {
-                $.each(data, function (key, value) {
-                    new Notification(value.title, {
-                        body: value.body,
-                        icon: value.icon,
-                        dir: value.dir,
+
+
+                    var notification = new Notification(data.title, {
+                        body: data.body,
+                        icon: data.icon,
+                        dir: data.dir,
+                        data:data.data,
 
                     });
-                });
+                    notification.onclick=function(event){
+
+                    }
+                    notification.onshow=function(){
+                        setTimeout(notification.close.bind(notification), 14000);
+                    }
+
             }
         });
-
     }
 
 

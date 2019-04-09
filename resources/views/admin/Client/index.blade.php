@@ -866,147 +866,147 @@
                 <div class="modal-body">
                     <form id="orderModelForm">
 
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
-                         id="OrderModelfirms">
-                        @foreach($data['firms'] as $firm)
-                            <label class="btn btn-outline-success"
-                                   onclick="getPaymentMethodByFirm({{$firm->firm_id}})">
-                                <input type="radio" id="firm_id" name="order_firm" value="{{$firm->firm_id}}"
-                                       autocomplete="off"> {{$firm->firm_name}}
+                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                             id="OrderModelfirms">
+                            @foreach($data['firms'] as $firm)
+                                <label class="btn btn-outline-success"
+                                       onclick="getPaymentMethodByFirm({{$firm->firm_id}})">
+                                    <input type="radio" id="firm_id" name="order_firm" value="{{$firm->firm_id}}"
+                                           autocomplete="off"> {{$firm->firm_name}}
+                                </label>
+                            @endforeach
+                        </div>
+                        选择公司:
+                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                             id="OrderModelCompany"></div>
+
+                        <br/><br/>
+
+                        <div class="input-group input-group-sm mb-3">
+                            联系人: &nbsp;<div class="btn-group  btn-group-toggle" data-toggle="buttons"
+                                            id="OrderModelContact"></div>&nbsp;
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">姓名</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_contact_name" name="order_contact_name"
+                                   placeholder="联系人姓名" aria-label="Username" aria-describedby="basic-addon1">
+
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">电话</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_contact_number"
+                                   name="order_contact_number"
+                                   placeholder="联系人电话" aria-label="Username" aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">地址</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_contact_address"
+                                   name="order_contact_address"
+                                   placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">邮编</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_contact_post_code"
+                                   name="order_contact_post_code" placeholder="联系人地址" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                        </div>
+
+                        <div class="input-group input-group-sm mb-3">
+                            邮寄地址: &nbsp;<div class="btn-group  btn-group-toggle" data-toggle="buttons"
+                                             id="OrderModelContact"></div>&nbsp;
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">姓名</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_post_addressee"
+                                   name="order_post_addressee"
+                                   placeholder="联系人姓名" aria-label="Username" aria-describedby="basic-addon1">
+
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">电话</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_post_contact" name="order_post_contact"
+                                   placeholder="联系人电话" aria-label="Username" aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">地址</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_post_address" name="order_post_address"
+                                   placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">邮编</span>
+                            </div>
+                            <input type="text" class="form-control" id="order_post_code" name="order_post_code"
+                                   placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
+                        </div>
+
+                        发票类型:
+                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                             id="OrderModelTaxType">
+                            <label class="btn btn-outline-success active">
+                                <input type="radio" name="order_tax_type" value="无票" autocomplete="off" checked> 无票
                             </label>
-                        @endforeach
-                    </div>
-                    选择公司:
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
-                         id="OrderModelCompany"></div>
+                            <label class="btn btn-outline-success">
+                                <input type="radio" name="order_tax_type" value="普票" autocomplete="off"> 普票
+                            </label>
+                            <label class="btn btn-outline-success">
+                                <input type="radio" name="order_tax_type" value="专票" autocomplete="off"> 专票
+                            </label>
 
-                    <br/><br/>
-
-                    <div class="input-group input-group-sm mb-3">
-                        联系人: &nbsp;<div class="btn-group  btn-group-toggle" data-toggle="buttons"
-                                        id="OrderModelContact"></div>&nbsp;
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">姓名</span>
                         </div>
-                        <input type="text" class="form-control" id="order_contact_name" name="order_contact_name"
-                               placeholder="联系人姓名" aria-label="Username" aria-describedby="basic-addon1">
-
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">电话</span>
+                        对方开票:
+                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                             id="OrderModelTaxable">
+                            <label class="btn btn-outline-success active">
+                                <input type="radio" name="order_taxable" value="无票" autocomplete="off" checked> 无票
+                            </label>
+                            <label class="btn btn-outline-success">
+                                <input type="radio" name="order_taxable" value="普票" autocomplete="off"> 普票
+                            </label>
+                            <label class="btn btn-outline-success">
+                                <input type="radio" name="order_taxable" value="专票" autocomplete="off"> 专票
+                            </label>
                         </div>
-                        <input type="text" class="form-control" id="order_contact_number"
-                               name="order_contact_number"
-                               placeholder="联系人电话" aria-label="Username" aria-describedby="basic-addon1">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">地址</span>
-                        </div>
-                        <input type="text" class="form-control" id="order_contact_address"
-                               name="order_contact_address"
-                               placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">邮编</span>
-                        </div>
-                        <input type="text" class="form-control" id="order_contact_post_code"
-                               name="order_contact_post_code" placeholder="联系人地址" aria-label="Username"
-                               aria-describedby="basic-addon1">
-                    </div>
 
-                    <div class="input-group input-group-sm mb-3">
-                        邮寄地址: &nbsp;<div class="btn-group  btn-group-toggle" data-toggle="buttons"
-                                         id="OrderModelContact"></div>&nbsp;
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">姓名</span>
-                        </div>
-                        <input type="text" class="form-control" id="order_post_addressee"
-                               name="order_post_addressee"
-                               placeholder="联系人姓名" aria-label="Username" aria-describedby="basic-addon1">
+                        付款方式:
+                        <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
+                             id="OrderModelPayments"></div>
+                        <hr/>
 
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">电话</span>
-                        </div>
-                        <input type="text" class="form-control" id="order_post_contact" name="order_post_contact"
-                               placeholder="联系人电话" aria-label="Username" aria-describedby="basic-addon1">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">地址</span>
-                        </div>
-                        <input type="text" class="form-control" id="order_post_address" name="order_post_address"
-                               placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text" id="basic-addon1">邮编</span>
-                        </div>
-                        <input type="text" class="form-control" id="order_post_code" name="order_post_code"
-                               placeholder="联系人地址" aria-label="Username" aria-describedby="basic-addon1">
-                    </div>
-
-                    发票类型:
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
-                         id="OrderModelTaxType">
-                        <label class="btn btn-outline-success active">
-                            <input type="radio" name="order_tax_type" value="无票" autocomplete="off" checked> 无票
-                        </label>
-                        <label class="btn btn-outline-success">
-                            <input type="radio" name="order_tax_type" value="普票" autocomplete="off"> 普票
-                        </label>
-                        <label class="btn btn-outline-success">
-                            <input type="radio" name="order_tax_type" value="专票" autocomplete="off"> 专票
-                        </label>
-
-                    </div>
-                    对方开票:
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
-                         id="OrderModelTaxable">
-                        <label class="btn btn-outline-success active">
-                            <input type="radio" name="order_taxable" value="无票" autocomplete="off" checked> 无票
-                        </label>
-                        <label class="btn btn-outline-success">
-                            <input type="radio" name="order_taxable" value="普票" autocomplete="off"> 普票
-                        </label>
-                        <label class="btn btn-outline-success">
-                            <input type="radio" name="order_taxable" value="专票" autocomplete="off"> 专票
-                        </label>
-                    </div>
-
-                    付款方式:
-                    <div class="btn-group btn-group-sm btn-group-toggle" data-toggle="buttons"
-                         id="OrderModelPayments"></div>
-                    <hr/>
-
-                    <form id="supportFileForm" enctype="multipart/form-data">
+                        <form id="supportFileForm" enctype="multipart/form-data">
+                            <div class="input-group input-group-sm mb-3">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">相关文件</span>
+                                </div>
+                                <div class="custom-file">
+                                    <input type="file" name="supportFiles" class="custom-file-input" id="supportFiles"
+                                           multiple="multiple">
+                                    <label class="custom-file-label" for="inputGroupFile01">选择文件</label>
+                                </div>
+                            </div>
+                        </form>
+                        <hr/>
                         <div class="input-group input-group-sm mb-3">
                             <div class="input-group-prepend">
-                                <span class="input-group-text">相关文件</span>
+                                <label class="input-group-text" for="inputGroupSelect01">添加服务</label>
                             </div>
-                            <div class="custom-file">
-                                <input type="file" name="supportFiles" class="custom-file-input" id="supportFiles"
-                                       multiple="multiple">
-                                <label class="custom-file-label" for="inputGroupFile01">选择文件</label>
-                            </div>
-                        </div>
-                    </form>
-                    <hr/>
-                    <div class="input-group input-group-sm mb-3">
-                        <div class="input-group-prepend">
-                            <label class="input-group-text" for="inputGroupSelect01">添加服务</label>
-                        </div>
-                        <select class="custom-select" id="service">
-                            @foreach($data['services'] as $services)
+                            <select class="custom-select" id="service">
+                                @foreach($data['services'] as $services)
 
-                                @foreach($services as $service=>$serviceId)
-                                    @if(is_int($serviceId) || $serviceId=='disabled' )
-                                        <option value="{{$serviceId}}"
-                                                {{$serviceId}} cost="@if(key_exists($service."cost",$services)){{$services[$service."cost"]}}@endif">{{$service}}</option>
-                                    @endif
+                                    @foreach($services as $service=>$serviceId)
+                                        @if(is_int($serviceId) || $serviceId=='disabled' )
+                                            <option value="{{$serviceId}}"
+                                                    {{$serviceId}} cost="@if(key_exists($service."cost",$services)){{$services[$service."cost"]}}@endif">{{$service}}</option>
+                                        @endif
+                                    @endforeach
                                 @endforeach
-                            @endforeach
-                        </select>
-                        <div class="input-group-prepend">
-                            <button class="btn btn-outline-success" type="button" onclick="addService()">添加</button>
+                            </select>
+                            <div class="input-group-prepend">
+                                <button class="btn btn-outline-success" type="button" onclick="addService()">添加</button>
+                            </div>
                         </div>
-                    </div>
 
 
-                    <div id="orderModelServiceSection"></div>
-                    <textarea class="form-control" id="orderModelMemo" placeholder="订单备注"></textarea>
+                        <div id="orderModelServiceSection"></div>
+                        <textarea class="form-control" id="orderModelMemo" placeholder="订单备注"></textarea>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -1155,7 +1155,7 @@
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">关闭</button>
-                            <button type="button" class="btn btn-outline-danger" onclick="delOrder()">无效订单</button>
+                            <button type="button" class="btn btn-outline-danger" onclick="delOrder()">无效此订单</button>
                         </div>
                     </div>
 
@@ -1849,9 +1849,10 @@
                 dataType: 'json',
                 success: function (data) {
                     layer.msg(data.msg, {icon: data.code});
-                    if(data.status){
+                    if (data.status) {
                         $("#orderModal").modal('hide');
                         clientOrderModalRest();
+                        getClientDetail($("#client_id").val());
                     }
                 }
             });
@@ -1885,8 +1886,8 @@
             $("#showOrderModalNewOrderStatus").val(order.order_status_code);
 
             $("#showOrderModalNewOrderStatus").html('');
-            $.each(order.available_order_status, function(key,value){
-                $("#showOrderModalNewOrderStatus").append('<option value="'+value.order_status_id+'">'+value.order_status_name+'</option>');
+            $.each(order.available_order_status, function (key, value) {
+                $("#showOrderModalNewOrderStatus").append('<option value="' + value.order_status_id + '">' + value.order_status_name + '</option>');
             });
 
 
@@ -1914,7 +1915,8 @@
                 $.each(str, function (k, v) {
                     cartContents += ' <span class="badge badge-secondary">' + v.name + ':</span><span>' + v.value + '</span>';
                 });
-
+                    let ref = item.service_ref!=null?item.service_ref:'';
+                    let stage = item.service_stage!=null?item.service_stage:'';
 
                 var content = '<div class="card border-primary mb-3">\n' +
                     '                                    <div class="card-body text-success">\n' +
@@ -1929,14 +1931,18 @@
                     '                                                      id="showOrderModalServicePrice">' + item.service_price + '</span>\n' +
                     '                                                <span class="input-group-text"\n' +
                     '                                                      id="showOrderModalServiceCost">' + item.service_cost + '</span>\n' +
+                    '                                               <span class="input-group-text">ID</span>' +
                     '                                            </div>\n' +
-                    '                                            <input type="text" id="showOrderModalCartServiceRef' + item.cart_id + '" class="form-control"\n' +
-                    '                                                   value="' + item.service_ref + '">\n' +
+                    '                                               <input type="text" id="showOrderModalCartServiceRef' + item.cart_id + '" class="form-control" value="' + ref + '">\n' +
+                    '                                            <div class="input-group-append">\n' +
+                    '                                               <span class="input-group-text">状态</span>' +
+                    '                                            </div>\n' +
+                    '                                            <input type="text" id="showOrderModalCartServiceStage' + item.cart_id + '" class="form-control" value="' + stage + '">\n' +
                     '                                            <div class="input-group-append">\n' +
                     '                                                <button class="btn btn-outline-secondary" type="button" onclick="updateCart(' + item.cart_id + ')">更新</button>\n' +
                     '                                            </div>\n' +
                     '                                        </div>\n' +
-                    cartContents +
+                                                             cartContents +
                     '                                    </div>\n' +
                     '                                </div>';
 
@@ -1950,10 +1956,11 @@
 
         function updateCart(cartId) {
             var cartRef = $("#showOrderModalCartServiceRef" + cartId).val();
+            var cartStage = $("#showOrderModalCartServiceStage" + cartId).val();
             $.ajax({
-                url: "{{url('admin/updateCartRef')}}",
+                url: "{{url('admin/updateCart')}}",
                 type: 'post',
-                data: {cart_id: cartId, service_ref: cartRef},
+                data: {cart_id: cartId, service_ref: cartRef, service_stage: cartStage},
                 dataType: 'json',
                 success: function (data) {
                     layer.msg(data.msg, {icon: data.code});
@@ -1994,21 +2001,25 @@
 
         }
 
-        function delOrder(){
+        function delOrder() {
             let orderId = $("#showOrderModalOrderId").text();
             $.ajax({
-               url:"{{url('admin/delOrder')}}",
-                type:'post',
-                data:{order_id:orderId},
-                dataType:'json',
-                success:function(data){
-                   layer.msg(data.msg,{icon:data.code});
+                url: "{{url('admin/delOrder')}}",
+                type: 'post',
+                data: {order_id: orderId},
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                    if (data.status) {
+                        $("#showOrderModal").modal('hide');
+                        getClientDetail($("#client_id").val());
+                    }
                 }
 
             });
         }
 
-        function  clientOrderModalRest(){
+        function clientOrderModalRest() {
             document.getElementById('orderModelForm').reset();
         }
 

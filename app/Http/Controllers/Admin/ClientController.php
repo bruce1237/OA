@@ -210,7 +210,7 @@ class ClientController extends Controller {
 
             $order->carts = Cart::where('order_id', '=', $order->order_id)->get();
         }
-//dd($orders);
+
         if ($client) {
             $this->returnData['status'] = true;
             $this->returnData['data'] = $client;

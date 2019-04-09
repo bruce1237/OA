@@ -148,9 +148,12 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*****************Order 订单部分*************/
     /*******************************************/
     Route::post('generateOrder', ['uses' => 'orderController@generateOrder']);
-    Route::post('updateCartRef', ['uses' => 'orderController@updateCartRef']);
+    Route::post('updateCart', ['uses' => 'orderController@updateCart']);
     Route::post('updateOder', ['uses' => 'orderController@updateOder']);
     Route::post('delOrder', ['uses' => 'orderController@delOrder']);
+    Route::get('orderList', ['uses' => 'orderController@orderList']);
+    Route::post('orderSearch', ['uses' => 'orderController@orderSearch']);
+    Route::post('getOrderDetail', ['uses' => 'orderController@getOrderDetail']);
 
 
 
