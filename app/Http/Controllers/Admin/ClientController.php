@@ -711,7 +711,9 @@ class ClientController extends Controller {
             }
 
 
-        })->where('client_status', '=', '1')
+        })
+            ->where('deleted_at','=',null)
+            ->where('client_status', '=', '1')
             ->orderBy($orderBy[0], $orderBy[1])
             ->paginate($this->_pageSize);
 

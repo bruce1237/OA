@@ -154,6 +154,7 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::get('orderList', ['uses' => 'orderController@orderList']);
     Route::post('orderSearch', ['uses' => 'orderController@orderSearch']);
     Route::post('getOrderDetail', ['uses' => 'orderController@getOrderDetail']);
+    Route::post('uploadOrderSupportFiles', ['uses' => 'orderController@uploadOrderSupportFiles']);
 
 
 

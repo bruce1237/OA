@@ -46,34 +46,7 @@ class Controller extends BaseController
     }
 
 
-    protected function authorizeOrderStatusChange(Request $request){
-        /**
-        "order_id" => "1"
-        "order_tax_ref" => "99988877665544"
-        "tax_number" => "987654321"
-        "tax_received_date" => "2019-03-09"
-        "order_settlement" => "已结算"
-        "order_settled_date" => "2019-02-28"
-        "order_status_code" => "5"
-        **/
 
-        $orderStage = Order::find($request->post('order_id'))->order_stage;
-        $orderStatusCategory = OrderStatus::find($request->post('order_status_code'))->getOriginal('order_status_category');
-
-        /**
-         * how orderStage works
-         * Stage 0: can only change to category 0 status
-         * stage 1: can only change to category 1 status
-         * stage 2: can only change to category 2 status
-         **/
-
-        return $orderStage == $orderStatusCategory;
-
-
-
-
-
-    }
 
 
 }

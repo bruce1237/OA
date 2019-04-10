@@ -1160,16 +1160,8 @@
                     </div>
 
 
-                    <div class="input-group mb-3">
-                        <select class="form-control" id="showOrderModalNewOrderStatus">
-
-
-                        </select>
-                        <div class="input-group-append">
-                            <button class="btn btn-outline-success" type="button" onclick="updateOrder()">更新订单信息
-                            </button>
-                        </div>
-                    </div>
+                    <button class="btn btn-outline-success" type="button" onclick="updateOrder()">更新订单信息
+                    </button>
                 </div>
             </div>
         </div>
@@ -1512,7 +1504,7 @@
                         getClientDetail($("#client_id").val());
                     }
                 }
-            })
+            });
         }
 
         function showClientQlfFile(fileName) {
@@ -1883,12 +1875,9 @@
             $("#showOrderModalTaxNumber").val(order.tax_number);
             $("#showOrderModalTaxReceivedDate").val(order.tax_received_date);
             $("#showOrderModalPaymentMethodName").html(order.order_payment_method_name);
-            $("#showOrderModalNewOrderStatus").val(order.order_status_code);
 
-            $("#showOrderModalNewOrderStatus").html('');
-            $.each(order.available_order_status, function (key, value) {
-                $("#showOrderModalNewOrderStatus").append('<option value="' + value.order_status_id + '">' + value.order_status_name + '</option>');
-            });
+
+
 
 
             var paymentdetails = $.parseJSON(order.order_payment_method_details);
@@ -1976,7 +1965,6 @@
             data.append('tax_received_date', $("#showOrderModalTaxReceivedDate").val());
             data.append('order_settlement', $("#showOrderModalOrderSettlement").val());
             data.append('order_settled_date', $("#showOrderModalOrderSettledDate").val());
-            data.append('order_status_code', $("#showOrderModalNewOrderStatus").val());
 
             for (var i = 0; i < $("#showOrderModalSupportFiles")[0].files.length; i++) {
                 data.append('file' + i, $("#showOrderModalSupportFiles")[0].files[i])
