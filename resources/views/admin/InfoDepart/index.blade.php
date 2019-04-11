@@ -126,9 +126,9 @@
 
                     <div class="input-group-append">
                         <select class ="custom-select custom-select-sm" id="order_status_category_0">
-                            <option value="2">状态更新</option>
-                            <option value="0">合法性审批</option>
-                            <option value="1">有效性审批</option>
+                            <option value="3">状态更新</option>
+                            <option value="1">合法性审批</option>
+                            <option value="2">有效性审批</option>
                         </select>
                     </div>
                     <div class="input-group-append">
@@ -149,10 +149,10 @@
                                aria-label="Recipient's username" aria-describedby="basic-addon2">
                         <div class="input-group-append">
                             <select class ="custom-select custom-select-sm" id="order_status_category_{{$status->order_status_id}}">
-                                <option value="{{$status->getOriginal('order_status_category')}}">{{$status->order_status_category}}</option>
-                                <option value="2">状态更新</option>
-                                <option value="0">合法性审批</option>
-                                <option value="1">有效性审批</option>
+                                <option value="{{$status->getOriginal('order_status_category')}}" selected>{{$status->order_status_category}}</option>
+                                <option value="3">状态更新</option>
+                                <option value="1">合法性审批</option>
+                                <option value="2">有效性审批</option>
                             </select>
                             <button class="btn btn-outline-success" type="button"
                                     onclick="modify('update','order_status',{{$status->order_status_id}},'order_status_name')">
@@ -215,7 +215,7 @@
                                name="visit_status_name" placeholder="业务名称" value="{{$service['service_name']}}"
                                aria-label="Recipient's username" aria-describedby="basic-addon2">
 
-                        @if($service['service_cost']>0)
+                        @if($service['service_cost']!=0)
                             <div class="input-group-prepend">
                                 <label class="input-group-text" for="inputGroupSelect01">&yen;:</label>
                             </div>
@@ -643,7 +643,8 @@
                 case "service_name":
                     // var cost = $("#category").val()!=0?$("#price_0").val():'-1';
                     data = {
-                        service_cost: $("#category").val() != 0 ? $("#price_0").val() : '-1',
+                        // service_cost: $("#category").val() != 0 ? $("#price_0").val() : '-1',
+                        service_cost: $("#category").val(),
                         service_name: $("#" + tableName + '_' + inputId).val(),
                         service_parent_id: $("#category").val()
                     };

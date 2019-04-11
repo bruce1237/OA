@@ -12,6 +12,7 @@ use App\Model\InfoSource;
 use App\Model\Order;
 use App\Model\OrderStatus;
 use App\Model\PaymentMethod;
+use App\Model\Service;
 use App\Model\Staff;
 use App\Model\Visit;
 use App\Model\VisitStatus;
@@ -48,8 +49,8 @@ class ClientController extends Controller {
         $clients = call_user_func([$this, $func], $staffId, $staffLevel, $request);
         $clients['clients'] = $this->attachClientVisitStatusColorCode($clients['clients']);
 //dd($clients);
-        $services = new TemplateController();
-        $services = $services->getServices();
+
+        $services = $this->getServices();
 
 
         $orderStatus = OrderStatus::all();
@@ -72,7 +73,24 @@ class ClientController extends Controller {
         ];
         return view('admin/client/index', ['data' => $data]);
     }
+    public function getServices(){
+        $structuredServices = array();
+        $services = Service::all();
 
+        foreach ($services as $key=>$service) {
+            if (!$service->service_parent_id) {
+                $structuredServices[$key][$service->service_name] = "disabled";
+                foreach ($services as $s) {
+                    if ($s->service_parent_id == $service->service_id) {
+                        $structuredServices[$key][$s->service_name] = $s->service_id;
+                        $structuredServices[$key][$s->service_name.'cost'] = $s->service_cost;
+                    }
+                }
+            }
+        }
+
+        return $structuredServices;
+    }
     /**
      * usage: to add client visitData
      * @param Request $request

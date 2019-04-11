@@ -69,7 +69,7 @@
 
         </div>
 
-        <div class="col-8" id="orderDetail" style="display: block">
+        <div class="col-8" id="orderDetail" style="display: none">
 
             <div class="card border-primary mb-3">
                 <div class="card-header">订单明细: <span id="order_id"></span>
@@ -199,8 +199,7 @@
                         <div class="card-header">相关文件</div>
 
 
-
-                        <div class="card-body text-secondary" >
+                        <div class="card-body text-secondary">
 
 
                             <div class="input-group">
@@ -209,7 +208,8 @@
                                     <label class="custom-file-label" for="uploadFiles">Choose file</label>
                                 </div>
                                 <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="button" onclick="uploadFiles()">上传</button>
+                                    <button class="btn btn-outline-secondary" type="button" onclick="uploadFiles()">上传
+                                    </button>
                                 </div>
                             </div>
 
@@ -230,13 +230,10 @@
 
                     <div class="input-group input-group-sm col-4 float-right">
                         <select class="custom-select" id="order_status_code">
-                            <option selected>Choose...</option>
-                            <option value="1">One</option>
-                            <option value="2">Two</option>
-                            <option value="3">Three</option>
+
                         </select>
                         <div class="input-group-append">
-                            <button class="btn btn-outline-success">更新</button>
+                            <button class="btn btn-outline-success" onclick="updateOrder()">更新</button>
                         </div>
                     </div>
 
@@ -369,9 +366,17 @@
                     $("#tax_number").val(data.data.tax_number);
                     $("#tax_received_date").val(data.data.tax_received_date);
                     $("#order_memo").text(data.data.order_memo);
-                    $("#order_status_code").text(data.data.order_status_code);
                     $("#created_at").text(data.data.created_date);
                     $("#updated_at").text(data.data.updated_at);
+
+                    $("#order_status_code").html('');
+                    $("#order_status_code").append('<option value="'+data.data.order_status_code+'" selected>'+data.data.order_status_name+'</option>');
+                    if(data.data.order_status_option){
+                        $.each(data.data.order_status_option,function(key,item){
+                            $("#order_status_code").append('<option value="'+item.order_status_id+'">'+item.order_status_name+'</option>');
+                        });
+                    }
+
 
                     $("#supportFiles").html('');
                     $.each(data.data.files, function (path, file) {
@@ -423,14 +428,13 @@
         function showFiles(filePath, file) {
             let src = "/storage/CRM/" + filePath;
             $("#showFileIframe").attr('src', src);
-            $("#rmOrderFiles").attr('onclick', "rmOrderFile('"+filePath+"')");
+            $("#rmOrderFiles").attr('onclick', "rmOrderFile('" + filePath + "')");
 
             $("#showFileModalTitle").html(file);
 
             $("#showFileModal").draggable();
             $("#showFileModal").modal('show');
         }
-
 
         function orderDivRest() {
             $("#order_id").text('');
@@ -462,9 +466,10 @@
             $("#created_at").text('');
             $("#updated_at").text('');
         }
+
         function updateCart(cartId) {
-            let cartRef = $("#service_ref"+cartId).val();
-            let cartStage = $("#service_stage"+cartId).val();
+            let cartRef = $("#service_ref" + cartId).val();
+            let cartStage = $("#service_stage" + cartId).val();
             $.ajax({
                 url: "{{url('admin/updateCart')}}",
                 type: 'post',
@@ -477,12 +482,13 @@
 
 
         }
-        function uploadFiles(){
+
+        function uploadFiles() {
             var order_id = $("#order_id").text();
             var data = new FormData();
-            data.append('order_id',order_id);
-            for(var i = 0; i< $("#uploadFiles")[0].files.length;i++){
-                data.append('file'+i,$("#uploadFiles")[0].files[i]);
+            data.append('order_id', order_id);
+            for (var i = 0; i < $("#uploadFiles")[0].files.length; i++) {
+                data.append('file' + i, $("#uploadFiles")[0].files[i]);
             }
             $.ajax({
                 url: "{{url('admin/uploadOrderSupportFiles')}}",
@@ -493,16 +499,54 @@
                 async: false,
                 success: function (data) {
                     layer.msg(data.msg, {icon: data.code});
-                    if(data.status){
+                    if (data.status) {
                         getOrderDetails(order_id);
                     }
                 }
             });
-
         }
 
-        function rmOrderFile(file){
-            //todo: continue
+        function rmOrderFile(file) {
+            $.ajax({
+                url: "{{url('admin/rmOrderFiles')}}",
+                type: 'post',
+                data: {filename: file},
+                dataType: 'json',
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                    if (data.status) {
+                        $("#showFileModal").modal('hide');
+                        getOrderDetails($("#order_id").text());
+                    }
+                }
+            });
+        }
+
+        function updateOrder(){
+            let data = new FormData();
+            data.append('order_id',$("#order_id").text());
+            data.append('order_settlement',$("#order_settlement").val());
+            data.append('order_settled_date',$("#order_settled_date").val());
+            data.append('order_tax_ref',$("#order_tax_ref").val());
+            data.append('tax_number',$("#tax_number").val());
+            data.append('tax_received_date',$("#tax_received_date").val());
+            data.append('order_memo',$("#order_memo").val());
+            data.append('order_status_code',$("#order_status_code").val());
+
+            $.ajax({
+                url: "{{url('admin/updateOrder')}}",
+                type: 'post',
+                data: data,
+                dataType: 'json',
+                processData: false,
+                contentType: false,
+                success: function (data) {
+                    layer.msg(data.msg, {icon: data.code});
+                    if (data.status) {
+                        getClientDetail($("#order_id").text());
+                    }
+                }
+            });
 
 
         }

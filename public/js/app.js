@@ -46854,7 +46854,7 @@ Vue.prototype.$mount = function (
           /* istanbul ignore if */
           if ("development" !== 'production' && !template) {
             warn(
-              ("Template element not found or is empty: " + (options.template)),
+              ("Contract element not found or is empty: " + (options.template)),
               this
             );
           }

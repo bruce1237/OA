@@ -1686,6 +1686,7 @@
         }
 
         function showOrderModel(client_id) {
+            orderModelReset();
             $.ajax({
                 url: "{{url('admin/getClientDetail')}}",
                 type: 'post',
@@ -1732,7 +1733,12 @@
             var service = $("#service").find("option:selected").text();
             var serviceId = $("#service").val();
             var cost = $("#service").find("option:selected").attr('cost');
+                if(cost>0){
+                    readonly = "readonly";
+                }else{
+                    readonly = "";
 
+                }
 
             var serviceDiv = '<div class="input-group input-group-sm mb-3" id="service_details_' + count + '">\n' +
                 '                            <div class="input-group-prepend">\n' +
@@ -1743,7 +1749,7 @@
                 '\n' +
                 '                            <input type="text" class="form-control" id="order_service_price_' + count + '" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm" >\n' +
                 '                            <div class="input-group-prepend">\n' +
-                '                                <span class="input-group-text" id="order_service_cost_' + count + '">' + cost + '</span>' +
+                '                                <input type="text" class="form-control" id="order_service_cost_' + count + '" value = "'+cost+'" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm" '+readonly+' >\n' +
                 '                            </div>' +
                 '<iframe name="iframe' + count + '" src="/storage/CRM/Order/Temp/' + serviceId + '.php"></iframe>\n' +
                 '<button class="btn btn-outline-secondary btn-sm" type="button" onclick="removeService(' + count + ')">移除</button>\n' +
@@ -1783,6 +1789,7 @@
         }
 
         function generateOrder() {
+
             var count = Number($("#OrderModalServiceCount").val());
 
             var services = [];
@@ -1793,10 +1800,11 @@
                     var serviceId = $("#order_service_category_id_" + i).val();
                     var serviceName = $("#order_service_name_" + i).val();
                     var servicePrice = $("#order_service_price_" + i).val();
+                    var serviceCost = $("#order_service_cost_" + i).val();
                     var iframeObj = $(window.frames["iframe" + i].document);
                     var serviceAttributes = iframeObj.find("#iframeFrom" + serviceId).serializeArray();
                     serviceAttributes = decodeURIComponent(JSON.stringify(serviceAttributes), true);
-                    services.push({serviceId, serviceName, servicePrice, serviceAttributes});
+                    services.push({serviceId, serviceName, servicePrice,serviceCost, serviceAttributes});
 
                 }
             }
@@ -1820,7 +1828,6 @@
                 order_memo: $("#orderModelMemo").val(),
                 services: services,
             };
-
 
             var dd = new FormData;
 
@@ -1850,6 +1857,25 @@
             });
         }
 
+        function orderModelReset(){
+
+            $("#OrderModalServiceCount").val(0);
+            $("#orderModelServiceSection").html('');
+            $("#firm_id").val('');
+
+            $("#orderClientCompany").val('');
+            $("#order_contact_name").val('');
+            $("#order_contact_number").val('');
+            $("#order_contact_address").val('');
+            $("#order_contact_post_code").val('');
+            $("#order_post_addressee").val('');
+            $("#order_post_contact").val('');
+            $("#order_post_address").val('');
+            $("#order_post_code").val('');
+            $("#orderModelMemo").val('');
+            $("#supportFiles").val('');
+
+        }
         function showOrderDetail(order) {
             $("#showOrderModalSupportFiles").val('');
             $("#showOrderModalOrderId").text(order.order_id);
@@ -1971,7 +1997,7 @@
             }
 
             $.ajax({
-                url: "{{url('admin/updateOder')}}",
+                url: "{{url('admin/updateOrder')}}",
                 type: 'post',
                 data: data,
                 dataType: 'json',

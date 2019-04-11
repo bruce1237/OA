@@ -40,7 +40,7 @@ class TestController extends Controller
 //        Settings::setPdfRenderer($rendererName,$rendererLibraryPath);
 
 
-//    $template = Template::find(1);
+//    $template = Contract::find(1);
 //    $filename = storage_path('contractTemplates\\'.$template->template_file);
 //    $filename = storage_path('contractTemplates\tmp333.doc');
 

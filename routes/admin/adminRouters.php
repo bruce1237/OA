@@ -117,9 +117,14 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     Route::post('assignInfo', ['uses' => 'infoAssignController@assignInfo']);
     Route::post('newClient', ['uses' => 'clientController@addClient']);
     Route::post('infoStatic', ['uses' => 'infoAssignController@infoStatic']);
-    Route::get('templateManage', ['uses' => 'templateController@index']);
-    Route::post('modifyTemplate', ['uses' => 'templateController@templateModify']);
+//    Route::get('templateManage', ['uses' => 'templateController@index']); //not in use, redesign in progress
+//    Route::post('modifyTemplate', ['uses' => 'templateController@templateModify']); //not in use redesign in progress
     Route::post('uploadClientInfoFile', ['uses' => 'infoAssignController@uploadClientInfoFile']);
+
+    /*************************-*******************/
+    /*********infoDepart信息部****合同部分*********/
+    /*******************************************/
+    Route::get('ContractManage', ['uses' => 'ContractController@index']);
 
 
     /*************************-*******************/
@@ -149,12 +154,13 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*******************************************/
     Route::post('generateOrder', ['uses' => 'orderController@generateOrder']);
     Route::post('updateCart', ['uses' => 'orderController@updateCart']);
-    Route::post('updateOder', ['uses' => 'orderController@updateOder']);
+    Route::post('updateOrder', ['uses' => 'orderController@updateOrder']);
     Route::post('delOrder', ['uses' => 'orderController@delOrder']);
     Route::get('orderList', ['uses' => 'orderController@orderList']);
     Route::post('orderSearch', ['uses' => 'orderController@orderSearch']);
     Route::post('getOrderDetail', ['uses' => 'orderController@getOrderDetail']);
     Route::post('uploadOrderSupportFiles', ['uses' => 'orderController@uploadOrderSupportFiles']);
+    Route::post('rmOrderFiles', ['uses' => 'orderController@rmOrderFiles']);
 
 
 

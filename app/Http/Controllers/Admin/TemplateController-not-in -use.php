@@ -113,6 +113,7 @@ class TemplateController extends Controller {
     public function getServices(){
         $structuredServices = array();
         $services = Service::all();
+
         foreach ($services as $key=>$service) {
             if (!$service->service_parent_id) {
                 $structuredServices[$key][$service->service_name] = "disabled";
