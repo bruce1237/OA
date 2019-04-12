@@ -637,27 +637,7 @@
             </div>
         </div>
     </div>
-    {{--    <div class="modal fade " tabindex="-1" role="dialog" id="clientQlfModal">--}}
-    {{--        <div class="modal-dialog" role="document" style="max-width: 1200px;">--}}
-    {{--            <div class="modal-content">--}}
-    {{--                <form id="newClientForm">--}}
-    {{--                    <div class="modal-header">--}}
-    {{--                        <h5 class="modal-title" id="clientQLFTitle">客户资质</h5>--}}
-    {{--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">--}}
-    {{--                            <span aria-hidden="true">&times;</span>--}}
-    {{--                        </button>--}}
-    {{--                    </div>--}}
-    {{--                    <div class="modal-body">--}}
-    {{--                        <iframe id="clientQLFEMBD" style="width:1150px;height:600px;"></iframe>--}}
-    {{--                    </div>--}}
-    {{--                    <div class="modal-footer">--}}
-    {{--                        <input type="hidden" id="clientQLFFileName"/>--}}
-    {{--                        <button type="button" class="btn btn-primary" onclick="rmClientQLFFile()">删除</button>--}}
-    {{--                    </div>--}}
-    {{--                </form>--}}
-    {{--            </div>--}}
-    {{--        </div>--}}
-    {{--    </div>--}}
+
 
 
     <div class="modal fade" id="searchClientModal">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Lib\contractMaker\MakeContract;
 use App\Model\Cart;
 use App\Model\Company;
 use App\Model\Department;
@@ -19,20 +20,15 @@ class OrderController extends Controller {
     //
     public function generateOrder(Request $request) {
         $data = $request->post('data');
-
         $data = json_decode($data, true);
-
         $orderId = 0;
         $orderTotal = $orderProfit = 0;
-
         //get cart details
         $cartData = array();
-
-
         foreach ($data['services'] as $service) {
             $serviceObj = Service::find($service['serviceId']);
             $cartData[] = [
-                'order_id' => & $orderId,
+                'order_id' => & $orderId, //先设置, 当 orderId变化的时候, 自动变化
                 'service_category' => $serviceObj->service_name,
                 'service_id' => $service['serviceId'],
                 'service_name' => $service['serviceName'],
@@ -41,7 +37,6 @@ class OrderController extends Controller {
                 'service_attributes' => $service['serviceAttributes'],
                 'service_profit' => $service['servicePrice'] - $serviceObj->service_cost,
             ];
-
             $orderTotal += $service['servicePrice'];
             $orderProfit += ($service['servicePrice'] - $serviceObj->service_cost);
         }
@@ -121,7 +116,7 @@ class OrderController extends Controller {
         try {
             Order::find($structruedData['order_id'])->update($structruedData);
             $this->uploadOrderSupportFiles($request);
-            if($structruedData['order_status_code']==16){
+            if($structruedData['order_status_code']==env('ORDER_VALID_STAGE')){
                 $this->generateContract($structruedData['order_id']);
             }
             $this->returnData['status'] = true;
@@ -136,6 +131,9 @@ class OrderController extends Controller {
     }
 
     public function generateContract($orderId){
+      $makeContract = new MakeContract();
+      $makeContract->makeContract($orderId);
+
 
     }
 
@@ -343,19 +341,19 @@ class OrderController extends Controller {
         $statusOptions = OrderStatus::where('order_status_category','=',$orderStatusCategory)->get();
         switch ($orderStatusCategory){
             case "1": //待审批阶段: 合法性审批
-                if($staff->staff_level == '3' && $staffDepart->assignable){
+                if($staff->staff_level == env('DEPARTMENT_CHIEF_LEVEL') && $staffDepart->assignable){
                     //业务部经理
                     return $statusOptions;
                 }
                 break;
             case "2"://付款审批: 有效性审批
-                if($staff->staff_level !='3' && $staffDepart->assignable == env("FINANCE_DEPART")){
+                if($staff->staff_level != env('DEPARTMENT_CHIEF_LEVEL') && $staffDepart->assignable == env("FINANCE_DEPART")){
                     //财务部员工
                     return $statusOptions;
                 }
                 break;
             case "3": //状态更新阶段: 状态修改
-                if($staff->staff_level !='3' && $staffDepart->assignable == env("PROCESS_DEPART")){
+                if($staff->staff_level != env('DEPARTMENT_CHIEF_LEVEL') && $staffDepart->assignable == env("PROCESS_DEPART")){
                     //流程部员工
                     return $statusOptions;
                 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Lib\contractMaker\MakeContract;
 use App\Model\Client;
 use App\Model\phone;
 use App\Model\Template;
@@ -22,12 +23,19 @@ class TestController extends Controller
 {
     public function tt(){
 
+        $makeContract = new MakeContract();
+        $makeContract->makeContract(1);
+
+
+
+
+
 //        $clients = Client::positions()->where('position_id',1)->get();
 //        $user = \App\Model\user::find(1)->phone;
-        $user = phone::find(1)->user;
+//        $user = phone::find(1)->user;
 
 
-        dd($user);
+//        dd($user);
 
         return view('admin/test/index',['count'=>10]);
 

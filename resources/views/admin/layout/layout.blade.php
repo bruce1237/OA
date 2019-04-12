@@ -332,6 +332,9 @@ style="left: 0px;"
             url: "{{url('admin/notificationCheck')}}",
             type: 'post',
             success: function (data) {
+                if(!data.notify){
+                    return false;
+                }
 
 
                     var notification = new Notification(data.title, {

@@ -125,6 +125,8 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
     /*********infoDepart信息部****合同部分*********/
     /*******************************************/
     Route::get('ContractManage', ['uses' => 'ContractController@index']);
+    Route::post('uploadContract', ['uses' => 'ContractController@uploadContract']);
+    Route::post('showContractServices', ['uses' => 'ContractController@showContractServices']);
 
 
     /*************************-*******************/

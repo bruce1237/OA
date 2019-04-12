@@ -12,6 +12,7 @@ class NotificationController extends Controller {
     private $_checker = array(); //like observer, to check if there is any new request need to notify the end user
     private $_clientChangeArr = array(); //used to store the files for client change request
     private $_returnData = [    //the return data sturcture
+        'notify'=>false,
         'title' => '等待您的审批',              //title of the notify popup window
         'body' => '',               //body of the notify popup window
         'icon' => '',               //icon need to be used for th popup window
@@ -61,6 +62,7 @@ class NotificationController extends Controller {
         if(in_array($positionId,$notifyPositionId)){
             if ($this->_clientChangeArr) { //if there is any file in the indicated folder, then their is file need to be notify
                 $this->_returnData['body'] .= " 客户信息修改 \r\n";
+                $this->_returnData['nofify'] =true;
             }
         }
     }
@@ -72,6 +74,7 @@ class NotificationController extends Controller {
             if($orders){
                 $this->_returnData['body'] .= " 共有{$orders}订单等待您的审批 \r\n";
             }
+                $this->_returnData['nofify'] =true;
         }
     }
 }
