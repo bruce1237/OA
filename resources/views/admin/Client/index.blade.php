@@ -851,7 +851,7 @@
                             @foreach($data['firms'] as $firm)
                                 <label class="btn btn-outline-success"
                                        onclick="getPaymentMethodByFirm({{$firm->firm_id}})">
-                                    <input type="radio" id="firm_id" name="order_firm" value="{{$firm->firm_id}}"
+                                    <input type="radio"  name="order_firm" value="{{$firm->firm_id}}"
                                            autocomplete="off"> {{$firm->firm_name}}
                                 </label>
                             @endforeach
@@ -1791,7 +1791,7 @@
 
 
             var data = {
-                firm_id: $("#firm_id").val(),
+                firm_id:  $("input[name='order_firm']:checked").val(),
                 order_client_id: $("#client_id").val(),
                 company_id: $("#orderClientCompany").val(),
                 order_contact_name: $("#order_contact_name").val(),

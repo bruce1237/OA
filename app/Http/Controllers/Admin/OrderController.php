@@ -20,6 +20,7 @@ class OrderController extends Controller {
     //
     public function generateOrder(Request $request) {
         $data = $request->post('data');
+//        dd($data);
         $data = json_decode($data, true);
         $orderId = 0;
         $orderTotal = $orderProfit = 0;

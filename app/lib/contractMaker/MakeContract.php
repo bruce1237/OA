@@ -22,19 +22,24 @@ class MakeContract {
     public function makeContract(Int $orderId) {
         $this->init($orderId);
         $contractServiceArr = $this->getContractServcieArray();
-        $this->getContractMaker($contractServiceArr);
+        $this->getContractMaker($orderId, $contractServiceArr);
 
     }
 
-    private function getContractMaker($contractServiceArr) {
+    private function getContractMaker(int $orderId, array $contractServiceArr):bool {
+        $maker = false;
         foreach ($contractServiceArr as $contractId=>$serviceIds){
             switch($contractId){
-                case "1":
-                    $contractMaker = logoApplyContractMaker();
-                    $contractMaker->make($serviceIds,$this->orderObj);
+                case env('LOGOAPPLY'):
+                    $contractMaker = new LogoApplyContractMaker();
+                    $result = $contractMaker->make($orderId,$contractId, $serviceIds);
                     break;
+                default:
+                    $result=false;
             }
+            $maker = (int)$maker*(int)$result;
         }
+        return $maker;
 
     }
 

@@ -46,6 +46,8 @@ class ClientController extends Controller {
         $firms = Firm::all(); //get firm data
         $func = $type . "ClientList";
 
+
+
         $clients = call_user_func([$this, $func], $staffId, $staffLevel, $request);
         $clients['clients'] = $this->attachClientVisitStatusColorCode($clients['clients']);
 //dd($clients);

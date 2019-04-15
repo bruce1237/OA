@@ -2,32 +2,37 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Controller;
 use App\Lib\contractMaker\MakeContract;
-use App\Model\Client;
 use App\Model\phone;
 use App\Model\Template;
-use App\User;
-use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\Storage;
-
-
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Reader\Word2007;
-use PhpOffice\PhpWord\Settings;
 use PhpOffice\PhpWord\TemplateProcessor;
-use PhpOffice\PhpWord\Writer\PDF\TCPDF;
 
-class TestController extends Controller
-{
-    public function tt(){
+
+class TestController extends Controller {
+
+
+
+    public function tt() {
+//
+//        $this->makeTable();
+//
+
 
         $makeContract = new MakeContract();
         $makeContract->makeContract(1);
 
-
-
+//        $cart = Cart::find(1);
+//
+//             $attributes=json_decode($cart->service_attributes,true);
+//             dd($attributes);
+//             foreach ($attributes as $key =>$attribute){
+//                 if($attribute['name']=="类别"){
+////                     $cart[$key]['ser']
+//                 }
+//             }
 
 
 //        $clients = Client::positions()->where('position_id',1)->get();
@@ -37,7 +42,7 @@ class TestController extends Controller
 
 //        dd($user);
 
-        return view('admin/test/index',['count'=>10]);
+        return view('admin/test/index', ['count' => 10]);
 
 //        $rendererName =  Settings::PDF_RENDERER_TCPDF;
         $rendererLibraryPath = 'D:\website\OA\vendor\phpoffice\phpword\src\PhpWord\Writer\PDF';
@@ -50,29 +55,28 @@ class TestController extends Controller
 
 //    $template = Contract::find(1);
 //    $filename = storage_path('contractTemplates\\'.$template->template_file);
-//    $filename = storage_path('contractTemplates\tmp333.doc');
+        $filename = storage_path('contractTemplates\tmp333.doc');
 
-//        $newfilename = storage_path('contractTemplates\tmp44333.doc');
-
+        $newfilename = storage_path('contractTemplates\tmp44333.doc');
 
 
         /**********************************变量替换***********************/
-//        //指定模板文件
-//        $templateProcessor =  new TemplateProcessor($filename);
-//        //通过setValue 方法给模板赋值
-//        $templateProcessor->setValue('ccf',"OKOK中国人");
-//        //保存新word文档
-//        $templateProcessor->saveAs($newfilename);
+        //指定模板文件
+        $templateProcessor = new TemplateProcessor($filename);
+        //通过setValue 方法给模板赋值
+        $templateProcessor->setValue('ccfv', "OKOK中国人");
+        //保存新word文档
+        $templateProcessor->saveAs($newfilename);
         /**********************************完成变量替换***********************/
 
-//        $word = new PhpWord();
-//        $loader = IOFactory::load($newfilename)->getSections();
-//        $word = IOFactory::load($filename);
+        $word = new PhpWord();
+        $loader = IOFactory::load($newfilename)->getSections();
+        $word = IOFactory::load($filename);
 
-//        $writer = IOFactory::createWriter($word,'PDF');
-//        $writer->save(storage_path('contractTemplates\tmp44333.PDF'));
+        $writer = IOFactory::createWriter($word, 'Word2007');
+        $writer->save(storage_path('contractTemplates\tmp44333.PDF'));
 
-//        dd($loader);
+        dd($loader);
 
 
 //        $phpWord = new PhpWord();
@@ -196,9 +200,84 @@ class TestController extends Controller
 //        $word = IOFactory::load($filename);
 
 
-
 //        $writer = IOFactory::createWriter($word,'PDF');
 //        $writer->save(storage_path('contractTemplates\tmp999.PDF'));
+
+    }
+
+    public function makeTable() {
+
+        $PHPWord = new PhpWord();
+// New portrait section
+        $section = $PHPWord->addSection();
+        $PHPWord->addFontStyle('rStyle', array('bold' => true, 'color' => '000000', 'size' => 16));
+        $PHPWord->addParagraphStyle('pStyle', array('align' => 'center'));
+        $section->addText('×××公司招聘信息', 'rStyle', 'pStyle');
+        $section->addTextBreak(2);
+
+// Define table style arrays
+        $styleTable = array('borderSize' => 6, 'borderColor' => '006699', 'cellMargin' => 80);
+
+
+// Add table style
+        $PHPWord->addTableStyle('myOwnTableStyle', $styleTable);
+
+// Add table
+        $table = $section->addTable('myOwnTableStyle');
+        $fontStyle = array('bold' => true, 'align' => 'center');
+
+// Add more rows / cells
+        $table->addRow();
+        $table->addCell(2000)->addText("单位名称", $fontStyle);
+        $table->addCell(3000)->addText("", $fontStyle);
+        $table->addCell(2000)->addText("详细地址", $fontStyle);
+        $table->addCell(3000)->addText("", $fontStyle);
+
+
+        $table->addRow();
+        $table->addCell(2000)->addText("场所负责人", $fontStyle);
+        $table->addCell(3000)->addText("", $fontStyle);
+        $table->addCell(2000)->addText("联系电话", $fontStyle);
+        $table->addCell(3000)->addText("", $fontStyle);
+
+        $styleTable2 = array('borderColor' => '006699', 'borderLeftSize' => 6, 'borderRightSize' => 6, 'cellMargin' => 80);
+        $fontStyle2 = array('align' => 'center');
+// Add table style
+        $PHPWord->addTableStyle('myOwnTableStyle2', $styleTable2);
+        for ($i = 1; $i <= 5; $i++) {
+            $table2 = $section->addTable('myOwnTableStyle2');
+            $table2->addRow();
+            $table2->addCell(10000)->addText("服务岗位" . $i, $fontStyle);
+            $table3 = $section->addTable('myOwnTableStyle');
+            $table3->addRow();
+            $table3->addCell(2000)->addText("岗位内容", $fontStyle2);
+            $table3->addCell(3000)->addText("", $fontStyle2);
+            $table3->addCell(2000)->addText("需求数量", $fontStyle2);
+            $table3->addCell(3000)->addText("", $fontStyle2);
+            $table3->addRow();
+            $table3->addCell(2000)->addText("服务时数", $fontStyle2);
+            $table3->addCell(3000)->addText("", $fontStyle2);
+            $table3->addCell(2000)->addText("服务周期", $fontStyle2);
+            $table3->addCell(3000)->addText("", $fontStyle2);
+        }
+        $styleTable3 = array('borderColor' => '006699', 'borderLeftSize' => 6, 'borderBottomSize' => 6, 'borderRightSize' => 6, 'cellMargin' => 80);
+        $fontStyle3 = array('align' => 'center');
+        $cellStyle3 = array('borderColor' => '006699', 'borderRightSize' => 6);
+// Add table style
+        $PHPWord->addTableStyle('myOwnTableStyle3', $styleTable3);
+        $table4 = $section->addTable('myOwnTableStyle3');
+        $table4->addRow(2000);
+        $table4->addCell(3333, $cellStyle3)->addText("本单位意见", $fontStyle3);
+        $table4->addCell(3333, $cellStyle3)->addText("主管部门意见", $fontStyle3);
+        $table4->addCell(3334)->addText("集团总部意见", $fontStyle3);
+//Two enter
+        $section->addTextBreak(2);
+//Add image
+//    $section->addImage('logo.jpg', array('width'=>100, 'height'=>100,'align'=>'right'));
+
+        $objWrite = IOFactory::createWriter($PHPWord, 'Word2007');
+        $objWrite->save('index.docx');
+
 
     }
 

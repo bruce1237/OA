@@ -78,7 +78,7 @@ class InfoDepartController extends Controller
                     $insertId = Firm::create($data)->firm_id;
                     if ($insertId && $request->file('seal')) {//if they upload an contract seal nad the data insertion success, then deal with contract seal png image
                         //save the uploaded contract seal
-                        if ($request->file('seal')->storeAs("firm/{$insertId}/seal/", $insertId . ".png", "CRM")) { //save seal success
+                        if ($request->file('seal')->storeAs("{$insertId}/seal/", $insertId . ".png", "Firm")) { //save seal success
                             //modify the return data
                             $this->returnData['status'] = true;
                             $this->returnData['msg'] = "添加成功";
@@ -95,8 +95,8 @@ class InfoDepartController extends Controller
                     unset($data['firm_id']); // unset the unnecessary data
                     Firm::find($request->post('firm_id'))->update($data); // update the firm info
                     if ($request->file('seal')) { //if upload a new contract seal,
-                        Storage::disk('CRM')->delete("firm/{$firm_id}/seal/{$firm_id}.png"); //remove the old seal
-                        $request->file('seal')->storeAs("firm/{$firm_id}/seal/", $firm_id . ".png", 'CRM'); //upload the new seal
+                        Storage::disk('CRM')->delete("{$firm_id}/seal/{$firm_id}.png"); //remove the old seal
+                        $request->file('seal')->storeAs("{$firm_id}/seal/", $firm_id . ".png", 'Firm'); //upload the new seal
                     }
                     break;
                 case "delete": //deltet firm

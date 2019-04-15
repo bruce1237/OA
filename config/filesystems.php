@@ -54,6 +54,10 @@ return [
             'driver' => 'local',
             'root' => storage_path('staff'),
         ],
+        'Firm'=>[
+            'driver' => 'local',
+            'root' => storage_path('firms'),
+        ],
 
         'local' => [
             'driver' => 'local',
