@@ -15,8 +15,20 @@ use App\Model\Contract;
 use App\Model\Firm;
 use App\Model\Order;
 use App\Model\Staff;
+use PhpOffice\PhpWord\IOFactory;
+use PhpOffice\PhpWord\PhpWord;
 
 abstract class ContractMaker {
+
+
+    protected function addPageSeal(string $PDFFile,string $seal){
+        $pdfReader = new \TCPDF();
+        $pdfReader->getNumPages();
+
+
+
+
+    }
 
     protected function getStaffInfo($staffId){
         try{
