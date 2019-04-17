@@ -18,6 +18,9 @@ class TestController extends Controller {
     public function tt() {
 
 
+
+
+
         $makeContract = new MakeContract();
         $makeContract->makeContract(1);
 

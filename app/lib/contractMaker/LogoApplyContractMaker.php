@@ -12,6 +12,7 @@ namespace App\Lib\contractMaker;
 
 use App\Lib\office2pdf\office2pdf;
 use App\Model\Contract;
+use Illuminate\Support\Facades\Storage;
 use PhpOffice\PhpWord\IOFactory;
 use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\TemplateProcessor;
@@ -26,18 +27,31 @@ class LogoApplyContractMaker extends ContractMaker {
         $staffObj = $this->getStaffInfo($orderObj->order_staff_id);
         $orderInfo = array_merge($firmObj->toArray(), $orderObj->toArray(), $staffObj->toArray());
         $wordFile['file'] = $this->processTemplate($contractObj, $orderId, $serviceIds, $orderInfo);
+
         $wordFile['seal'] = storage_path("firms/{$firmObj->firm_id}/seal/{$firmObj->firm_id}.png");
         //todo: convert word into PDF with split-Seal
         $pdf = new office2pdf();
-        $pdfFileName = storage_path('contractTemplate/PDF').uniqid().'.pdf';
-        $pdf->run($wordFile['file'],$pdfFileName);
+        $pdfFileName = storage_path('contractTemplates/PDF').uniqid().'.pdf';
+        $testDocFile = storage_path('contractTemplates/TMP5cb6fa5ae29b5.doc');
+        $pdf->run($testDocFile,$pdfFileName);
+     dd("AA");
 
-        $pdfFile=storage_path('contractTemplates/TMP5cb58ec41ee2d.pdf');
 
-//        $this->addPageSeal($wordFile['file'],$wordFile['seal']);
-        $this->addPageSeal($pdfFile,$wordFile['seal']);
+        if($pdf->run($wordFile['file'],$pdfFileName)){
+//            unlink($wordFile['file']);
+        }
 
-        return true;
+        $pdfFileName = $this->addPageSeal($pdfFileName,$wordFile['seal']);
+        if(!is_dir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"))){
+            mkdir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"));
+        }
+        $contractPdf = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/{$contractObj->contract_name}.pdf") ;
+
+        copy($pdfFileName,$contractPdf);
+        unlink($pdfFileName);
+
+
+        return $contractPdf;
     }
 
 
@@ -46,13 +60,14 @@ class LogoApplyContractMaker extends ContractMaker {
         $templateFile = storage_path("contractTemplates\\{$contractObj->contract_file}");
         $word = new PhpWord();
 
+
         $templateProcessor = new TemplateProcessor($templateFile);
-        $templateWriter = IOFactory::createWriter($word, 'HTML');
+
         $cartObj = $this->getCarts($orderId, $serviceIds);
         $cartDetails = $this->restructureCarts($cartObj);
 
 
-        $sourceImgName = "image3.png";
+        $sourceImgName = "image2.png";
         $firmId = $this->getFirmInfo($orderId)->firm_id;
 
         $firmSeal = storage_path("firms/{$firmId}/seal/{$firmId}.png");
@@ -83,7 +98,7 @@ class LogoApplyContractMaker extends ContractMaker {
             $templateProcessor->setValue($key, $value);
         }
 
-        $newFileName = storage_path("contractTemplates\\TMP" . uniqid() . ".doc");
+        $newFileName = storage_path("contractTemplates\\TMP" . uniqid() . ".docx");
 
         $templateProcessor->saveAs($newFileName);
         return $newFileName;
