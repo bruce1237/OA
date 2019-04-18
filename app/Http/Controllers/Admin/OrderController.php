@@ -112,14 +112,31 @@ class OrderController extends Controller {
 
     public function updateOrder(Request $request) {
 
-        $structruedData = $this->trimData($request->post()); //权限判定
+        $structuredData = $this->trimData($request->post()); //权限判定
+
+        $orderStatusStage = OrderStatus::find($structuredData['order_status_code'])->getOriginal('order_status_category');
+
+
 
         try {
-            Order::find($structruedData['order_id'])->update($structruedData);
-            $this->uploadOrderSupportFiles($request);
-            if($structruedData['order_status_code']==env('ORDER_VALID_STAGE')){
-                $this->generateContract($structruedData['order_id']);
+
+            if(in_array($orderStatusStage,[1,2])){
+
+                $structuredData['order_stage']= $orderStatusStage+1;
+            }else{
+
+            $structuredData['order_stage']=$orderStatusStage;
             }
+
+
+
+            $this->uploadOrderSupportFiles($request);
+            if($structuredData['order_status_code']==env('ORDER_VALID_STAGE')){
+                $this->generateContract($structuredData['order_id']);
+            }
+
+
+            Order::find($structuredData['order_id'])->update($structuredData);
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "更新成功";
             $this->returnData['code'] = 1;
@@ -334,30 +351,47 @@ class OrderController extends Controller {
         return $this->returnData;
     }
 
-    public function getAvailableOrderStatus($orderStatusCategory){
+    public function getAvailableOrderStatus($orderStage){
+
         $staff = Staff::find(Auth::guard('admin')->user()->staff_id);
         $staffDepart = Department::find($staff->getOriginal('department_id'));
 
 
-        $statusOptions = OrderStatus::where('order_status_category','=',$orderStatusCategory)->get();
-        switch ($orderStatusCategory){
-            case "1": //待审批阶段: 合法性审批
-                if($staff->staff_level == env('DEPARTMENT_CHIEF_LEVEL') && $staffDepart->assignable){
+        switch ($orderStage){
+            case "0": //待审批阶段: 合法性审批
+        $statusOptions = OrderStatus::where('order_status_category','=',"1")->get();
+
+                if($staff->staff_level == env('DEPARTMENT_CHIEF_LEVEL') &&  $staffDepart->getOriginal('assignable')){
                     //业务部经理
                     return $statusOptions;
                 }
                 break;
-            case "2"://付款审批: 有效性审批
-                if($staff->staff_level != env('DEPARTMENT_CHIEF_LEVEL') && $staffDepart->assignable == env("FINANCE_DEPART")){
+            case "1"://付款审批: 有效性审批
+                $statusOptions = OrderStatus::where('order_status_category','=',"2")->get();
+
+                if($staff->getOriginal('department_id') == env("FINANCE_DEPART")){
                     //财务部员工
+
                     return $statusOptions;
                 }
                 break;
+            case "2": //状态更新阶段: 状态修改
             case "3": //状态更新阶段: 状态修改
-                if($staff->staff_level != env('DEPARTMENT_CHIEF_LEVEL') && $staffDepart->assignable == env("PROCESS_DEPART")){
+
+                if($staff->getOriginal('department_id') == env("FINANCE_DEPART")){
+                    //财务部员工
+                $statusOptions = OrderStatus::where('order_status_category','=',"2")->get();
+
+                    return $statusOptions;
+                }
+
+                if( $staff->getOriginal('department_id') == env("PROCESS_DEPART")){
+                $statusOptions = OrderStatus::where('order_status_category','=',"3")->get();
                     //流程部员工
                     return $statusOptions;
                 }
+                break;
+
         }
         return false;
     }

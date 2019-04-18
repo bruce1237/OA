@@ -13,7 +13,7 @@ namespace App\Lib\contractMaker;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class LogoApplyContractMaker extends ContractMaker {
-    private $wordDummySealName = "image2.png";
+    private const wordDummySealName = "image2.png";
 
     /**
      * @param int $orderId
@@ -38,9 +38,9 @@ class LogoApplyContractMaker extends ContractMaker {
         $cartDetails = $this->restructureCarts($cartObj);
 
         //get the real seal for the order
-        $realSeal = $this->replaceDummySeal($this->wordDummySealName,$orderId);
+        $realSeal = $this->replaceDummySeal(self::wordDummySealName,$orderId);
         //replace the dummySeal to realSeal
-        $templateProcessor->setImageValueC($this->wordDummySealName, $realSeal);
+        $templateProcessor->setImageValueC(self::wordDummySealName, $realSeal);
 
         $orderInfo['order_payment_method_details'] = $this->convertPaymentDetails($orderInfo['order_payment_method_details']);
         $orderInfo['order_totalCHN'] = $this->toChineseNumber($cartDetails['total']);

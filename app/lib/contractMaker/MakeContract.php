@@ -21,7 +21,7 @@ class MakeContract {
 
     public function makeContract(Int $orderId) {
         $this->init($orderId);
-        $contractServiceArr = $this->getContractServcieArray();
+        $contractServiceArr = $this->getContractServiceArray();
         return $this->getContractMaker($orderId, $contractServiceArr);
 
     }
@@ -43,8 +43,7 @@ class MakeContract {
 
     }
 
-
-    private function getContractServcieArray() {
+    private function getContractServiceArray() {
         $contractServiceArr = array();
         foreach ($this->contractArr as $contractId => $services) {
             $contractServiceArr[$contractId] = array_intersect($this->cartObj->Arr, $services);

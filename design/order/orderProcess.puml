@@ -13,7 +13,43 @@ class LogoOrderProcessor{
 }
 PatternOrderProcessor --^ OrderProcessor : < extends
 class PatternOrderProcessor{
+}
 
+abstract Class ContractMaker{
+  + make(orderId:Int, contractId:Int,serviceIds:Array):bool
+  # getTemplateFile(contractId:int):string
+  # replaceDummySeal($dummySeal:string, orderId:int):string
+  # wordToPDF(wordFile:string,pdfFile:string)
+  # addPageSeal(pdfFile:string,seal:string):string
+  # sliceSeal(slice:int $sealImg:string):array
+  # getStaffInfo(staffId:int)
+  # toChineseNumber(ns:float):string
+  ~ _cny_map_unit(list:array,units:array)
+  # getContractInfo(contractId:int)
+  # convertPaymentDetails(paymentsJson:string):string
+  # getCarts(orderId:int,services:array):object
+  # getOrderInfo(orderId:int)
+  # getFirmInfo(firmId:int)
+  {abstract} processTemplate(orderId:int,serviceIds:array,orderInfo:array):string
+}
+
+ContractMaker --^ LogoApplyContractMaker : > 继承
+class LogoApplyContractMaker{
+    ~ wordDummySealName:string
+    # processTemplate(orderId:int,serviceIds:array,orderInfo:array):string
+}
+MakeContract ..^ LogoApplyContractMaker : > 调用
+class MakeContract{
+    ~ orderObj
+    ~ cartObj
+    ~ ContractArr
+    + makeContract(orderId:Int)
+    ~ getContractMaker(orderId:int,contractServiceArr:array):bool
+    ~ getContractService
+    ~ init(orderId:int)
+    ~ getOrderInfo(orderId:int)
+    ~ getCartInfo(orderId:int)
+    ~ getContractArr()
 }
 
 @enduml

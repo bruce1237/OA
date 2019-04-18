@@ -61,7 +61,7 @@ abstract class ContractMaker {
     }
 
 
-    protected function getTemplateFile($contractId): string {
+    protected function getTemplateFile(int $contractId): string {
         $fileName = Contract::find($contractId)->contract_file;
         $path = storage_path('contractTemplates/');
         if (Storage::disk('contract')->exists($fileName)) {
@@ -71,7 +71,7 @@ abstract class ContractMaker {
         }
     }
 
-    protected function replaceDummySeal($dummySeal,$orderId){
+    protected function replaceDummySeal(string $dummySeal, int $orderId):string {
         $firmId = $this->getFirmInfo($orderId)->firm_id;
         $firmSeal = storage_path("firms/{$firmId}/seal/{$firmId}.png");
         $realSeal = storage_path("firms/{$firmId}/seal/{$dummySeal}");
@@ -91,7 +91,7 @@ abstract class ContractMaker {
         return false;
     }
 
-    protected function addPageSeal(string $PDFFile, string $seal) {
+    protected function addPageSeal(string $PDFFile, string $seal) :string {
         $pdf = new Fpdi();
         $totalPageNum = $pdf->setSourceFile($PDFFile);
         if($totalPageNum==1){
@@ -148,7 +148,7 @@ abstract class ContractMaker {
         return $slicedSeal;
     }
 
-    protected function getStaffInfo($staffId) {
+    protected function getStaffInfo(int $staffId) {
         try {
             return Staff::find($staffId);
         } catch (\Exception $e) {
@@ -157,7 +157,7 @@ abstract class ContractMaker {
         }
     }
 
-    protected function toChineseNumber($ns) {
+    protected function toChineseNumber(float $ns):string {
         static $cnums = array("零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"),
         $cnyunits = array("", "圆", "角", "分"),
         $grees = array("", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿");
@@ -180,7 +180,7 @@ abstract class ContractMaker {
         return str_replace(array_keys($cnums), $cnums, $ret);
     }
 
-    protected function _cny_map_unit($list, $units) {
+    private function _cny_map_unit(array $list, array $units):array {
         $ul = count($units);
         $xs = array();
         foreach (array_reverse($list) as $x) {
@@ -203,8 +203,8 @@ abstract class ContractMaker {
         }
     }
 
-    protected function convertPaymentDetails($payments) {
-        $payments = json_decode($payments, true);
+    protected function convertPaymentDetails(String $paymentJson):string {
+        $payments = json_decode($paymentJson, true);
         $str = '';
         foreach ($payments as $key => $value) {
             $str .= "{$key}:{$value}
@@ -218,7 +218,6 @@ abstract class ContractMaker {
             ->whereIn('service_id', $serviceIds)
             ->get();
     }
-
 
     protected function getOrderInfo(int $orderId) {
         try {
@@ -242,6 +241,6 @@ abstract class ContractMaker {
         }
     }
 
-    abstract protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string ;
+    abstract protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string;
 
 }

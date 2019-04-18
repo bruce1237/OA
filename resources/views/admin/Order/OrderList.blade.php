@@ -1,8 +1,6 @@
 @extends ('admin/layout/basic')
 @section('shortcut')
-    <a class="layui-btn layui-btn btn-success layui-btn-xs" onclick="showNewClientModal()">
-        <span style="color:white"><i class="layui-icon"></i>添加新客户</span>
-    </a>
+
 @endsection
 
 @section('content')
@@ -261,7 +259,7 @@
                 <div class="modal-body">
                     <div class="embed-responsive embed-responsive-16by9">
                         <iframe id="showFileIframe" class="embed-responsive-item"
-                                src="https://www.youtube.com/embed/zpOULjyy-n8?rel=0" allowfullscreen></iframe>
+                                src="" allowfullscreen></iframe>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -282,6 +280,8 @@
 
     <script>
         function searchOrder() {
+            $("#orderDetail").hide();
+            $("#searchResultOrderList").html('');
             layer.msg('努力搜索中,请稍候片刻哦~~');
             var Formdata = $("#orderSearchForm").serialize();
 
@@ -330,7 +330,7 @@
         }
 
         function getOrderDetails(orderId) {
-
+            $("#orderDetail").hide();
             $.ajax({
                 url: "{{url('admin/getOrderDetail')}}",
                 type: 'post',
@@ -523,6 +523,7 @@
         }
 
         function updateOrder(){
+            layer.msg("正在处理订单.....请耐心等候, 请不要刷新页面",{icon:3,time:15000});
             let data = new FormData();
             data.append('order_id',$("#order_id").text());
             data.append('order_settlement',$("#order_settlement").val());
@@ -542,6 +543,7 @@
                 contentType: false,
                 success: function (data) {
                     layer.msg(data.msg, {icon: data.code});
+
                     if (data.status) {
                         getClientDetail($("#order_id").text());
                     }
