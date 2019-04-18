@@ -10,15 +10,86 @@
 namespace App\Lib\contractMaker;
 
 
+use App\Lib\office2pdf\office2pdf;
 use App\Model\Cart;
 use App\Model\Contract;
 use App\Model\Firm;
 use App\Model\Order;
 use App\Model\Staff;
+use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
 
 abstract class ContractMaker {
 
+    /**
+     * @param int $orderId
+     * @param int $contractId
+     * @param array $serviceIds
+     * @return bool
+     * Used For: generate PDF format contract
+     */
+    public function make(int $orderId, int $contractId, array $serviceIds): bool {
+        //get all the information about this order
+        $orderObj = $this->getOrderInfo($orderId);
+        $contractObj = $this->getContractInfo($contractId);
+        $firmObj = $this->getFirmInfo($orderObj->order_firm_id);
+        $staffObj = $this->getStaffInfo($orderObj->order_staff_id);
+
+        //merge into a single array for word template insert
+        $orderInfo = array_merge($firmObj->toArray(), $orderObj->toArray(), $staffObj->toArray());
+
+        //process the word template
+        $wordFile['file'] = $this->processTemplate($orderId, $serviceIds, $orderInfo);
+
+        //get the contractSeal picture
+        $wordFile['seal'] = storage_path("firms/{$firmObj->firm_id}/seal/{$firmObj->firm_id}.png");
+
+        //check if the order Reference folder exist,
+        if(!is_dir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"))){
+            mkdir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"));
+        }
+
+        //get the contactPDF Name
+        $contractPdf = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/{$contractObj->contract_name}.pdf") ;
+        // convert word into PDF with split-Seal
+        $pdfFileName = $this->wordToPDF($wordFile['file'],$contractPdf);
+
+        //add PageSeal 骑缝章 into PDF
+        $pdfFileName = $this->addPageSeal($pdfFileName,$wordFile['seal']);
+
+        return $pdfFileName;
+    }
+
+
+    protected function getTemplateFile($contractId): string {
+        $fileName = Contract::find($contractId)->contract_file;
+        $path = storage_path('contractTemplates/');
+        if (Storage::disk('contract')->exists($fileName)) {
+            return $path . $fileName;
+        } else {
+            throw new ContractException("合同模板文件不存在!");
+        }
+    }
+
+    protected function replaceDummySeal($dummySeal,$orderId){
+        $firmId = $this->getFirmInfo($orderId)->firm_id;
+        $firmSeal = storage_path("firms/{$firmId}/seal/{$firmId}.png");
+        $realSeal = storage_path("firms/{$firmId}/seal/{$dummySeal}");
+        copy($firmSeal, $realSeal);
+        return $realSeal;
+    }
+
+    protected function wordToPDF(string $wordFile,string $pdfFile){
+        $pdf = new office2pdf();
+        $TmpPDF= storage_path('contractTemplates/PDF').uniqid().'.pdf';
+        if($pdf->run($wordFile,$TmpPDF)){
+            unlink($wordFile);
+            copy($TmpPDF,$pdfFile);
+            unlink($TmpPDF);
+            return $pdfFile;
+        }
+        return false;
+    }
 
     protected function addPageSeal(string $PDFFile, string $seal) {
         $pdf = new Fpdi();
@@ -75,7 +146,6 @@ abstract class ContractMaker {
             imagepng($targetImg, $slicedSeal[$i]);
         }
         return $slicedSeal;
-
     }
 
     protected function getStaffInfo($staffId) {
@@ -92,7 +162,6 @@ abstract class ContractMaker {
         $cnyunits = array("", "圆", "角", "分"),
         $grees = array("", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿");
         $moneyArr = explode(".", $ns, 2);
-//        list($ns1, $ns2) = explode(".", $ns, 2);
         $ns1 = $moneyArr[0];
         $ns2 = key_exists(1, $moneyArr) ? $moneyArr[1] : '00';
         $ns2 = array_filter(array($ns2[1], $ns2[0])); //转为数组
@@ -138,21 +207,16 @@ abstract class ContractMaker {
         $payments = json_decode($payments, true);
         $str = '';
         foreach ($payments as $key => $value) {
-//            $str .= "{$key}:{$value}<w:br/>";//这个只在word中显示有效, 当转换为pdf时是失效
             $str .= "{$key}:{$value}
 ";//这个为在word里面换行用得到, 不能留空格
         }
-
-//        dd($str);
         return $str;
     }
 
     protected function getCarts(int $orderId, array $serviceIds) {
-
         return Cart::where('order_id', '=', $orderId)
             ->whereIn('service_id', $serviceIds)
             ->get();
-
     }
 
 
@@ -178,7 +242,6 @@ abstract class ContractMaker {
         }
     }
 
-    abstract protected function make(int $orderId, int $contractId, array $serviceIds): bool;
+    abstract protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string ;
 
-    abstract protected function getTemplateFile(): string;
 }

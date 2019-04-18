@@ -10,90 +10,59 @@
 namespace App\Lib\contractMaker;
 
 
-use App\Lib\office2pdf\office2pdf;
-use App\Model\Contract;
-use Illuminate\Support\Facades\Storage;
-use PhpOffice\PhpWord\IOFactory;
-use PhpOffice\PhpWord\PhpWord;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class LogoApplyContractMaker extends ContractMaker {
+    private $wordDummySealName = "image2.png";
 
-    public function make(int $orderId, int $contractId, array $serviceIds): bool {
-        $orderObj = $this->getOrderInfo($orderId);
+    /**
+     * @param int $orderId
+     * @param array $serviceIds
+     * @param array $orderInfo
+     * @return string
+     * @throws ContractException
+     * @throws \PhpOffice\PhpWord\Exception\CopyFileException
+     * @throws \PhpOffice\PhpWord\Exception\CreateTemporaryFileException
+     * @throws \PhpOffice\PhpWord\Exception\Exception
+     * Used For:
+     */
+    protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo):string {
 
-        $contractObj = $this->getContractInfo($contractId);
-        $firmObj = $this->getFirmInfo($orderObj->order_firm_id);
-        $staffObj = $this->getStaffInfo($orderObj->order_staff_id);
-        $orderInfo = array_merge($firmObj->toArray(), $orderObj->toArray(), $staffObj->toArray());
-        $wordFile['file'] = $this->processTemplate($contractObj, $orderId, $serviceIds, $orderInfo);
+        //get word template file;
 
-        $wordFile['seal'] = storage_path("firms/{$firmObj->firm_id}/seal/{$firmObj->firm_id}.png");
-        //todo: convert word into PDF with split-Seal
-        $pdf = new office2pdf();
-        $pdfFileName = storage_path('contractTemplates/PDF').uniqid().'.pdf';
-        $testDocFile = storage_path('contractTemplates/TMP5cb6fa5ae29b5.doc');
-        $pdf->run($testDocFile,$pdfFileName);
-     dd("AA");
-
-
-        if($pdf->run($wordFile['file'],$pdfFileName)){
-//            unlink($wordFile['file']);
-        }
-
-        $pdfFileName = $this->addPageSeal($pdfFileName,$wordFile['seal']);
-        if(!is_dir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"))){
-            mkdir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"));
-        }
-        $contractPdf = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/{$contractObj->contract_name}.pdf") ;
-
-        copy($pdfFileName,$contractPdf);
-        unlink($pdfFileName);
-
-
-        return $contractPdf;
-    }
-
-
-    private function processTemplate($contractObj, int $orderId, array $serviceIds, array $orderInfo) {
-
-        $templateFile = storage_path("contractTemplates\\{$contractObj->contract_file}");
-        $word = new PhpWord();
-
+        $templateFile = $this->getTemplateFile(env('LOGOAPPLY'));
 
         $templateProcessor = new TemplateProcessor($templateFile);
 
         $cartObj = $this->getCarts($orderId, $serviceIds);
         $cartDetails = $this->restructureCarts($cartObj);
 
-
-        $sourceImgName = "image2.png";
-        $firmId = $this->getFirmInfo($orderId)->firm_id;
-
-        $firmSeal = storage_path("firms/{$firmId}/seal/{$firmId}.png");
-        $newSeal = storage_path("firms/{$firmId}/seal/{$sourceImgName}");
-        copy($firmSeal, $newSeal);
-
-        $templateProcessor->setImageValueC($sourceImgName, $newSeal);
+        //get the real seal for the order
+        $realSeal = $this->replaceDummySeal($this->wordDummySealName,$orderId);
+        //replace the dummySeal to realSeal
+        $templateProcessor->setImageValueC($this->wordDummySealName, $realSeal);
 
         $orderInfo['order_payment_method_details'] = $this->convertPaymentDetails($orderInfo['order_payment_method_details']);
         $orderInfo['order_totalCHN'] = $this->toChineseNumber($cartDetails['total']);
         $orderInfo['order_total'] = $cartDetails['total'];
         unset($cartDetails['total']);
+
+        //find out how many records need insert to the word table
         $rows = sizeof($cartDetails['name']);
 
-
+        //clone the Row
         $templateProcessor->cloneRow('service_type', $rows);
 
-
+        //resture the order info CART parts
         for ($i = 1; $i <= $rows; $i++) {
             $orderInfo['service_name#' . $i] = $cartDetails['name'][$i - 1];
             $orderInfo['service_type#' . $i] = $cartDetails['type'][$i - 1];
             $orderInfo['service_attr#' . $i] = $cartDetails['attr'][$i - 1];
             $orderInfo['service_price#' . $i] = $cartDetails['price'][$i - 1];
+
         }
 
-
+        //assign info into word template
         foreach ($orderInfo as $key => $value) {
             $templateProcessor->setValue($key, $value);
         }
@@ -172,33 +141,7 @@ class LogoApplyContractMaker extends ContractMaker {
         return $orderDetailArray;
     }
 
-    protected function makeCartDetailsTable(PhpWord $word, int $orderId, array $serviceIds) {
-        $total = 0;
-        $cartObj = $this->getCarts($orderId, $serviceIds);
 
-        $cartArr = $this->restructureCarts($cartObj);
-
-
-        $totalCHN = $this->toChineseNumber($total);
-
-        $result['table'] = $table;
-        $result['total'] = $total;
-        $result['totalCHN'] = $totalCHN;
-
-
-        return $result;
-
-    }
-
-    protected function getTemplateFile(): string {
-        $fileName = Contract::find(env('LOGOAPPLY'))->contract_file;
-        $path = storage_path('contractTemplates/');
-        if (storage_path('contractTemplates/')->exists($fileName)) {
-            return $path . $fileName;
-        } else {
-            throw new ContractException("合同模板文件不存在!");
-        }
-    }
 
 
 }

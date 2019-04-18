@@ -19,10 +19,9 @@ class TestController extends Controller {
 
 
 
-
-
         $makeContract = new MakeContract();
-        $makeContract->makeContract(1);
+       $result =  $makeContract->makeContract(1);
+       dd($result);
 
 //        $cart = Cart::find(1);
 //
