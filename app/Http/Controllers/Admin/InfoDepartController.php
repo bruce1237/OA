@@ -14,7 +14,7 @@ class InfoDepartController extends Controller
     {
         $infoSource = $this->getData('InfoSource'); //get all the data from the database for the table:Info_Source
         $visitStatus = $this->getData('visitStatus'); //get all the data from the database for the table Visit_Status
-        $orderType = $this->getData('orderType'); //get all the data from the database for the table order_type
+//        $orderType = $this->getData('orderType'); //get all the data from the database for the table order_type
         $paymentMethod = $this->getData('paymentMethod'); //get all the data from the database for the table payment_method
         $orderStatus = $this->getData('orderStatus'); //get all the data from the database for the table order_status
         $services = $this->getData('service'); //get all the data from the database for the table service
@@ -37,7 +37,7 @@ class InfoDepartController extends Controller
         $data = [
             'infoSource' => $infoSource,
             'visitStatus' => $visitStatus,
-            'orderType' => $orderType,
+//            'orderType' => $orderType,
             'paymentMethod' => $paymentMethod,
             'orderStatus' => $orderStatus,
             'service' => $serviceByCate,

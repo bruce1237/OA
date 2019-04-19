@@ -26,7 +26,7 @@ class LogoApplyContractMaker extends ContractMaker {
      * @throws \PhpOffice\PhpWord\Exception\Exception
      * Used For:
      */
-    protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo):string {
+    protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string {
 
         //get word template file;
 
@@ -34,18 +34,18 @@ class LogoApplyContractMaker extends ContractMaker {
 
         $templateProcessor = new TemplateProcessor($templateFile);
 
-        $cartObj = $this->getCarts($orderId, $serviceIds);
-        $cartDetails = $this->restructureCarts($cartObj);
-
-        //get the real seal for the order
-        $realSeal = $this->replaceDummySeal(self::wordDummySealName,$orderId);
         //replace the dummySeal to realSeal
+        $realSeal = $this->replaceDummySeal(self::wordDummySealName, $orderInfo['order_firm_id']);
         $templateProcessor->setImageValueC(self::wordDummySealName, $realSeal);
 
+
+        $cartObj = $this->getCarts($orderId, $serviceIds);
+        $cartDetails = $this->restructureCarts($cartObj);
         $orderInfo['order_payment_method_details'] = $this->convertPaymentDetails($orderInfo['order_payment_method_details']);
         $orderInfo['order_totalCHN'] = $this->toChineseNumber($cartDetails['total']);
         $orderInfo['order_total'] = $cartDetails['total'];
         unset($cartDetails['total']);
+
 
         //find out how many records need insert to the word table
         $rows = sizeof($cartDetails['name']);
@@ -59,8 +59,8 @@ class LogoApplyContractMaker extends ContractMaker {
             $orderInfo['service_type#' . $i] = $cartDetails['type'][$i - 1];
             $orderInfo['service_attr#' . $i] = $cartDetails['attr'][$i - 1];
             $orderInfo['service_price#' . $i] = $cartDetails['price'][$i - 1];
-
         }
+
 
         //assign info into word template
         foreach ($orderInfo as $key => $value) {
@@ -140,8 +140,6 @@ class LogoApplyContractMaker extends ContractMaker {
         $orderDetailArray['total'] = $total;
         return $orderDetailArray;
     }
-
-
 
 
 }

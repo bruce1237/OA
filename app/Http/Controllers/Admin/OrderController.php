@@ -142,7 +142,7 @@ class OrderController extends Controller {
             $this->returnData['code'] = 1;
 
         } catch (\Exception $e) {
-            $this->returnData['msg'] = $e->getMessage();
+            $this->returnData['msg'] = $e->getMessage().$e->getFile().$e->getLine();
         }
 
         return $this->returnData;

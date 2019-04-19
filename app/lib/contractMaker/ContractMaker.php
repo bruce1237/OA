@@ -37,6 +37,7 @@ abstract class ContractMaker {
 
         //merge into a single array for word template insert
         $orderInfo = array_merge($firmObj->toArray(), $orderObj->toArray(), $staffObj->toArray());
+        $orderInfo['contract_name'] = $contractObj->contract_name;
 
         //process the word template
         $wordFile['file'] = $this->processTemplate($orderId, $serviceIds, $orderInfo);
@@ -63,7 +64,9 @@ abstract class ContractMaker {
 
     protected function getTemplateFile(int $contractId): string {
         $fileName = Contract::find($contractId)->contract_file;
+
         $path = storage_path('contractTemplates/');
+
         if (Storage::disk('contract')->exists($fileName)) {
             return $path . $fileName;
         } else {
@@ -71,8 +74,7 @@ abstract class ContractMaker {
         }
     }
 
-    protected function replaceDummySeal(string $dummySeal, int $orderId):string {
-        $firmId = $this->getFirmInfo($orderId)->firm_id;
+    protected function replaceDummySeal(string $dummySeal, int $firmId):string {
         $firmSeal = storage_path("firms/{$firmId}/seal/{$firmId}.png");
         $realSeal = storage_path("firms/{$firmId}/seal/{$dummySeal}");
         copy($firmSeal, $realSeal);

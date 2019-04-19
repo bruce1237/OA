@@ -27,11 +27,16 @@ class MakeContract {
     }
 
     private function getContractMaker(int $orderId, array $contractServiceArr):bool {
+
         $pdfContract= array();
         foreach ($contractServiceArr as $contractId=>$serviceIds){
             switch($contractId){
                 case env('LOGOAPPLY'):
                     $contractMaker = new LogoApplyContractMaker();
+                    $pdfContract[]= $contractMaker->make($orderId,$contractId, $serviceIds);
+                    break;
+                case env('LOGOEXTEN'):
+                    $contractMaker = new LogoExtenContractMaker();
                     $pdfContract[]= $contractMaker->make($orderId,$contractId, $serviceIds);
                     break;
                 default:
@@ -44,11 +49,12 @@ class MakeContract {
     }
 
     private function getContractServiceArray() {
+
         $contractServiceArr = array();
         foreach ($this->contractArr as $contractId => $services) {
             $contractServiceArr[$contractId] = array_intersect($this->cartObj->Arr, $services);
         }
-        return $contractServiceArr;
+        return array_filter($contractServiceArr);
     }
 
     private function init($orderId) {
