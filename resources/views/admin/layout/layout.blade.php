@@ -266,8 +266,8 @@ style="left: 0px;"
             }
         });
         // notificationCheck();
-        setInterval(showDateTime, 1000);
-        self.setInterval("notificationCheck()", 15000);
+        // setInterval(showDateTime, 1000);
+        // self.setInterval("notificationCheck()", 15000);
 
     });
 

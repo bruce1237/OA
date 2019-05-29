@@ -26,6 +26,7 @@ abstract class ContractMaker {
      * @param int $contractId
      * @param array $serviceIds
      * @return bool
+     *
      * Used For: generate PDF format contract
      */
     public function make(int $orderId, int $contractId, array $serviceIds): bool {
@@ -52,6 +53,7 @@ abstract class ContractMaker {
 
         //get the contactPDF Name
         $contractPdf = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/{$contractObj->contract_name}.pdf") ;
+        // dd("FF");
         // convert word into PDF with split-Seal
         $pdfFileName = $this->wordToPDF($wordFile['file'],$contractPdf);
 
@@ -160,6 +162,7 @@ abstract class ContractMaker {
     }
 
     protected function toChineseNumber(float $ns):string {
+
         static $cnums = array("零", "壹", "贰", "叁", "肆", "伍", "陆", "柒", "捌", "玖"),
         $cnyunits = array("", "圆", "角", "分"),
         $grees = array("", "拾", "佰", "仟", "万", "拾", "佰", "仟", "亿");
@@ -179,20 +182,36 @@ abstract class ContractMaker {
 
         $ret = implode("", array_reverse($arrayTemp));    //处理小数
 
-        return str_replace(array_keys($cnums), $cnums, $ret);
+        $CHY = str_replace(array_keys($cnums), $cnums, $ret);
+
+
+        \preg_replace()
+
+        while(strpos($CHY,"零零")){
+            $CHY = str_replace("零零","零", $CHY);
+        }
+
+
+
+        return $CHY;
     }
 
     private function _cny_map_unit(array $list, array $units):array {
+
         $ul = count($units);
         $xs = array();
         foreach (array_reverse($list) as $x) {
             $l = count($xs);
 
 
-            if ($x != "0" || !($l % 4)) $n = ($x == '0' ? '' : $x) . ($units[($l) % $ul]);
-            else $n = is_numeric($xs[0][0]) ? $x : '';
+            if ($x != "0" || !($l % 4)){
+                $n = ($x == '0' ? '' : $x) . ($units[($l) % $ul]);
+            }else{
+                $n = is_numeric($xs[0]) ? $x : '';
+            }
             array_unshift($xs, $n);
         }
+
         return $xs;
     }
 

@@ -12,7 +12,8 @@ namespace App\Lib\contractMaker;
 
 use PhpOffice\PhpWord\TemplateProcessor;
 
-class LogoApplyContractMaker extends ContractMaker {
+class LogoApplyContractMaker extends ContractMaker
+{
     private const wordDummySealName = "image2.png";
 
     /**
@@ -26,7 +27,8 @@ class LogoApplyContractMaker extends ContractMaker {
      * @throws \PhpOffice\PhpWord\Exception\Exception
      * Used For:
      */
-    protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string {
+    protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string
+    {
 
         //get word template file;
 
@@ -71,10 +73,11 @@ class LogoApplyContractMaker extends ContractMaker {
 
         $templateProcessor->saveAs($newFileName);
         return $newFileName;
-
     }
 
-    private function restructureCarts($cartObj) {
+    private function restructureCarts($cartObj)
+    {
+
         $serviceName = $cartObj[0]['service_name'];
         $restructureArr = array();
 
@@ -125,6 +128,7 @@ class LogoApplyContractMaker extends ContractMaker {
             'name' => [],
             'attr' => [],
             'price' => [],
+            'total' => 0,
 
         ];
         $total = 0;
@@ -140,6 +144,4 @@ class LogoApplyContractMaker extends ContractMaker {
         $orderDetailArray['total'] = $total;
         return $orderDetailArray;
     }
-
-
 }

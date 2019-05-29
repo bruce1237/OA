@@ -1,28 +1,20 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: Administrator
- * Date: 2019-04-19
- * Time: 9:17
- * Used:
- */
-
-namespace App\Lib\contractMaker;
+namespace App\lib\contractMaker;
 
 
-use App\Model\Cart;
 use PhpOffice\PhpWord\TemplateProcessor;
 
-class LogoExtenContractMaker extends ContractMaker {
+class LogoTransferContractMaker extends ContractMaker{
     private const wordDummySealName = "image2.png";
 
     protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string {
 
         //get word template file;
 
-        $templateFile = $this->getTemplateFile(env('LOGOAPPLY'));
+        $templateFile = $this->getTemplateFile(env('LOGOCHANGE'));
 
         $templateProcessor = new TemplateProcessor($templateFile);
+        // new TemplateProcessor($templateFile);
 
         //replace the dummySeal to realSeal
         $realSeal = $this->replaceDummySeal(self::wordDummySealName, $orderInfo['order_firm_id']);
@@ -71,29 +63,29 @@ class LogoExtenContractMaker extends ContractMaker {
      * word template
      * target format:
      * "type" => array:3 [
-    *     0 => "商标注册"
-    *     1 => "商标注册"
-    *     2 => "商标注册"
-    * ]
-    * "name" => array:3 [
-    *     0 => "audi"
-    *     1 => "BMW"
-    *     2 => "BenZ"
-    * ]
-    * "attr" => array:3 [
-    *     0 => "35类, "
-    *     1 => "35类, "
-    *     2 => "35类, "
-    * ]
-    * "price" => array:3 [
-    *     0 => 980.0
-    *     1 => 980.0
-    *     2 => 950.0
-    * ]
-    * "total" => 2910.0
-    * ]
+     *     0 => "商标注册"
+     *     1 => "商标注册"
+     *     2 => "商标注册"
+     * ]
+     * "name" => array:3 [
+     *     0 => "audi"
+     *     1 => "BMW"
+     *     2 => "BenZ"
+     * ]
+     * "attr" => array:3 [
+     *     0 => "35类, "
+     *     1 => "35类, "
+     *     2 => "35类, "
+     * ]
+     * "price" => array:3 [
+     *     0 => 980.0
+     *     1 => 980.0
+     *     2 => 950.0
+     * ]
+     * "total" => 2910.0
+     * ]
      */
-    private function restructureCarts($cartObj):array {
+    private function restructureCarts($cartObj){
         $orderDetailArray = [
             'type' => [],
             'name' => [],
@@ -102,30 +94,7 @@ class LogoExtenContractMaker extends ContractMaker {
             'total'=>0,
         ];
 
-        //
-        // array:5 [
-        //     "type" => array:3 [
-        //       0 => "商标注册"
-        //       1 => "商标注册"
-        //       2 => "商标注册"
-        //     ]
-        //     "name" => array:3 [
-        //       0 => "audi"
-        //       1 => "BMW"
-        //       2 => "BenZ"
-        //     ]
-        //     "attr" => array:3 [
-        //       0 => "35类, "
-        //       1 => "35类, "
-        //       2 => "35类, "
-        //     ]
-        //     "price" => array:3 [
-        //       0 => 980.0
-        //       1 => 980.0
-        //       2 => 950.0
-        //     ]
-        //     "total" => 2910.0
-        //   ]
+
 
         foreach($cartObj as $cart){
             $attrs = json_decode($cart->service_attributes,true);
@@ -141,7 +110,11 @@ class LogoExtenContractMaker extends ContractMaker {
             $orderDetailArray['total']+=$cart->service_price;
 
         }
+
         return $orderDetailArray;
+
+
 
     }
 }
+

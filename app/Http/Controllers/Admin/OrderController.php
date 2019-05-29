@@ -129,8 +129,8 @@ class OrderController extends Controller {
             }
 
 
-
             $this->uploadOrderSupportFiles($request);
+
             if($structuredData['order_status_code']==env('ORDER_VALID_STAGE')){
                 $this->generateContract($structuredData['order_id']);
             }
@@ -182,9 +182,8 @@ class OrderController extends Controller {
     }
 
     public function delOrder(Request $request) {
-
         if (Order::where('order_id', '=', $request->post('order_id'))
-            ->where('order_stage', '=', '1')->exists()) {
+            ->where('order_status_code', '=', '1')->exists()) {
             try {
                 Order::destroy($request->post('order_id'));
                 Cart::where('order_id', '=', $request->post('order_id'))->delete();
@@ -196,6 +195,8 @@ class OrderController extends Controller {
                 $this->returnData['msg'] = $e->getMessage();
             }
 
+        }else{
+            $this->returnData['msg']="订单已经通过审批,不可以无效!";
         }
         return $this->returnData;
 
