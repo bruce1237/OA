@@ -185,7 +185,7 @@ abstract class ContractMaker {
         $CHY = str_replace(array_keys($cnums), $cnums, $ret);
 
 
-        \preg_replace()
+
 
         while(strpos($CHY,"零零")){
             $CHY = str_replace("零零","零", $CHY);

@@ -1729,7 +1729,7 @@
                 '\n' +
                 '                            <input type="text" class="form-control" id="order_service_price_' + count + '" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm" >\n' +
                 '                            <div class="input-group-prepend">\n' +
-                '                                <input type="text" class="form-control" id="order_service_cost_' + count + '" value = "'+cost+'" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm" '+readonly+' >\n' +
+                '                                <input type="text" class="form-control" id="order_service_cost_' + count + '" value = "'+cost+'" placeholder="产品价格" aria-label="Small" aria-describedby="inputGroup-sizing-sm" '+readonly+' size=8>\n' +
                 '                            </div>' +
                 '<iframe name="iframe' + count + '" src="/storage/CRM/Order/Temp/' + serviceId + '.php"></iframe>\n' +
                 '<button class="btn btn-outline-secondary btn-sm" type="button" onclick="removeService(' + count + ')">移除</button>\n' +
