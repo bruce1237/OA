@@ -16,11 +16,13 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
-class OrderController extends Controller {
+class OrderController extends Controller
+{
     //
-    public function generateOrder(Request $request) {
+    public function generateOrder(Request $request)
+    {
         $data = $request->post('data');
-//        dd($data);
+        //        dd($data);
         $data = json_decode($data, true);
         $orderId = 0;
         $orderTotal = $orderProfit = 0;
@@ -29,7 +31,7 @@ class OrderController extends Controller {
         foreach ($data['services'] as $service) {
             $serviceObj = Service::find($service['serviceId']);
             $cartData[] = [
-                'order_id' => & $orderId, //先设置, 当 orderId变化的时候, 自动变化
+                'order_id' => &$orderId, //先设置, 当 orderId变化的时候, 自动变化
                 'service_category' => $serviceObj->service_name,
                 'service_id' => $service['serviceId'],
                 'service_name' => $service['serviceName'],
@@ -89,28 +91,29 @@ class OrderController extends Controller {
         return $this->returnData;
     }
 
-    private function uploadFiles(array $files, $orderId) {
+    private function uploadFiles(array $files, $orderId)
+    {
         foreach ($files as $file) {
             $file->storeAs("/order/REF/{$orderId}/", str_replace(" ", '', $file->getClientOriginalName()), 'CRM');
         }
     }
 
-    public function updateCart(Request $request) {
+    public function updateCart(Request $request)
+    {
         try {
             Cart::find($request->post('cart_id'))->update($request->post());
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "更新成功";
             $this->returnData['code'] = 1;
-
         } catch (\Exception $e) {
             $this->returnData['msg'] = "更新失败:" . $e->getMessage();
         }
 
         return $this->returnData;
-
     }
 
-    public function updateOrder(Request $request) {
+    public function updateOrder(Request $request)
+    {
 
         $structuredData = $this->trimData($request->post()); //权限判定
 
@@ -120,18 +123,18 @@ class OrderController extends Controller {
 
         try {
 
-            if(in_array($orderStatusStage,[1,2])){
+            if (in_array($orderStatusStage, [1, 2])) {
 
-                $structuredData['order_stage']= $orderStatusStage+1;
-            }else{
+                $structuredData['order_stage'] = $orderStatusStage + 1;
+            } else {
 
-            $structuredData['order_stage']=$orderStatusStage;
+                $structuredData['order_stage'] = $orderStatusStage;
             }
 
 
             $this->uploadOrderSupportFiles($request);
 
-            if($structuredData['order_status_code']==env('ORDER_VALID_STAGE')){
+            if ($structuredData['order_status_code'] == env('ORDER_VALID_STAGE')) {
                 $this->generateContract($structuredData['order_id']);
             }
 
@@ -140,35 +143,34 @@ class OrderController extends Controller {
             $this->returnData['status'] = true;
             $this->returnData['msg'] = "更新成功";
             $this->returnData['code'] = 1;
-
         } catch (\Exception $e) {
-            $this->returnData['msg'] = $e->getMessage().$e->getFile().$e->getLine();
+            $this->returnData['msg'] = $e->getMessage() . $e->getFile() . $e->getLine();
         }
 
         return $this->returnData;
     }
 
-    public function generateContract($orderId){
-      $makeContract = new MakeContract();
-      $makeContract->makeContract($orderId);
-
-
+    public function generateContract($orderId)
+    {
+        $makeContract = new MakeContract();
+        $makeContract->makeContract($orderId);
     }
 
-    public function trimData(array $data){
+    public function trimData(array $data)
+    {
 
-        if($this->getStaffDepartId() != env('FINANCE_DEPART')){
-                unset($data['order_settlement']);
-                unset($data['order_settled_date']);
-                unset($data['order_tax_ref']);
-                unset($data['tax_number']);
-                unset($data['tax_received_date']);
+        if ($this->getStaffDepartId() != env('FINANCE_DEPART')) {
+            unset($data['order_settlement']);
+            unset($data['order_settled_date']);
+            unset($data['order_tax_ref']);
+            unset($data['tax_number']);
+            unset($data['tax_received_date']);
         }
         return $data;
-
     }
 
-    public function uploadOrderSupportFiles(Request $request) {
+    public function uploadOrderSupportFiles(Request $request)
+    {
         try {
             $this->uploadFiles($request->file(), $request->post('order_id'));
             $this->returnData['status'] = true;
@@ -178,12 +180,13 @@ class OrderController extends Controller {
             $this->returnData['msg'] = "上传失败" . $e->getMessage();
         }
         return $this->returnData;
-
     }
 
-    public function delOrder(Request $request) {
+    public function delOrder(Request $request)
+    {
         if (Order::where('order_id', '=', $request->post('order_id'))
-            ->where('order_status_code', '=', '1')->exists()) {
+            ->where('order_status_code', '=', '1')->exists()
+        ) {
             try {
                 Order::destroy($request->post('order_id'));
                 Cart::where('order_id', '=', $request->post('order_id'))->delete();
@@ -194,19 +197,19 @@ class OrderController extends Controller {
             } catch (\Exception $e) {
                 $this->returnData['msg'] = $e->getMessage();
             }
-
-        }else{
-            $this->returnData['msg']="订单已经通过审批,不可以无效!";
+        } else {
+            $this->returnData['msg'] = "订单已经通过审批,不可以无效!";
         }
         return $this->returnData;
-
     }
 
-    public function removeAllFiles($folderPath, $disk) {
+    public function removeAllFiles($folderPath, $disk)
+    {
         return Storage::disk($disk)->deleteDirectory($folderPath);
     }
 
-    public function orderList() {
+    public function orderList()
+    {
         $staff_level = $this->getStaffLevel();
 
         $staffs = $this->getAssignableStaffs();
@@ -221,11 +224,13 @@ class OrderController extends Controller {
         return view('admin/Order/OrderList', ['data' => $data]);
     }
 
-    public function getStaffLevel() {
+    public function getStaffLevel()
+    {
         return Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level;
     }
 
-    public function getAssignableStaffs() {
+    public function getAssignableStaffs()
+    {
         $departObj = Department::where('assignable', '=', '1')->get();
         $departs = array();
         foreach ($departObj as $depart) {
@@ -236,16 +241,18 @@ class OrderController extends Controller {
         return $staffs;
     }
 
-    public function getCartStage() {
+    public function getCartStage()
+    {
         return $stages = Cart::select('service_stage')->GroupBy('service_stage')->get();
-
     }
 
-    public function getOrderStage() {
+    public function getOrderStage()
+    {
         return OrderStatus::all();
     }
 
-    public function orderSearch(Request $request) {
+    public function orderSearch(Request $request)
+    {
         $postData = $request->post();
 
         foreach ($postData as $k => $v) {
@@ -267,12 +274,12 @@ class OrderController extends Controller {
         return $this->returnData;
     }
 
-    public function getOrderList($staff_level, $staff_id, array $condition) {
+    public function getOrderList($staff_level, $staff_id, array $condition)
+    {
         if (!$staff_level) {
             $condition['staff_id'] = $staff_id;
         }
-        $carts = Cart::
-        leftJoin('orders', 'orders.order_id', '=', 'carts.order_id')
+        $carts = Cart::leftJoin('orders', 'orders.order_id', '=', 'carts.order_id')
             ->leftJoin('clients', 'clients.client_id', '=', 'orders.order_client_id')
             ->leftJoin('order_status', 'order_status.order_status_id', '=', 'orders.order_status_code')
             ->leftJoin('staff', 'staff.staff_id', '=', 'clients.client_assign_to')
@@ -284,12 +291,12 @@ class OrderController extends Controller {
                     $query->where('orders.order_status_code', '=', $condition['order_status_code']);
                 }
                 if (key_exists('client_name', $condition)) {
-                    $sanitizedClient = filter_var($condition['client_name'],FILTER_SANITIZE_NUMBER_INT);
-                    if(!$sanitizedClient){
+                    $sanitizedClient = filter_var($condition['client_name'], FILTER_SANITIZE_NUMBER_INT);
+                    if (!$sanitizedClient) {
                         $query->where('clients.client_name', 'like', "%" . $condition['client_name'] . "%");
-                    }elseif(strlen($sanitizedClient)==11){
+                    } elseif (strlen($sanitizedClient) == 11) {
                         $query->where('clients.client_mobile', '=', $condition['client_name']);
-                    }elseif(strlen($sanitizedClient)>0){
+                    } elseif (strlen($sanitizedClient) > 0) {
                         $query->where('clients.client_id', '=', $condition['client_name']);
                     }
                 }
@@ -307,8 +314,11 @@ class OrderController extends Controller {
             ->where('clients.deleted_at', '=', null)
             ->where('carts.deleted_at', '=', null)
             ->select(
-                'clients.client_id', 'clients.client_name', 'clients.client_mobile',
-                'orders.order_id', 'orders.created_at',
+                'clients.client_id',
+                'clients.client_name',
+                'clients.client_mobile',
+                'orders.order_id',
+                'orders.created_at',
                 'order_status.order_status_name',
                 'staff.staff_name'
             )->get();
@@ -323,15 +333,15 @@ class OrderController extends Controller {
             $data[$order->order_id]['staff_name'] = $order->staff_name;
         }
         return $data;
-
-
     }
 
-    public function getStaffId() {
+    public function getStaffId()
+    {
         return Auth::guard('admin')->user()->staff_id;
     }
 
-    public function getOrderDetail(Request $request) {
+    public function getOrderDetail(Request $request)
+    {
 
         try {
             $order_id = $request->post('order_id');
@@ -352,25 +362,26 @@ class OrderController extends Controller {
         return $this->returnData;
     }
 
-    public function getAvailableOrderStatus($orderStage){
+    public function getAvailableOrderStatus($orderStage)
+    {
 
         $staff = Staff::find(Auth::guard('admin')->user()->staff_id);
         $staffDepart = Department::find($staff->getOriginal('department_id'));
 
 
-        switch ($orderStage){
+        switch ($orderStage) {
             case "0": //待审批阶段: 合法性审批
-        $statusOptions = OrderStatus::where('order_status_category','=',"1")->get();
+                $statusOptions = OrderStatus::where('order_status_category', '=', "1")->get();
 
-                if($staff->staff_level == env('DEPARTMENT_CHIEF_LEVEL') &&  $staffDepart->getOriginal('assignable')){
+                if ($staff->staff_level == env('DEPARTMENT_CHIEF_LEVEL') &&  $staffDepart->getOriginal('assignable')) {
                     //业务部经理
                     return $statusOptions;
                 }
                 break;
-            case "1"://付款审批: 有效性审批
-                $statusOptions = OrderStatus::where('order_status_category','=',"2")->get();
+            case "1": //付款审批: 有效性审批
+                $statusOptions = OrderStatus::where('order_status_category', '=', "2")->get();
 
-                if($staff->getOriginal('department_id') == env("FINANCE_DEPART")){
+                if ($staff->getOriginal('department_id') == env("FINANCE_DEPART")) {
                     //财务部员工
 
                     return $statusOptions;
@@ -379,50 +390,53 @@ class OrderController extends Controller {
             case "2": //状态更新阶段: 状态修改
             case "3": //状态更新阶段: 状态修改
 
-                if($staff->getOriginal('department_id') == env("FINANCE_DEPART")){
+                if ($staff->getOriginal('department_id') == env("FINANCE_DEPART")) {
                     //财务部员工
-                $statusOptions = OrderStatus::where('order_status_category','=',"2")->get();
+                    $statusOptions = OrderStatus::where('order_status_category', '=', "2")->get();
 
                     return $statusOptions;
                 }
 
-                if( $staff->getOriginal('department_id') == env("PROCESS_DEPART")){
-                $statusOptions = OrderStatus::where('order_status_category','=',"3")->get();
+                if ($staff->getOriginal('department_id') == env("PROCESS_DEPART")) {
+                    $statusOptions = OrderStatus::where('order_status_category', '=', "3")->get();
                     //流程部员工
                     return $statusOptions;
                 }
                 break;
-
         }
         return false;
     }
 
-    public function getStaffDepartId(){
+    public function getStaffDepartId()
+    {
         return Staff::find(Auth::guard('admin')->user()->staff_id)->department_id;
     }
 
-    public function SensitiveDataConvert($data) {
+    public function SensitiveDataConvert($data)
+    {
         if ($this->getStaffLevel() <= 3) {
             $patten = "";
             $hideDigits = (int)(strlen($data) * 0.6);
             for ($i = 0; $i <= $hideDigits; $i++) {
                 $patten .= "*";
             }
-            $data = substr_replace($data, $patten, 3, strlen($patten));// tzzzt
+            $data = substr_replace($data, $patten, 3, strlen($patten)); // tzzzt
         }
         return $data;
-
     }
 
-    public function convertTimeStampToDate(string $timeStamp) {
+    public function convertTimeStampToDate(string $timeStamp)
+    {
         return date('Y-m-d', strtotime($timeStamp));
     }
 
-    public function getOrderStatusName(int $orderStatusCode) {
+    public function getOrderStatusName(int $orderStatusCode)
+    {
         return OrderStatus::find($orderStatusCode)->order_status_name;
     }
 
-    public function getOrderFiles($orderId) {
+    public function getOrderFiles($orderId)
+    {
         $path = "Order/REF/{$orderId}/";
         $result = array();
         $files = Storage::disk('CRM')->allFiles($path);
@@ -432,7 +446,8 @@ class OrderController extends Controller {
         return $result;
     }
 
-    public function rmOrderFiles(Request $request) {
+    public function rmOrderFiles(Request $request)
+    {
         try {
             $this->removeFile($request->post('filename'), 'CRM');
             $this->returnData['status'] = true;
@@ -445,8 +460,8 @@ class OrderController extends Controller {
         return $this->returnData;
     }
 
-    public function removeFile($filePathFullName, $disk) {
+    public function removeFile($filePathFullName, $disk)
+    {
         return Storage::disk($disk)->delete($filePathFullName);
     }
-
 }
