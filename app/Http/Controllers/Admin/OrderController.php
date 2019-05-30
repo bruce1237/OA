@@ -26,7 +26,7 @@ class OrderController extends Controller
         $data = json_decode($data, true);
         $orderId = 0;
         $orderTotal = $orderProfit = 0;
-        //get cart details  
+        //get cart details
         $cartData = array();
         foreach ($data['services'] as $service) {
             $serviceObj = Service::find($service['serviceId']);

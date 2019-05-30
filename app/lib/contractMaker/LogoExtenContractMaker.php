@@ -14,7 +14,7 @@ use App\Model\Cart;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class LogoExtenContractMaker extends ContractMaker {
-    protected $wordDummySealName = "image2.png";
+    protected $wordDummySealName = "image1.png";
     protected $contractTemplate = 3;
 
     // protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string {

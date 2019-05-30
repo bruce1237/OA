@@ -13,7 +13,7 @@ namespace App\Lib\contractMaker;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class LogoChangeContractMaker extends ContractMaker {
-    protected $wordDummySealName = "image2.png";
+    protected $wordDummySealName = "image1.png";
     protected $contractTemplate = 4;
 
     // protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string {

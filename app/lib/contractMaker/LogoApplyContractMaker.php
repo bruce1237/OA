@@ -14,7 +14,7 @@ use PhpOffice\PhpWord\TemplateProcessor;
 
 class LogoApplyContractMaker extends ContractMaker
 {
-    protected $wordDummySealName = "image2.png";
+    protected $wordDummySealName = "image1.png";
     protected $contractTemplate =1;
 
     /**

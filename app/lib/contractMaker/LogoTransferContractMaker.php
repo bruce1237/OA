@@ -5,7 +5,7 @@ namespace App\lib\contractMaker;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class LogoTransferContractMaker extends ContractMaker{
-    protected $wordDummySealName = "image2.png";
+    protected $wordDummySealName = "image1.png";
     protected $contractTemplate = 5;
 
     // protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string {
