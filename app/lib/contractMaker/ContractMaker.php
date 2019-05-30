@@ -18,8 +18,12 @@ use App\Model\Order;
 use App\Model\Staff;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 abstract class ContractMaker {
+
+    protected $pageHeaderFileFullName = "page_head.png";
+    protected $pageFooterFileFullName = "page_foot.png";
 
     /**
      * @param int $orderId
@@ -29,7 +33,7 @@ abstract class ContractMaker {
      *
      * Used For: generate PDF format contract
      */
-    public function make(int $orderId, int $contractId, array $serviceIds): bool {
+    public function make(int $orderId, int $contractId, array $serviceIds): string {
         //get all the information about this order
         $orderObj = $this->getOrderInfo($orderId);
         $contractObj = $this->getContractInfo($contractId);
@@ -53,17 +57,63 @@ abstract class ContractMaker {
 
         //get the contactPDF Name
         $contractPdf = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/{$contractObj->contract_name}.pdf") ;
+
         // dd("FF");
+
+
         // convert word into PDF with split-Seal
         $pdfFileName = $this->wordToPDF($wordFile['file'],$contractPdf);
 
         //add PageSeal 骑缝章 into PDF
-        $pdfFileName = $this->addPageSeal($pdfFileName,$wordFile['seal']);
+        $pdfFileName = $this->addPageSeal($pdfFileName,$wordFile['seal'],$firmObj->firm_id);
 
         return $pdfFileName;
     }
 
+    protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string
+    {
 
+        //ge word template file;
+        $templateFile = $this->getTemplateFile($this->contractTemplate);
+
+        $templatePrcessor = new TemplateProcessor($templateFile);
+
+        // replace the dummySeal to realSeal
+        $realSeal = $this->replaceDummySeal($this->wordDummySealName, $orderInfo['order_firm_id']);
+        $templatePrcessor->setImageValueC($this->wordDummySealName, $realSeal);
+
+        $cartObj = $this->getCarts($orderId, $serviceIds);
+        $cartDetails = $this->restructureCarts($cartObj);
+
+        $orderInfo['order_payment_method_details'] = $this->convertPaymentDetails($orderInfo['order_payment_method_details']);
+        $orderInfo['order_totalCHN'] = $this->toChineseNumber($cartDetails['total']);
+        $orderInfo['order_total'] = $cartDetails['total'];
+        unset($cartDetails['total']);
+
+        // find out how many records need insert to the word table
+        $rows = sizeof($cartDetails['name']);
+
+        // clone the row
+        $templatePrcessor->cloneRow('service_type', $rows);
+
+        // resturce the order info CART parts
+        for ($i = 1; $i <= $rows; $i++) {
+            $orderInfo['service_name#' . $i] = $cartDetails['name'][$i - 1];
+            $orderInfo['service_type#' . $i] = $cartDetails['type'][$i - 1];
+            $orderInfo['service_attr#' . $i] = $cartDetails['attr'][$i - 1];
+            $orderInfo['service_price#'. $i] = $cartDetails['price'][$i -1];
+        }
+
+
+        //assign info into word template
+        foreach($orderInfo as $key => $value){
+            $templatePrcessor->setValue($key,$value);
+        }
+
+        $newFileName = storage_path("contractTemplates\\TMP" . uniqid() . ".docx");
+        $templatePrcessor->saveAs($newFileName);
+        return $newFileName;
+    }
     protected function getTemplateFile(int $contractId): string {
         $fileName = Contract::find($contractId)->contract_file;
 
@@ -95,7 +145,31 @@ abstract class ContractMaker {
         return false;
     }
 
-    protected function addPageSeal(string $PDFFile, string $seal) :string {
+    /**
+     * addPageSeal
+     *
+     * @param  mixed $PDFFile
+     * @param  mixed $seal
+     *
+     * @return string
+     *
+     * MODIFICATION: CHANGE:
+     * *as the openoffice has bug with pageHeader and pageFooter,
+     * *so has to add the pageHeader through the program
+     */
+
+    protected function addPageSeal(string $PDFFile, string $seal,$firmId) :string {
+
+        //this section is for process pageHeader and footer
+        $pageHeaderFilePath = storage_path("firms\\$firmId\\seal\\".$this->pageHeaderFileFullName);
+        $pageFooterFilePath = storage_path("firms\\$firmId\\seal\\".$this->pageFooterFileFullName);
+        // dd($pageHeaderFilePath);
+
+
+        //end of page header and footer section
+
+
+
         $pdf = new Fpdi();
         $totalPageNum = $pdf->setSourceFile($PDFFile);
         if($totalPageNum==1){
@@ -116,7 +190,26 @@ abstract class ContractMaker {
             //use the template page
             $pdf->useTemplate($templateId);
             //place the graphics
+            /** for the function image arguments explains
+             * public function Image($file,$x = null,$y = null,$w = 0,$h = 0,$type = '',$link = '') { }
+             * public funciton Image(
+             *               file    string      fullFilePathName,
+             *               x       int         positionToPageLeftEdge
+             *               y       int         positionToPageTopEdge
+             *               w       int         insert width space for the Picture
+             *               h       int         insert height space for the Picture
+             *               type   *type*      **unkonw**
+             *               link   *link*      **unkonw**
+             *                      )
+             */
             $pdf->image($sealSlices[$pageNum], ($size['width'] - $sealSlices['width']), 35, $sealSlices['width'],$sealSlices['height']);
+
+            //add the pageHeader
+
+            // $pdf->image($pageHeaderFilePath,10,20,$headerWidth,$headerHeight);
+            $pdf->image($pageHeaderFilePath,20,10,170,10);
+            $pdf->image($pageFooterFilePath,20,280,170,10);
+
             unlink($sealSlices[$pageNum]);
         }
         try{
@@ -262,6 +355,6 @@ abstract class ContractMaker {
         }
     }
 
-    abstract protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string;
+    abstract protected   function restructureCarts($cartObj);
 
 }

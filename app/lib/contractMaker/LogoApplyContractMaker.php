@@ -14,7 +14,8 @@ use PhpOffice\PhpWord\TemplateProcessor;
 
 class LogoApplyContractMaker extends ContractMaker
 {
-    private const wordDummySealName = "image2.png";
+    protected $wordDummySealName = "image2.png";
+    protected $contractTemplate =1;
 
     /**
      * @param int $orderId
@@ -27,55 +28,56 @@ class LogoApplyContractMaker extends ContractMaker
      * @throws \PhpOffice\PhpWord\Exception\Exception
      * Used For:
      */
-    protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string
-    {
 
-        //get word template file;
+    // protected function processTemplate(int $orderId, array $serviceIds, array $orderInfo): string
+    // {
 
-        $templateFile = $this->getTemplateFile(env('LOGOAPPLY'));
+    //     //get word template file;
 
-        $templateProcessor = new TemplateProcessor($templateFile);
+    //     $templateFile = $this->getTemplateFile(env('LOGOAPPLY'));
 
-        //replace the dummySeal to realSeal
-        $realSeal = $this->replaceDummySeal(self::wordDummySealName, $orderInfo['order_firm_id']);
-        $templateProcessor->setImageValueC(self::wordDummySealName, $realSeal);
+    //     $templateProcessor = new TemplateProcessor($templateFile);
 
-
-        $cartObj = $this->getCarts($orderId, $serviceIds);
-        $cartDetails = $this->restructureCarts($cartObj);
-        $orderInfo['order_payment_method_details'] = $this->convertPaymentDetails($orderInfo['order_payment_method_details']);
-        $orderInfo['order_totalCHN'] = $this->toChineseNumber($cartDetails['total']);
-        $orderInfo['order_total'] = $cartDetails['total'];
-        unset($cartDetails['total']);
+    //     //replace the dummySeal to realSeal
+    //     $realSeal = $this->replaceDummySeal(self::wordDummySealName, $orderInfo['order_firm_id']);
+    //     $templateProcessor->setImageValueC(self::wordDummySealName, $realSeal);
 
 
-        //find out how many records need insert to the word table
-        $rows = sizeof($cartDetails['name']);
-
-        //clone the Row
-        $templateProcessor->cloneRow('service_type', $rows);
-
-        //resture the order info CART parts
-        for ($i = 1; $i <= $rows; $i++) {
-            $orderInfo['service_name#' . $i] = $cartDetails['name'][$i - 1];
-            $orderInfo['service_type#' . $i] = $cartDetails['type'][$i - 1];
-            $orderInfo['service_attr#' . $i] = $cartDetails['attr'][$i - 1];
-            $orderInfo['service_price#' . $i] = $cartDetails['price'][$i - 1];
-        }
+    //     $cartObj = $this->getCarts($orderId, $serviceIds);
+    //     $cartDetails = $this->restructureCarts($cartObj);
+    //     $orderInfo['order_payment_method_details'] = $this->convertPaymentDetails($orderInfo['order_payment_method_details']);
+    //     $orderInfo['order_totalCHN'] = $this->toChineseNumber($cartDetails['total']);
+    //     $orderInfo['order_total'] = $cartDetails['total'];
+    //     unset($cartDetails['total']);
 
 
-        //assign info into word template
-        foreach ($orderInfo as $key => $value) {
-            $templateProcessor->setValue($key, $value);
-        }
+    //     //find out how many records need insert to the word table
+    //     $rows = sizeof($cartDetails['name']);
 
-        $newFileName = storage_path("contractTemplates\\TMP" . uniqid() . ".docx");
+    //     //clone the Row
+    //     $templateProcessor->cloneRow('service_type', $rows);
 
-        $templateProcessor->saveAs($newFileName);
-        return $newFileName;
-    }
+    //     //resture the order info CART parts
+    //     for ($i = 1; $i <= $rows; $i++) {
+    //         $orderInfo['service_name#' . $i] = $cartDetails['name'][$i - 1];
+    //         $orderInfo['service_type#' . $i] = $cartDetails['type'][$i - 1];
+    //         $orderInfo['service_attr#' . $i] = $cartDetails['attr'][$i - 1];
+    //         $orderInfo['service_price#' . $i] = $cartDetails['price'][$i - 1];
+    //     }
 
-    private function restructureCarts($cartObj)
+
+    //     //assign info into word template
+    //     foreach ($orderInfo as $key => $value) {
+    //         $templateProcessor->setValue($key, $value);
+    //     }
+
+    //     $newFileName = storage_path("contractTemplates\\TMP" . uniqid() . ".docx");
+
+    //     $templateProcessor->saveAs($newFileName);
+    //     return $newFileName;
+    // }
+
+    protected function restructureCarts($cartObj)
     {
 
         $serviceName = $cartObj[0]['service_name'];
