@@ -80,6 +80,7 @@ class LogoApplyContractMaker extends ContractMaker
     protected function restructureCarts($cartObj)
     {
 
+
         $serviceName = $cartObj[0]['service_name'];
         $restructureArr = array();
 
@@ -116,6 +117,9 @@ class LogoApplyContractMaker extends ContractMaker
                     if ($attribute['name'] == "类别") {
                         $cate .= $attribute['value'] . "类, ";
                         $arr[$v->service_category][$key]['attr'] .= $attribute['value'] . "类, ";
+                    }elseif($attribute['name'] == "注册号"){
+                        $cate .= $attribute['value'] . "类, ";
+                        $arr[$v->service_category][$key]['attr'] .= "注册号: ".$attribute['value'] . ", ";
                     }
                 }
                 $price += $v->service_price;
