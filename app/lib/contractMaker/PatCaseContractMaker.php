@@ -47,7 +47,7 @@ class PatCaseContractMaker extends ContractMaker
         $pdfFileName = $this->wordToPDF($confidentContractFilePathName,$confidentPDF);
 
         // add the pageSeal
-
+        
         $this->addPageSeal($pdfFileName,$contractSeal,$firmObj->firm_id);
 
 
