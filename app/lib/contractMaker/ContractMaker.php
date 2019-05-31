@@ -57,7 +57,7 @@ abstract class ContractMaker {
             mkdir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"));
         }
 
-        //get the contactPDF Name
+        //set the contactPDF Name
         $contractPdf = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/{$contractObj->contract_name}.pdf") ;
 
         // dd("FF");

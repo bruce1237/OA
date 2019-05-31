@@ -3,11 +3,79 @@ namespace App\Lib\contractMaker;
 
 
 use App\Lib\contractMaker\ContractMaker;
+use PhpOffice\PhpWord\TemplateProcessor;
 
 class PatCaseContractMaker extends ContractMaker
 {
     protected $wordDummySealName = "image1.png";
     protected $contractTemplate = 7;
+
+    public function make(int $orderId, int $contractId, array $serviceIds): string
+    {
+        $orderObj = $this->getOrderInfo($orderId);
+        $staffObj = $this->getStaffInfo($orderObj->order_staff_id);
+        $firmObj = $this->getFirmInfo($orderObj->order_firm_id);
+
+        $orderInfo = array_merge($orderObj->toArray(), $staffObj->toArray(), $firmObj->toArray());
+
+
+
+
+        // processing the Confidential contract
+        $templateFile = storage_path('contractTemplates/confidential.docx');
+
+
+        
+
+
+        // assign info into the tamplatefile 
+        $confidentContractFilePathName = $this->processConfidentialContract($templateFile, $orderInfo);
+        //set the contactPDF Name
+        $confidentPDF = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/专利保密协议.pdf") ;
+
+        // get contract seal by firm
+        $contractSeal =  storage_path("firms/{$firmObj->firm_id}/seal/{$firmObj->firm_id}.png");
+
+
+        //check if the order Reference folder exist,
+        if (!is_dir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"))) {
+            mkdir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"));
+        }
+
+        // convert word into pdf with Split-Seal
+
+        $pdfFileName = $this->wordToPDF($confidentContractFilePathName,$confidentPDF);
+
+        // add the pageSeal
+
+        $this->addPageSeal($pdfFileName,$contractSeal,$firmObj->firm_id);
+
+
+
+
+
+
+        return parent::make($orderId, $contractId, $serviceIds);
+    }
+
+    private function processConfidentialContract($templateFile, array $data): string
+    {
+
+        $templateProcessor = new TemplateProcessor($templateFile);
+
+        // replace dummySeal in the template file
+        $realSeal = $this->replaceDummySeal("image1.png",$data['order_firm_id']);
+        $templateProcessor->setImageValueC("image1.png",$realSeal);
+
+        foreach ($data as $key => $value) {
+            $templateProcessor->setValue($key, $value);
+        }
+
+        $newFileName = storage_path("contractTemplates\\TMP" . uniqid() . ".docx");
+        $templateProcessor->saveAs($newFileName);
+
+        return $newFileName;
+    }
 
     protected function restructureCarts($cartObj)
     {
