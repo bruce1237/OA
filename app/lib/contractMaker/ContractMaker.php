@@ -106,7 +106,7 @@ abstract class ContractMaker {
             $orderInfo['service_price#'. $i] = $cartDetails['price'][$i -1];
         }
 
-
+     
         //assign info into word template
         foreach($orderInfo as $key => $value){
             $templatePrcessor->setValue($key,$value);

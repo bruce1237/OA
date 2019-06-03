@@ -12,6 +12,24 @@ class PatCaseContractMaker extends ContractMaker
 
     public function make(int $orderId, int $contractId, array $serviceIds): string
     {
+
+        // for the patent case, need addional pdf contract: confidential contract,
+        // so make the confident contract
+        $this->privateMaker($orderId,$contractId,$serviceIds);
+       
+
+        return parent::make($orderId, $contractId, $serviceIds);
+    }
+
+    /**
+     * make the confidential contract for the patent contract ONLY
+     *
+     * @param integer $orderId
+     * @param integer $contractId
+     * @param array $serviceIds
+     * @return string
+     */
+    private function privateMaker(int $orderId, int $contractId, array $serviceIds):string{
         $orderObj = $this->getOrderInfo($orderId);
         $staffObj = $this->getStaffInfo($orderObj->order_staff_id);
         $firmObj = $this->getFirmInfo($orderObj->order_firm_id);
@@ -47,16 +65,13 @@ class PatCaseContractMaker extends ContractMaker
         $pdfFileName = $this->wordToPDF($confidentContractFilePathName,$confidentPDF);
 
         // add the pageSeal
-        
+
         $this->addPageSeal($pdfFileName,$contractSeal,$firmObj->firm_id);
-
-
-
-
-
-
-        return parent::make($orderId, $contractId, $serviceIds);
+        return $pdfFileName;
     }
+
+
+
 
     private function processConfidentialContract($templateFile, array $data): string
     {

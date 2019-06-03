@@ -50,7 +50,7 @@ class MakeContract
                     $contractMaker = new LogoChangeContractMaker();
                     $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
                     break;
-                    
+
                 case env('LOGOTRANSF'):
                     $contractMaker = new LogoTransferContractMaker();
                     $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
@@ -63,7 +63,12 @@ class MakeContract
 
                 case env('PATCASE'):
                     $contractMaker = new PatCaseContractMaker();
-                    $pdfContract[] = $contractMaker->make($orderId, $contractId,$serviceIds);
+                    $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
+                    break;
+
+                case env('COPYRIGHTCASE'):
+                    $contractMaker = new CopyRightContractMaker();
+                    $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
                     break;
 
                 default:
