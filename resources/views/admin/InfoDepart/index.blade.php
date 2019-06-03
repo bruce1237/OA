@@ -178,7 +178,7 @@
         <div class="col-3">
 
             <div class="alert alert-primary">
-                <h4 class="alert-heading">业务范围</h4>
+                <h4 class="alert-heading">业务范围<small><font color="red">业务名称请不要使用<</font></small> </h4>
                 <hr>
                 <div class="input-group input-group-sm mb-3">
                     <input type="text" class="form-control" id="service_0" placeholder="业务范围"

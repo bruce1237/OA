@@ -19,7 +19,7 @@ use App\Model\Staff;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
 use PhpOffice\PhpWord\TemplateProcessor;
-use App\Model\Todo;
+
 
 abstract class ContractMaker {
 
@@ -137,6 +137,7 @@ abstract class ContractMaker {
         copy($firmSeal, $realSeal);
         return $realSeal;
     }
+
 
     protected function wordToPDF(string $wordFile,string $pdfFile){
         $pdf = new office2pdf();
