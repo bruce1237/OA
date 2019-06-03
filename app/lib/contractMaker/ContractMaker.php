@@ -19,6 +19,7 @@ use App\Model\Staff;
 use Illuminate\Support\Facades\Storage;
 use setasign\Fpdi\Fpdi;
 use PhpOffice\PhpWord\TemplateProcessor;
+use App\Model\Todo;
 
 abstract class ContractMaker {
 
@@ -107,6 +108,8 @@ abstract class ContractMaker {
         }
 
      
+// Todo: there is issue when insert value has "<" will stop the template process but still continue the code
+
         //assign info into word template
         foreach($orderInfo as $key => $value){
             $templatePrcessor->setValue($key,$value);
