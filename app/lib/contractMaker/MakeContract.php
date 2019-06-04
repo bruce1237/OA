@@ -71,6 +71,13 @@ class MakeContract
                     $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
                     break;
 
+                case env('LOGOCERTREISSUE'):
+                    $contractMaker = new LogoReissueContractMaker();
+                    $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
+                    break;
+                    
+
+
                 default:
                     dd("合同选择错误!!");
             }
