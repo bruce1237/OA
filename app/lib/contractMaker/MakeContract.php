@@ -71,7 +71,7 @@ class MakeContract
                     $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
                     break;
 
-                case env('LOGOCERTREISSUE'):
+                case env('LOGOREISSUE'):
                     $contractMaker = new LogoReissueContractMaker();
                     $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
                     break;

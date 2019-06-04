@@ -3,6 +3,8 @@ namespace App\Lib\contractMaker;
 
 class LogoReissueContractMaker extends ContractMaker
 {
+    protected $wordDummySealName = "image1.png";
+    protected $contractTemplate = 9;
 
     protected function restructureCarts($cartObj)
     {
@@ -23,7 +25,7 @@ class LogoReissueContractMaker extends ContractMaker
 
             array_push($orderDetailArray['type'], $cart->service_category);
             array_push($orderDetailArray['name'], $cart->service_name);
-            array_push($orderDetailArray['price'], $cart->service->price);
+            array_push($orderDetailArray['price'], $cart->service_price);
             array_push($orderDetailArray['attr'], $attrStr);
             $orderDetailArray['total'] += $cart->service_price;
         }
