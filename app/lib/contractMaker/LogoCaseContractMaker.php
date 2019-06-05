@@ -1,8 +1,7 @@
 <?php
 namespace App\lib\contractMaker;
 
-use App\Lib\contractMaker\ContractMaker;
-use PhpOffice\PhpWord\TemplateProcessor;
+
 
 class LogoCaseContractMaker extends ContractMaker
 {
@@ -61,20 +60,21 @@ class LogoCaseContractMaker extends ContractMaker
      *
      * @return void
      */
-    protected function restructureCarts($cartObj){
+    protected function restructureCarts($cartObj): array
+    {
         $orderDetailArray = [
             'type' => [],
             'name' => [],
             'attr' => [],
-            'price'=> [],
-            'total'=>0,
+            'price' => [],
+            'total' => 0,
         ];
 
         foreach ($cartObj as $cart) {
             $attrs = json_decode($cart->service_attributes, true);
-            $attrStr ='';
+            $attrStr = '';
             foreach ($attrs as $attr) {
-                $attrStr .= $attr['name'].": ".$attr['value'].PHP_EOL;
+                $attrStr .= $attr['name'] . ": " . $attr['value'] . PHP_EOL;
             }
 
             array_push($orderDetailArray['type'], $cart->service_category);
@@ -85,6 +85,5 @@ class LogoCaseContractMaker extends ContractMaker
         }
 
         return $orderDetailArray;
-
-     }
+    }
 }

@@ -26,7 +26,7 @@ abstract class ContractMaker {
     protected $pageHeaderFileFullName = "page_head.png";
     protected $pageFooterFileFullName = "page_foot.png";
 
-    abstract protected function restructureCarts($cartObj);
+    abstract protected function restructureCarts($cartObj):array;
 
     /**
      * @param int $orderId

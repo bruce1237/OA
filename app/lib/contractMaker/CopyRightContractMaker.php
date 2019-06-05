@@ -1,12 +1,13 @@
 <?php
 namespace App\Lib\contractMaker;
 
+
 class CopyRightContractMaker extends ContractMaker{
     protected $wordDummySealName = "image1.png";
     protected $contractTemplate = 8;
     
 
-    protected function restructureCarts($cartObj)
+    protected function restructureCarts($cartObj) :array
     {
         
         $orderDetailArray = [

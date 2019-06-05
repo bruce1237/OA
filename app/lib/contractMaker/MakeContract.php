@@ -13,8 +13,7 @@ namespace App\Lib\contractMaker;
 use App\Model\Cart;
 use App\Model\Contract;
 use App\Model\Order;
-use App\lib\contractMaker\LogoTransferContractMaker;
-use App\lib\contractMaker\LogoCaseContractMaker;
+
 
 class MakeContract
 {
@@ -75,7 +74,12 @@ class MakeContract
                     $contractMaker = new LogoReissueContractMaker();
                     $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
                     break;
-                    
+
+                case env('LOGOAUTH'):
+                    $contractMaker = new LogoAuthContractMaker();
+                    $pdfContract[] = $contractMaker->make($orderId, $contractId, $serviceIds);
+                    break;
+
 
 
                 default:

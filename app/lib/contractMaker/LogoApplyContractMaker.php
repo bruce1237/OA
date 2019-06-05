@@ -10,12 +10,10 @@
 namespace App\Lib\contractMaker;
 
 
-use PhpOffice\PhpWord\TemplateProcessor;
-
 class LogoApplyContractMaker extends ContractMaker
 {
     protected $wordDummySealName = "image1.png";
-    protected $contractTemplate =1;
+    protected $contractTemplate = 1;
 
     /**
      * @param int $orderId
@@ -77,7 +75,7 @@ class LogoApplyContractMaker extends ContractMaker
     //     return $newFileName;
     // }
 
-    protected function restructureCarts($cartObj)
+    protected function restructureCarts($cartObj): array
     {
 
 
@@ -117,9 +115,9 @@ class LogoApplyContractMaker extends ContractMaker
                     if ($attribute['name'] == "类别") {
                         $cate .= $attribute['value'] . "类, ";
                         $arr[$v->service_category][$key]['attr'] .= $attribute['value'] . "类, ";
-                    }elseif($attribute['name'] == "注册号"){
+                    } elseif ($attribute['name'] == "注册号") {
                         $cate .= $attribute['value'] . "类, ";
-                        $arr[$v->service_category][$key]['attr'] .= "注册号: ".$attribute['value'] . ", ";
+                        $arr[$v->service_category][$key]['attr'] .= "注册号: " . $attribute['value'] . ", ";
                     }
                 }
                 $price += $v->service_price;

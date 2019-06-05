@@ -2,7 +2,6 @@
 namespace App\Lib\contractMaker;
 
 
-use App\Lib\contractMaker\ContractMaker;
 use PhpOffice\PhpWord\TemplateProcessor;
 
 class PatCaseContractMaker extends ContractMaker
@@ -15,8 +14,8 @@ class PatCaseContractMaker extends ContractMaker
 
         // for the patent case, need addional pdf contract: confidential contract,
         // so make the confident contract
-        $this->privateMaker($orderId,$contractId,$serviceIds);
-       
+        $this->privateMaker($orderId, $contractId, $serviceIds);
+        
 
         return parent::make($orderId, $contractId, $serviceIds);
     }
@@ -29,7 +28,8 @@ class PatCaseContractMaker extends ContractMaker
      * @param array $serviceIds
      * @return string
      */
-    private function privateMaker(int $orderId, int $contractId, array $serviceIds):string{
+    private function privateMaker(int $orderId, int $contractId, array $serviceIds): string
+    {
         $orderObj = $this->getOrderInfo($orderId);
         $staffObj = $this->getStaffInfo($orderObj->order_staff_id);
         $firmObj = $this->getFirmInfo($orderObj->order_firm_id);
@@ -43,13 +43,13 @@ class PatCaseContractMaker extends ContractMaker
         $templateFile = storage_path('contractTemplates/confidential.docx');
 
 
-        
+
 
 
         // assign info into the tamplatefile 
         $confidentContractFilePathName = $this->processConfidentialContract($templateFile, $orderInfo);
         //set the contactPDF Name
-        $confidentPDF = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/专利保密协议.pdf") ;
+        $confidentPDF = public_path("storage/CRM/Order/REF/{$orderObj->order_id}/专利保密协议.pdf");
 
         // get contract seal by firm
         $contractSeal =  storage_path("firms/{$firmObj->firm_id}/seal/{$firmObj->firm_id}.png");
@@ -62,11 +62,11 @@ class PatCaseContractMaker extends ContractMaker
 
         // convert word into pdf with Split-Seal
 
-        $pdfFileName = $this->wordToPDF($confidentContractFilePathName,$confidentPDF);
+        $pdfFileName = $this->wordToPDF($confidentContractFilePathName, $confidentPDF);
 
         // add the pageSeal
 
-        $this->addPageSeal($pdfFileName,$contractSeal,$firmObj->firm_id);
+        $this->addPageSeal($pdfFileName, $contractSeal, $firmObj->firm_id);
         return $pdfFileName;
     }
 
@@ -79,8 +79,8 @@ class PatCaseContractMaker extends ContractMaker
         $templateProcessor = new TemplateProcessor($templateFile);
 
         // replace dummySeal in the template file
-        $realSeal = $this->replaceDummySeal("image1.png",$data['order_firm_id']);
-        $templateProcessor->setImageValueC("image1.png",$realSeal);
+        $realSeal = $this->replaceDummySeal("image1.png", $data['order_firm_id']);
+        $templateProcessor->setImageValueC("image1.png", $realSeal);
 
         foreach ($data as $key => $value) {
             $templateProcessor->setValue($key, $value);
@@ -92,7 +92,7 @@ class PatCaseContractMaker extends ContractMaker
         return $newFileName;
     }
 
-    protected function restructureCarts($cartObj)
+    protected function restructureCarts($cartObj): array
     {
         $orderDetailArray = [
             'type' => [],

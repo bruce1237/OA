@@ -10,10 +10,9 @@
 namespace App\Lib\contractMaker;
 
 
-use App\Model\Cart;
-use PhpOffice\PhpWord\TemplateProcessor;
 
-class LogoExtenContractMaker extends ContractMaker {
+class LogoExtenContractMaker extends ContractMaker
+{
     protected $wordDummySealName = "image1.png";
     protected $contractTemplate = 3;
 
@@ -72,35 +71,36 @@ class LogoExtenContractMaker extends ContractMaker {
      * word template
      * target format:
      * "type" => array:3 [
-    *     0 => "商标注册"
-    *     1 => "商标注册"
-    *     2 => "商标注册"
-    * ]
-    * "name" => array:3 [
-    *     0 => "audi"
-    *     1 => "BMW"
-    *     2 => "BenZ"
-    * ]
-    * "attr" => array:3 [
-    *     0 => "35类, "
-    *     1 => "35类, "
-    *     2 => "35类, "
-    * ]
-    * "price" => array:3 [
-    *     0 => 980.0
-    *     1 => 980.0
-    *     2 => 950.0
-    * ]
-    * "total" => 2910.0
-    * ]
+     *     0 => "商标注册"
+     *     1 => "商标注册"
+     *     2 => "商标注册"
+     * ]
+     * "name" => array:3 [
+     *     0 => "audi"
+     *     1 => "BMW"
+     *     2 => "BenZ"
+     * ]
+     * "attr" => array:3 [
+     *     0 => "35类, "
+     *     1 => "35类, "
+     *     2 => "35类, "
+     * ]
+     * "price" => array:3 [
+     *     0 => 980.0
+     *     1 => 980.0
+     *     2 => 950.0
+     * ]
+     * "total" => 2910.0
+     * ]
      */
-    protected function restructureCarts($cartObj):array {
+    protected function restructureCarts($cartObj): array
+    {
         $orderDetailArray = [
             'type' => [],
             'name' => [],
             'attr' => [],
             'price' => [],
-            'total'=>0,
+            'total' => 0,
         ];
 
         //
@@ -128,21 +128,19 @@ class LogoExtenContractMaker extends ContractMaker {
         //     "total" => 2910.0
         //   ]
 
-        foreach($cartObj as $cart){
-            $attrs = json_decode($cart->service_attributes,true);
-            $attrStr='';
-            foreach($attrs as $attr){
-                $attrStr .= $attr['name'].": ".$attr['value'].PHP_EOL;
+        foreach ($cartObj as $cart) {
+            $attrs = json_decode($cart->service_attributes, true);
+            $attrStr = '';
+            foreach ($attrs as $attr) {
+                $attrStr .= $attr['name'] . ": " . $attr['value'] . PHP_EOL;
             }
 
-            array_push($orderDetailArray['type'],$cart->service_category);
-            array_push($orderDetailArray['name'],$cart->service_name);
-            array_push($orderDetailArray['price'],$cart->service_price);
-            array_push($orderDetailArray['attr'],$attrStr);
-            $orderDetailArray['total']+=$cart->service_price;
-
+            array_push($orderDetailArray['type'], $cart->service_category);
+            array_push($orderDetailArray['name'], $cart->service_name);
+            array_push($orderDetailArray['price'], $cart->service_price);
+            array_push($orderDetailArray['attr'], $attrStr);
+            $orderDetailArray['total'] += $cart->service_price;
         }
         return $orderDetailArray;
-
     }
 }
