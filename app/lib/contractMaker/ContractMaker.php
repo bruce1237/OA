@@ -107,13 +107,14 @@ abstract class ContractMaker {
             $orderInfo['service_price#'. $i] = $cartDetails['price'][$i -1];
         }
 
-     
-// Todo: there is issue when insert value has "<" will stop the template process but still continue the code
-
-        //assign info into word template
+    
+        // assign info into word template,
+        // use htmlspecialchars to escape the special chars used in xml with is used in word
         foreach($orderInfo as $key => $value){
-            $templatePrcessor->setValue($key,$value);
+            $templatePrcessor->setValue($key,htmlspecialchars($value));
         }
+
+        
 
         $newFileName = storage_path("contractTemplates\\TMP" . uniqid() . ".docx");
         $templatePrcessor->saveAs($newFileName);
