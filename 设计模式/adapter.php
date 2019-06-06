@@ -1,6 +1,9 @@
 <?php
 namespace IDatabase;
 
+//added few lines for test
+
+
 interface IDatabase{
 	function connect($host,$user,$pwd,$dbname);
 	function query($sql);
