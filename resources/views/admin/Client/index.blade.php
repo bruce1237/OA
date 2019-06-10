@@ -1857,6 +1857,9 @@
 
         }
         function showOrderDetail(order) {
+            // alert("FF");
+            // alert(order.order_id);
+            // alert("CC");
             $("#showOrderModalSupportFiles").val('');
             $("#showOrderModalOrderId").text(order.order_id);
             $("#showOrderModalOrderCreatedAt").text(order.order_created_at);
@@ -1883,14 +1886,12 @@
             $("#showOrderModalPaymentMethodName").html(order.order_payment_method_name);
 
 
-
-
-
             var paymentdetails = $.parseJSON(order.order_payment_method_details);
             $("#showOrderModalPaymentMethodDetail").html('');
             $.each(paymentdetails, function (key, item) {
                 $("#showOrderModalPaymentMethodDetail").append('<h6><span class="badge badge-secondary">' + key + ': </span>' + item + '</h6>');
             });
+
             $("#showOrderModalOrderSettlement").val(order.order_settlement);
             $("#showOrderModalOrderSettledDate").val(order.order_settled_date);
             $("#showOrderModalFileList").html('');
@@ -1903,16 +1904,29 @@
 
 
                 var cartContents = '';
-
-
+               
                 var str = jQuery.parseJSON(item.service_attributes);
+               
+                
 
-                $.each(str, function (k, v) {
-                    cartContents += ' <span class="badge badge-secondary">' + v.name + ':</span><span>' + v.value + '</span>';
-                });
+                
+
+                if(typeof(str)=="object"){
+                    $.each(str, function (k, v) {
+               
+                     cartContents += ' <span class="badge badge-secondary">' + v.name + ':</span><span>' + v.value + '</span>';
+                    });
+
+                }else{
+                    cartContents = ' <span class="badge badge-secondary">' + str+ '</span>';
+                }
+
+
+              
+               
                     let ref = item.service_ref!=null?item.service_ref:'';
                     let stage = item.service_stage!=null?item.service_stage:'';
-
+               
                 var content = '<div class="card border-primary mb-3">\n' +
                     '                                    <div class="card-body text-success">\n' +
                     '                                        <div class="input-group input-group-sm mb-3">\n' +
@@ -1942,7 +1956,7 @@
                     '                                </div>';
 
                 $("#showOrderModalOrderDetailsList").append(content);
-
+               
             });
 
             $("#showOrderModal").draggable();
