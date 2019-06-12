@@ -64,7 +64,32 @@
     <h4>搜索结果</h4>
     <div class="row">
         <div class="col-4" id="searchResultOrderList">
+        <table class="table table-sm table-hover table-striped"> 
+            <thead> 
+            <tr> 
+                <th>订单号</th> 
+                <th>客户</th> 
+                <th>手机</th> 
+                <th>隶属人</th> 
+                <th>创建时间</th> 
+                <th>订单状态</th> 
+            </tr> 
+            </thead> 
+        <tbody> 
+            @foreach($data['orderList'] as $order)
+            <tr onclick="getOrderDetails({{$order['order_id']}})"> 
+                    <td>{{$order['order_id']}}</td> 
+                    <td>{{$order['client_name']}}</td> 
+                    <td>{{$order['client_mobile']}}</td> 
+                    <td>{{$order['staff_name']}}</td> 
+                    <td>{{$order['created_at']}}</td> 
+                    <td>{{$order['order_status_name']}}</td> 
+                </tr> 
+            @endforeach
+          
 
+        </tbody> 
+        </table>
         </div>
 
         <div class="col-8" id="orderDetail" style="display: none">
@@ -330,6 +355,7 @@
         }
 
         function getOrderDetails(orderId) {
+
             $("#orderDetail").hide();
             $.ajax({
                 url: "{{url('admin/getOrderDetail')}}",
@@ -552,6 +578,8 @@
 
 
         }
+
+        
 
     </script>
 

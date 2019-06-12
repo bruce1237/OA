@@ -14,6 +14,11 @@ use PhpOffice\PhpWord\TemplateProcessor;
 class TestController extends Controller {
 
 
+         public function FunctionName(Type $var = null)
+        {
+                # code...
+                echo "abc";
+        }
 
     public function tt() {
 

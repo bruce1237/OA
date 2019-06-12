@@ -37,7 +37,7 @@ class InfoAssignController extends Controller {
         }
 //$this->runTimer('after departs as depart foreach');
         //get the staffs data from the staff table which are info assignable
-        $staffs = Staff::whereIn('department_id', $departIds)->orderBy('department_id')->orderBy('staff_id')->get();
+        $staffs = Staff::where('staff_status','=','1')->whereIn('department_id', $departIds)->orderBy('department_id')->orderBy('staff_id')->get();
 //$this->runTimer('after get staff');
         //get the staff info assign statistic data from the database
         //there are two different ways to do so
@@ -82,20 +82,19 @@ class InfoAssignController extends Controller {
 //$this->runTimer('after pendingClients as pendingclient foreach');
         //data of clients who has been assigned but not been acknowledged by the relative staff
         $freshlyAssignClients = Client::where('client_new_enquiries', '=', '1')->where('client_assign_to', '>', 0)
+            ->where('Staff.staff_status','=',"1")
             ->join('Staff', 'clients.client_assign_to', '=', 'Staff.staff_id')
             ->select('clients.*', 'Staff.staff_name')
             ->orderBy('clients.updated_at', 'desc')->get();
 
-//dd($staffAssignedInfoCount);
-//        dd($freshlyAssignClients);
-//$this->runTimer('after get freshlyAssignClients');
         //restructure the freshly assigned client data, to put the first line of enquiries into the pendingClient data
+ 
         foreach ($freshlyAssignClients as $key => $freshlyAssignClient) {
-            $freshlyAssignClients[$key]->client_enquiries = explode("\r\n", $freshlyAssignClient->client_enquiries)[0];
-//            $freshlyAssignClients[$key]->today =key_exists($freshlyAssignClient->getOriginal('client_assign_to'),$staffAssignedInfoCount)?$staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['today']:0;
-//            $freshlyAssignClients[$key]->month =key_exists($freshlyAssignClient->getOriginal('client_assign_to'),$staffAssignedInfoCount)?$staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['month']:0;
-            $freshlyAssignClients[$key]->today = $staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['today'];
-            $freshlyAssignClients[$key]->month = $staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['month'];
+           
+           $freshlyAssignClients[$key]->client_enquiries = explode("\r\n", $freshlyAssignClient->client_enquiries)[0];
+           $freshlyAssignClients[$key]->today =key_exists($freshlyAssignClient->getOriginal('client_assign_to'),$staffAssignedInfoCount)?$staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['today']:0;
+           $freshlyAssignClients[$key]->month =key_exists($freshlyAssignClient->getOriginal('client_assign_to'),$staffAssignedInfoCount)?$staffAssignedInfoCount[$freshlyAssignClient->getOriginal('client_assign_to')]['month']:0;
+          
         }
 
 //        dd($freshlyAssignClients);

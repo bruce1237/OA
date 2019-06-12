@@ -15,6 +15,7 @@ use App\Model\Staff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Model\Sales;
 
 class OrderController extends Controller
 {
@@ -138,6 +139,14 @@ class OrderController extends Controller
                 $this->generateContract($structuredData['order_id']);
             }
 
+            $financeStage = explode(",",env('ORDER_FINANCE_STAGE'));
+            if(in_array($structuredData['order_status_code'],$financeStage)){
+              //insert the sales
+              $this->recordSales($structuredData['order_id']);
+            }
+
+
+
 
             Order::find($structuredData['order_id'])->update($structuredData);
             $this->returnData['status'] = true;
@@ -148,6 +157,22 @@ class OrderController extends Controller
         }
 
         return $this->returnData;
+    }
+
+    public function recordSales($orderId){
+        $orderInfo = Order::find($orderId);
+        $staffInfo = Staff::find($orderInfo['order_staff_id']);
+       
+        $sales =[
+            'staff_id'=>$orderInfo['order_staff_id'],
+            'staff_name'=>$staffInfo->staff_name,
+            'department_id'=>$staffInfo->department_id,
+            'date'=>date("Y-m-d"),
+            'sales'=>$orderInfo['order_profit']
+        ];
+
+        Sales::create($sales);
+
     }
 
     public function generateContract($orderId)
@@ -215,8 +240,17 @@ class OrderController extends Controller
         $staffs = $this->getAssignableStaffs();
         $serviceStages = $this->getCartStage();
         $orderStage = $this->getOrderStage();
-        $data = [
 
+        $condition =[
+            'order_status_code'=>1,
+        ];
+
+        
+        $orderList = $this->getOrderList($this->getStaffLevel(), $this->getStaffId(), $condition);
+
+
+        $data = [
+            'orderList'=>$orderList,
             'staffs' => $staffs,
             'service_stage' => $serviceStages,
             'order_stage' => $orderStage,
@@ -321,7 +355,8 @@ class OrderController extends Controller
                 'orders.created_at',
                 'order_status.order_status_name',
                 'staff.staff_name'
-            )->get();
+            )->orderBy('orders.created_at','desc')
+            ->get();
 
         $data = array();
         foreach ($carts as $order) {

@@ -12,7 +12,7 @@ class Visit extends Model
 
     public function getVisitStatusAttribute($value){
 
-        return VisitStatus::find($value)->first()->visit_status_name;
+        return VisitStatus::find($value)->visit_status_name;
     }
 
 
