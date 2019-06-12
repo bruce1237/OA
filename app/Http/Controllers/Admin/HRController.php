@@ -21,9 +21,68 @@ class HRController extends Controller
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
      * @target: display the hr page with some preloaded variables
      */
-    public function index() {
+    public function index()
+    {
         //get staff list with predesigned
         $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')->get();
+
+        //get total active staff count
+        $staffCount = Staff::count();
+
+        //get department list
+        $departments = Department::all();
+
+        //get maxId of departments for front end to list all the depart (for loop)
+        $departmentsMaxId = Department::all()->max('id');
+
+        //get all the positions
+        $positions = Position::all();
+
+        //get maxId of positions for the front end to list all the position (for loop)
+        $positionsMaxId = Position::all()->max('id');
+
+        //get list of managers which staff is greater than 0
+        $managers = Staff::where('staff_level', ">", 0)->get();
+
+        //display the page
+        return view('admin/hr/index', ['departments' => $departments, 'departmentsMaxId' => $departmentsMaxId, 'positions' => $positions, 'positionsMaxId' => $positionsMaxId, 'managers' => $managers, 'staffList' => $staffList, 'staffCount' => $staffCount]);
+    }
+
+    public function activeStaff()
+    {
+        //get staff list with predesigned
+        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')
+            ->where('staff_status', '=', '1')
+            ->get();
+
+        //get total active staff count
+        $staffCount = Staff::count();
+
+        //get department list
+        $departments = Department::all();
+
+        //get maxId of departments for front end to list all the depart (for loop)
+        $departmentsMaxId = Department::all()->max('id');
+
+        //get all the positions
+        $positions = Position::all();
+
+        //get maxId of positions for the front end to list all the position (for loop)
+        $positionsMaxId = Position::all()->max('id');
+
+        //get list of managers which staff is greater than 0
+        $managers = Staff::where('staff_level', ">", 0)->get();
+
+        //display the page
+        return view('admin/hr/index', ['departments' => $departments, 'departmentsMaxId' => $departmentsMaxId, 'positions' => $positions, 'positionsMaxId' => $positionsMaxId, 'managers' => $managers, 'staffList' => $staffList, 'staffCount' => $staffCount]);
+    }
+
+    public function deactiveStaff()
+    {
+        //get staff list with predesigned
+        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')
+            ->where('staff_status', '=', '0')
+            ->get();
 
         //get total active staff count
         $staffCount = Staff::count();
@@ -52,7 +111,8 @@ class HRController extends Controller
      * @return array
      * @target: setup an new department
      */
-    public function newDepart(Request $request) {
+    public function newDepart(Request $request)
+    {
         //$request: dapart_name
 
         //validation: the department name can not be empty
@@ -79,14 +139,15 @@ class HRController extends Controller
      * @return array
      * @target modify the specified department
      */
-    public function modifyDepart(Request $request) {
+    public function modifyDepart(Request $request)
+    {
         //$request: all the department name in an array
 
         //dismantle the array into KV array
-        foreach ($request->post() as $key => $value) {//$key as array index, $value as department_name
+        foreach ($request->post() as $key => $value) { //$key as array index, $value as department_name
 
             if ($value == null) { //the department valule == null, then delete the department
-                if (Department::destroy($key)) {//delete the department
+                if (Department::destroy($key)) { //delete the department
                     //rewrite the return variable
                     $this->data = ['status' => true, 'msg' => "删除成功！", 'icon' => 1];
                 }
@@ -111,7 +172,8 @@ class HRController extends Controller
      * @return array
      * @target: setup new position
      */
-    public function newPosition(Request $request) {
+    public function newPosition(Request $request)
+    {
         //$request: position_name, position_rank
 
         //post data validation
@@ -137,7 +199,8 @@ class HRController extends Controller
      * @return array
      * @target
      */
-    public function modifyPosition(Request $request) {
+    public function modifyPosition(Request $request)
+    {
         //$request : array array_index => position_name/position_rank format
 
         //dismantle the post data $key as array index, $value as position_name/position_rank string
@@ -180,7 +243,8 @@ class HRController extends Controller
      * @return string
      * @target get all the manager from database which staff_level is greater than 0
      */
-    public function getManagers(Request $request) {
+    public function getManagers(Request $request)
+    {
         //$request: department_id, position_id
 
         //get that position's position_rank  use getOriginal because of the model has used the assessor, so use getOriginal to get the original value
@@ -198,7 +262,8 @@ class HRController extends Controller
      * @return string
      * @target get staff level from database
      */
-    public function getStaffLevel(Request $request) {
+    public function getStaffLevel(Request $request)
+    {
         //$request: position_id
 
         //get staffLevel by using position id from database, also as the assessor has been used, so use the getOriginal to get the original data
@@ -212,7 +277,8 @@ class HRController extends Controller
      * @return mixed
      * @target add new staff
      */
-    public function newStaff(Request $request) {
+    public function newStaff(Request $request)
+    {
 
 
         /**
@@ -220,14 +286,14 @@ class HRController extends Controller
          * staff photo are no longer compulsory
          */
 
-//        if (!$request->post('staff_id')) {
-//            //新添加员工信息
-//            if (!$request->file('upload_staff_photo')) {
-//                $data['msg'] = "请填写必要项";
-//                $data['emptyCols'] = ['upload_staff_photo'];
-//                return json_encode($data);
-//            }
-//        }
+        //        if (!$request->post('staff_id')) {
+        //            //新添加员工信息
+        //            if (!$request->file('upload_staff_photo')) {
+        //                $data['msg'] = "请填写必要项";
+        //                $data['emptyCols'] = ['upload_staff_photo'];
+        //                return json_encode($data);
+        //            }
+        //        }
 
         //put the post data into temp variable for validation puropose
         $dataCheck = $request->post();
@@ -288,31 +354,31 @@ class HRController extends Controller
 
         //after the photo has been saved or not, the upload_staff_photo is no longer required
         unset($postData['upload_staff_photo']);
-//        dd($postData);
+        //        dd($postData);
 
         try { //failsafe
             //update or insert into the database
-//dd( $postData);
-           Staff::updateOrCreate(['staff_id' => $postData['staff_id']], $postData);
-          if($postData['staff_id']){
-              Admin::updateOrCreate(['staff_id'=>$postData['staff_id']],['staff_id'=>$postData['staff_id'],'staff_no'=>$postData['staff_no'],'name'=>$postData['staff_name']]);
-          }
+            //dd( $postData);
+            Staff::updateOrCreate(['staff_id' => $postData['staff_id']], $postData);
+            if ($postData['staff_id']) {
+                Admin::updateOrCreate(['staff_id' => $postData['staff_id']], ['staff_id' => $postData['staff_id'], 'staff_no' => $postData['staff_no'], 'name' => $postData['staff_name']]);
+            }
 
-//            Admin::where('staff_id','=',$postData['staff_id'])->update(['name'=>$postData['staff_name'],'staff_no'=>$postData['staff_no']]);
-//            $a = Admin::where('staff_id','=',$postData['staff_id'])->get();
-//            dd($a);c
+            //            Admin::where('staff_id','=',$postData['staff_id'])->update(['name'=>$postData['staff_name'],'staff_no'=>$postData['staff_no']]);
+            //            $a = Admin::where('staff_id','=',$postData['staff_id'])->get();
+            //            dd($a);c
 
-//            if ($request->file('upload_staff_photo')) {
-//                $request->file('upload_staff_photo')->storeAs('staff/photo', $photoFullName, 'public');
-//            }
+            //            if ($request->file('upload_staff_photo')) {
+            //                $request->file('upload_staff_photo')->storeAs('staff/photo', $photoFullName, 'public');
+            //            }
 
             //rewrite the return variable
             $this->data = ['status' => true, 'msg' => "操作成功！", 'icon' => 1];
-//            $this->data = ['status' => true, 'msg' =>$postData['staff_id'], 'icon' => 1];
+            //            $this->data = ['status' => true, 'msg' =>$postData['staff_id'], 'icon' => 1];
         } catch (\Exception $exception) {
-echo $exception->getMessage();
+            echo $exception->getMessage();
             //rewrite the return variable as there is an exception occurred
-//            $data['msg'] = $exception->getMessage();
+            //            $data['msg'] = $exception->getMessage();
             switch ($exception->getCode()) {
                 case 23000:
                     $this->data['msg'] = "员工号码已经存在!";
@@ -327,7 +393,8 @@ echo $exception->getMessage();
      * @return array
      * @target: get the staff info
      */
-    public function staff($id) {
+    public function staff($id)
+    {
 
         //get staff info
         $staff = Staff::find($id);
@@ -344,7 +411,8 @@ echo $exception->getMessage();
      * @return array
      * @target: delete the staff by staff id
      */
-    public function delStaff($id = null) {
+    public function delStaff($id = null)
+    {
 
         if ($id) { //if the id is not empty
             //delete the staff
@@ -373,7 +441,8 @@ echo $exception->getMessage();
      * @return array
      * @target: get staff login info prepare for the staff login password set up
      */
-    public function getStaffLoginInfo($id) {
+    public function getStaffLoginInfo($id)
+    {
 
         //get designed staff info
         $staffLoginInfo = Staff::where('staff_id', '=', $id)->first(['staff_id', 'staff_no', 'staff_name']);
@@ -391,8 +460,9 @@ echo $exception->getMessage();
      * @return array
      * @target assign the password into the admin table or create if not exist
      */
-    public function saveStaffLoginInfo(Request $request) {
-//dd($request->post());
+    public function saveStaffLoginInfo(Request $request)
+    {
+        //dd($request->post());
         if (Admin::updateOrCreate(['staff_id' => $request->post('staff_id')], $request->post())) {
             $this->data = ['status' => true, 'msg' => '密码修改成功', 'icon' => 1];
         }

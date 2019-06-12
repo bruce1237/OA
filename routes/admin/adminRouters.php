@@ -16,6 +16,8 @@ Route::group(['prefix' => '/admin', 'namespace' => 'admin', 'middleware' => 'adm
 
     /*****************HR**********************/
     Route::get('/hr', ['uses' => 'hrController@index']);
+    Route::get('/hrActive',['uses'=>'hrController@activeStaff']);
+    Route::get('/hrDeactive',['uses'=>'hrController@deactiveStaff']);
     Route::post('/newDepart', ['uses' => 'hrController@newDepart']);
     Route::post('/modifyDepart', ['uses' => 'hrController@modifyDepart']);
     Route::post('/newPosition', ['uses' => 'hrController@newPosition']);
