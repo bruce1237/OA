@@ -1174,6 +1174,8 @@
     <script>
 
         function getClientDetail(client_id) {
+            $("#clientList"+client_id).css("color", "#28a745").siblings().css("color","#000");  
+        
 
             layer.msg('获取中....!', {icon: 6});
 
@@ -1838,6 +1840,10 @@
         }
 
         function orderModelReset(){
+
+            $("#OrderModelfirms").find("label").removeClass("active");
+
+
 
             $("#OrderModalServiceCount").val(0);
             $("#orderModelServiceSection").html('');

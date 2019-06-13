@@ -77,7 +77,7 @@
             </thead> 
         <tbody> 
             @foreach($data['orderList'] as $order)
-            <tr onclick="getOrderDetails({{$order['order_id']}})"> 
+            <tr id="orderList{{$order['order_id']}}" onclick="getOrderDetails({{$order['order_id']}})"> 
                     <td>{{$order['order_id']}}</td> 
                     <td>{{$order['client_name']}}</td> 
                     <td>{{$order['client_mobile']}}</td> 
@@ -355,6 +355,7 @@
         }
 
         function getOrderDetails(orderId) {
+            $("#orderList"+orderId).css("color", "#28a745").siblings().css("color","#000");  
 
             $("#orderDetail").hide();
             $.ajax({
