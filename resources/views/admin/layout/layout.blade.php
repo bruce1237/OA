@@ -164,13 +164,14 @@ style="left: 0px;"
                                     <td>合计:</td>
                                     @if($monthlySales['daySales'])
                                         @foreach($monthlySales['daySales'][$monthlySales['sales'][$lastKey]['department_id']] as $key=>$day)
+                                        <td>
                                             @if($day)
-                                                <td>{{$day}}
+                                                {{$day}}
                                                     @if($key =='achievedPect')
                                                         %
                                                     @endif
-                                                </td>
                                             @endif
+                                            </td>
                                         @endforeach
                                     @endif
                                 </tr>

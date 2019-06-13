@@ -1527,7 +1527,7 @@
 
 
         function rmClientQLFFile() {
-            var fileName = $("#clientQLFFileName").val();
+            var fileName = $("#companyQLFFileName").val();
             var clientId = $("#client_id").val();
             $.ajax({
                 url: "{{url('admin/rmClientQLFfile')}}",
@@ -1538,7 +1538,7 @@
                     layer.msg(data.msg, {icon: data.code});
                     if (data.status) {
                         getClientDetail(clientId);
-                        $("#clientQlfModal").modal('hide');
+                        $("#companyQlfModal").modal('hide');
 
                     }
                 }
@@ -1547,8 +1547,13 @@
 
         function rmCompanyQLFFile() {
             var fileName = $("#companyQLFFileName").val();
-            var companyId = $("#modify_company_id").val();
+            var companyId = $("#modify_company_id").val(); //当为company时, 有companyid, 
             var clientId = $("#client_id").val();
+        
+            if(companyId==""){ //当删除的文件是客户资质的时候
+                rmClientQLFFile();
+                return false;
+            }
             $.ajax({
                 url: "{{url('admin/rmCompanyQLFfile')}}",
                 type: 'post',

@@ -507,9 +507,9 @@ class ClientController extends Controller {
             } else {
                 $this->returnData['msg'] = "客户资质上传失败";
             }
-            return $this->returnData;
+         
         }
-
+        return $this->returnData;
     }
 
     public function rmClentQLFfile(Request $request) {
@@ -606,6 +606,7 @@ class ClientController extends Controller {
                     ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
+            case "900": //总经理
                 $clientList = Client::where('clients.client_status', '=', '1')->paginate($this->_pageSize);
                 break;
         }
