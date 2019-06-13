@@ -271,7 +271,7 @@ class OrderController extends Controller
             array_push($departs, $depart->id);
         }
 
-        $staffs = Staff::whereIn('department_id', $departs)->OrderBy('department_id')->OrderBy('staff_no')->get();
+        $staffs = Staff::whereIn('department_id', $departs)->where('staff_status','=','1')->OrderBy('department_id')->OrderBy('staff_no')->get();
         return $staffs;
     }
 
