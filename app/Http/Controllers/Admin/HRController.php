@@ -24,7 +24,7 @@ class HRController extends Controller
     public function index()
     {
         //get staff list with predesigned
-        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')->get();
+        $staffList = Staff::select('staff_id','staff_no', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')->get();
 
         //get total active staff count
         $staffCount = Staff::count();
@@ -51,7 +51,7 @@ class HRController extends Controller
     public function activeStaff()
     {
         //get staff list with predesigned
-        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')
+        $staffList = Staff::select('staff_id','staff_no', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')
             ->where('staff_status', '=', '1')
             ->get();
 
@@ -80,7 +80,7 @@ class HRController extends Controller
     public function deactiveStaff()
     {
         //get staff list with predesigned
-        $staffList = Staff::select('staff_id', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')
+        $staffList = Staff::select('staff_id', 'staff_no', 'staff_name', 'staff_dob', 'staff_mobile_work', 'staff_mobile_private', 'staff_email_private', 'staff_id_no', 'staff_join_date', 'staff_wenxin_work')
             ->where('staff_status', '=', '0')
             ->get();
 

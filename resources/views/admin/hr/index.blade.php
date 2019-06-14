@@ -38,32 +38,32 @@
                     <div class="layui-unselect header layui-form-checkbox" lay-skin="primary"><i class="layui-icon">&#xe605;</i></div>
                 </th>
                 <th>姓名</th>
+                <th>工号</th>
                 <th>身份证</th>
                 <th>入职日期</th>
                 <th>出生日期</th>
                 <th>工作手机</th>
                 <th>工作微信</th>
                 <th>私人手机</th>
-                <th>邮箱</th>
                 <th>操作</th>
             </tr>
             </thead>
             <tbody>
-
-            @foreach($staffList as $staff)
+                
+                @foreach($staffList as $staff)
                 <tr>
                     <td>
                         <div class="layui-unselect layui-form-checkbox" lay-skin="primary" data-id='{{$staff->staff_id}}'><i
                                     class="layui-icon">&#xe605;</i></div>
                     </td>
                     <td>{{$staff->staff_name}}</td>
+                    <td>{{$staff->staff_no}}</td>
                     <td>{{$staff->staff_id_no}}</td>
                     <td>{{$staff->staff_join_date}}</td>
                     <td>{{$staff->staff_dob}}</td>
                     <td>{{$staff->staff_mobile_work}}</td>
                     <td>{{$staff->staff_wenxin_work}}</td>
                     <td>{{$staff->staff_mobile_private}}</td>
-                    <td>{{$staff->staff_email_private}}</td>
 
 
                     <td class="td-manage">
