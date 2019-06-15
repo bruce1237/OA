@@ -53,6 +53,7 @@ abstract class ContractMaker {
         //get the contractSeal picture
         $wordFile['seal'] = storage_path("firms/{$firmObj->firm_id}/seal/{$firmObj->firm_id}.png");
 
+        // dd(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"));
         //check if the order Reference folder exist,
         if(!is_dir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"))){
             mkdir(public_path("storage/CRM/Order/REF/{$orderObj->order_id}/"));

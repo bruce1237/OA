@@ -299,7 +299,7 @@
                             @endforeach
                         </select>
                         <input type="text" id="visit_records" class="form-control" aria-label="Small"
-                               aria-describedby="inputGroup-sizing-sm" placeholder="回访内容">
+                               aria-describedby="inputGroup-sizing-sm" placeholder="回访内容" style="width:400px">
                         <input type="date" id="visit_visit_next_date" class="form-control" aria-label="Small"
                                aria-describedby="inputGroup-sizing-sm" placeholder="下次回访日期">
                         <button class="form-control btn btn-outline-success" type="button" onclick="addVisit()">添加回访
@@ -773,6 +773,33 @@
                             <div class="input-group-prepend">
                                 <div class="input-group-text"><label for="visit_order_desc">降序 </label>
                                     <input type="radio" id="visit_order_desc" name="order_by"
+                                           value="client_next_date,desc"
+                                           aria-label="Radio button for following text input">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">公海时间</span>
+                            </div>
+                            <input type="date" name="client_pool_from" class="form-control" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text" id="basic-addon1">-</span>
+                            </div>
+                            <input type="date" name="client_pool_to" class="form-control" aria-label="Username"
+                                   aria-describedby="basic-addon1">
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><label for="visit_order_asc">升序 </label>
+                                    <input type="radio" checked id="pool_order_asc" name="order_by"
+                                           value="client_next_date,asc"
+                                           aria-label="Radio button for following text input">
+                                </div>
+                            </div>
+                            <div class="input-group-prepend">
+                                <div class="input-group-text"><label for="visit_order_desc">降序 </label>
+                                    <input type="radio" id="pool_order_desc" name="order_by"
                                            value="client_next_date,desc"
                                            aria-label="Radio button for following text input">
                                 </div>

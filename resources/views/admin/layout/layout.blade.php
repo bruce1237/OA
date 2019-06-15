@@ -266,9 +266,9 @@ style="left: 0px;"
                 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
             }
         });
-        // notificationCheck();
-        // setInterval(showDateTime, 1000);
-        // self.setInterval("notificationCheck()", 15000);
+        notificationCheck();
+        setInterval(showDateTime, 1000);
+        self.setInterval("notificationCheck()", 15000);
 
     });
 

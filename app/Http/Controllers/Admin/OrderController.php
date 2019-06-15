@@ -210,7 +210,8 @@ class OrderController extends Controller
     public function delOrder(Request $request)
     {
         if (Order::where('order_id', '=', $request->post('order_id'))
-            ->where('order_status_code', '=', '1')->exists()
+            ->whereIn('order_status_code', ['1','16'])
+            ->exists()
         ) {
             try {
                 Order::destroy($request->post('order_id'));

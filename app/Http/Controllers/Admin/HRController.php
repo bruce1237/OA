@@ -376,7 +376,8 @@ class HRController extends Controller
             $this->data = ['status' => true, 'msg' => "操作成功！", 'icon' => 1];
             //            $this->data = ['status' => true, 'msg' =>$postData['staff_id'], 'icon' => 1];
         } catch (\Exception $exception) {
-            echo $exception->getMessage();
+            // $this->data['msg'] = $exception->getMessage();
+            // echo 
             //rewrite the return variable as there is an exception occurred
             //            $data['msg'] = $exception->getMessage();
             switch ($exception->getCode()) {
@@ -462,7 +463,7 @@ class HRController extends Controller
      */
     public function saveStaffLoginInfo(Request $request)
     {
-        //dd($request->post());
+
         if (Admin::updateOrCreate(['staff_id' => $request->post('staff_id')], $request->post())) {
             $this->data = ['status' => true, 'msg' => '密码修改成功', 'icon' => 1];
         }

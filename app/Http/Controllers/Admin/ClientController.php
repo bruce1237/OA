@@ -425,6 +425,9 @@ class ClientController extends Controller {
             $client->client_assign_to = '0'; // use this to indicate the client in the pool
 
             if ($client->save()) {
+                $toPoolDate = date("Y-m-d");
+                Client::find($client_id)->update(['client_pool_date'=>$toPoolDate]);
+                
                 $this->returnData['status'] = true;
                 $this->returnData['msg'] = "成功放入公海";
                 $this->returnData['code'] = 1;
@@ -705,6 +708,12 @@ class ClientController extends Controller {
             if (key_exists('staff_id', $searchData) && $searchData['staff_id']) {
                 $query->where('client_assign_to', '=', $searchData['staff_id']);
             }
+            if (key_exists('client_pool_from', $searchData) && $searchData['client_pool_from'] && $searchData['client_pool_to']) {
+                // dd($searchData);
+                $query->where('client_pool_date', '>=', $searchData['client_pool_from']);
+                $query->where('client_pool_date', '<=', $searchData['client_pool_to']);
+            }
+
 //            else {
 //                if ($staffLevel == "0") {
 //                    $query->where('client_assign_to', '=', $staffId);

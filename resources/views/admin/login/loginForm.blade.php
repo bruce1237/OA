@@ -19,7 +19,7 @@
 <body class="login-bg">
 
 <div class="login layui-anim layui-anim-up">
-    <div class="message">x-admin2.0-管理登录</div>
+    <div class="message">MLOA-管理登录</div>
     <div id="darkbannerwrap"></div>
 
     <form action="{{url('admin/login')}}" method="post" class="layui-form" >
