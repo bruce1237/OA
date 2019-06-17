@@ -28,6 +28,10 @@
         <span style="color:white"><i class="layui-icon"></i>客户搜索</span>
     </a>
 
+    <a class="layui-btn layui-btn btn-info layui-btn-xs" data-toggle="modal" data-target="#searchCompanyModal">
+        <span style="color:white"><i class="layui-icon"></i>公司搜索</span>
+    </a>
+
 @endsection
 
 
@@ -62,7 +66,7 @@
                                         class="layui-icon">&#xe605;</i></div>
                             </th>
                             <th>姓名</th>
-                            <th>手机</th>
+                            <!-- <th>手机</th> -->
                             <th>创建时间</th>
                             <th>回访时间</th>
                             <th>销售情况</th>
@@ -83,7 +87,7 @@
                                         id="newTag{{$client->client_id}}"
                                         class="badge badge-pill badge-danger">(NEW)</span>@endif</td>
                                 {{--@if($client->client_new_enquiries)<span class="badge badge-pill badge-danger">(NEW)</span>@endif--}}
-                                <td>{{$client->client_mobile}}</td>
+                                <!-- <td>{{$client->client_mobile}}</td> -->
                                 <td>{{$client->created_at}}</td>
                                 <td>{{$client->client_next_date}}</td>
                                 <td><span
@@ -98,6 +102,7 @@
                     </table>
 
                     {!!  $data['clients']['clients']->appends($data['search'])->render() !!}
+                    <!-- 共{{sizeof($data)}}条信息 -->
                 </div>
             </div>
 
@@ -127,7 +132,7 @@
                 </div>
                 <div class="card-body text-primary" id="clientDetailBody">
                     客户需求 <input type="hidden" id="client_id"/>
-                    <p class="card-text" id="client_enquiries"></p>
+                    <h3 class="card-text" id="client_enquiries"></h3>
 
                     <form id="clientDetailForm">
                         <div class="row">
@@ -140,11 +145,11 @@
                                     <input type="text" name="client_name" id="client_name" class="form-control"
                                            aria-label="Small"
                                            aria-describedby="inputGroup-sizing-sm">
-                                    <select class="form-control" id="client_source" aria-label="Small"
+                                    <select class="form-control" id="client_source" name="client_source" aria-label="Small"
                                             aria-describedby="inputGroup-sizing-sm">
                                         @foreach($data['clientSource'] as $source)
                                             <option
-                                                value="{{$source->info_source_name}}">{{$source->info_source_name}}</option>
+                                                value="{{$source->info_source_id}}">{{$source->info_source_name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -320,6 +325,7 @@
                             <th scope="col">金额/利润</th>
                             <th scope="col">状态</th>
                             <th scope="col">最后更新时间</th>
+                            <th scope="col">客户姓名</th>
                             <th scope="col" width="50%">文件</th>
                         </tr>
                         </thead>
@@ -1197,11 +1203,43 @@
         </div>
     </div>
 
+    <div class="modal" tabindex="-1" role="dialog" id="searchCompanyModal">
+        <form action ="{{url('admin/clientManage/searchCompany')}}" method="post">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">公司搜索</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                @csrf      
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text" id="basic-addon1">客户公司名称:</span>
+                        </div>
+
+                        
+                        <input type="text"  name="companySearchCompanyName" class="form-control" aria-label="Small" aria-describedby="inputGroup-sizing-sm">
+
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">搜索公司</button>
+
+                </div>
+</form>
+
+            </div>
+        </div>
+    </div>
+
 
     <script>
 
         function getClientDetail(client_id) {
-            $("#clientList"+client_id).css("color", "#28a745").siblings().css("color","#000");  
+            $("#clientList"+client_id).css("color", "#f00").siblings().css("color","#000");  
         
 
             layer.msg('获取中....!', {icon: 6});
@@ -1267,7 +1305,7 @@
             var clientData = $("#clientDetailForm").serialize();
             clientData = decodeURIComponent(clientData, true);//解决可能出现的中文乱码问题
             clientData += '&client_id=' + clientId;
-
+// alert(clientData);
             $.ajax({
                 url: "{{url('admin/modifyClientInfo')}}",
                 type: 'post',
@@ -1357,6 +1395,7 @@
             $("#client_level").html(data.data.client_level);
             $("#created_at").html(data.data.created_at);
             $("#visit_next_date").html(data.data.client_next_date);
+            $("#client_source").val(data.data.client_source_id);
 
             $.each(data.company, function (key, company) {
                 $("#companies").append('<button type="button" class="btn btn-outline-primary btn-sm" onclick="showCompany(' + company.company_id + ')" >' + company.company_name + '</button> ');
@@ -1374,7 +1413,7 @@
                 });
 
 
-                $("#orderList").append('<tr><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_id + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_created_at + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_total + '/' + order.order_profit + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')"><span class="badge badge-secondary">' + order.order_status + '</span></td><td>' + order.updated_at + '</td><td>' + files + '</td></tr>');
+                $("#orderList").append('<tr><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_id + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_created_at + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')">' + order.order_total + '/' + order.order_profit + '</td><td onclick="showOrderDetail(' + JSON.stringify(order).replace(/"/g, '&quot;') + ')"><span class="badge badge-secondary">' + order.order_status + '</span></td><td>' + order.updated_at + '</td><td>'+order.order_company_name+'</td><td>' + files + '</td></tr>');
 
 
             });
@@ -1822,12 +1861,14 @@
 
                 }
             }
-
+//alert($("input[name='orderClientCompany']:checked").val());
 
             var data = {
                 firm_id:  $("input[name='order_firm']:checked").val(),
                 order_client_id: $("#client_id").val(),
-                company_id: $("#orderClientCompany").val(),
+                // company_id: $("#orderClientCompany").val(),
+                company_id: $("input[name='orderClientCompany']:checked").val(),
+
                 order_contact_name: $("#order_contact_name").val(),
                 order_contact_number: $("#order_contact_number").val(),
                 order_contact_address: $("#order_contact_address").val(),
@@ -2068,6 +2109,11 @@
         function clientOrderModalRest() {
             document.getElementById('orderModelForm').reset();
         }
+
+        function searchCompanyModal(){
+            $("#searchCompanyModal").show();
+        }
+       
 
 
     </script>

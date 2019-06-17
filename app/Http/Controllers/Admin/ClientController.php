@@ -33,6 +33,7 @@ class ClientController extends Controller {
 
         $assignableStaffs = Staff::join('departments', 'departments.id', '=', 'staff.department_id')
             ->where('departments.assignable', '=', '1')
+            ->where('staff.staff_status','=','1')
             ->get();
 
 
@@ -201,11 +202,12 @@ class ClientController extends Controller {
         $companies = Company::where('company_client_id', '=', $client->client_id)->get(); //get the company info
 
 
-        $visit = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->get(); //get all the visit records
+        $visit = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('created_at', 'desc')->get(); //get all the visit records
 
         $clientQlfs = Storage::disk('CRM')->files("client/QLF/{$client->client_id}/");
 
         $client['qlf'] = $clientQlfs;
+        $client['client_source_id']=$client->getOriginal("client_source");
 
         //get client order details
         $orders = Order::where('order_client_id', '=', $request->post('client_id'))->get();
@@ -284,6 +286,7 @@ class ClientController extends Controller {
     public function modifyClientInfo(Request $request) {
         $staffLevel = Staff::find(Auth::guard('admin')->user()->staff_id)->staff_level; // get staffLevel
         $data = $request->post(); //assign the post data into variable
+        // dd($data);
         if ($staffLevel >= 3) {
             if (Client::find($data['client_id'])->update($data)) {
                 $this->returnData['status'] = true;
@@ -480,7 +483,8 @@ class ClientController extends Controller {
             case "0": //普通员工
                 $clientList = Client::where('clients.client_assign_to', '=', $staffId)
                     ->where('clients.client_status', '=', '1')
-                    ->where('client_next_date', '<=', date("Y-m-d"))
+                    ->where('client_next_date', '<', date("Y-m-d"))
+                    ->orderBy('client_next_date','desc')
                     ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
@@ -584,7 +588,7 @@ class ClientController extends Controller {
     }
 
     private function assignClient($client_id, $staff_id) {
-        Client::find($client_id)->update(['client_assign_to' => $staff_id]);
+        Client::find($client_id)->update(['client_assign_to' => $staff_id,'client_new_enquiries'=>'1']);
     }
 
     public function getPaymentMethodByFirm(Request $request) {
@@ -600,17 +604,20 @@ class ClientController extends Controller {
     }
 
     private function allClientList($staffId, $staffLevel, Request $request = null) {
+        
         $clientList = '';
         switch ($staffLevel) {
             case "0": //普通员工
                 $clientList = Client::where('clients.client_assign_to', '=', $staffId)
                     ->where('clients.client_status', '=', '1')
-                    ->orderby('updated_at', 'desc')
+                    ->orderby('created_at', 'desc')
                     ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
             case "900": //总经理
-                $clientList = Client::where('clients.client_status', '=', '1')->paginate($this->_pageSize);
+                $clientList = Client::where('clients.client_status', '=', '1')
+                ->where('clients.client_assign_to','!=','0')
+                ->paginate($this->_pageSize);
                 break;
         }
         foreach ($clientList as $key => $client) {
@@ -681,6 +688,7 @@ class ClientController extends Controller {
     }
 
     private function searchClientList($staffId, $staffLevel, Request $request = null) {
+        
         $searchData = $request->post();
         unset($searchData['_token']);
         $orderBy = ['client_next_date', 'desc'];
@@ -715,9 +723,9 @@ class ClientController extends Controller {
             }
 
 //            else {
-//                if ($staffLevel == "0") {
-//                    $query->where('client_assign_to', '=', $staffId);
-//                }
+               if (!$searchData && $staffLevel == "0") {
+                   $query->where('client_assign_to', '=', $staffId);
+               }
 //            }
             if (key_exists('search_clientType', $searchData) && null !== $searchData['search_clientType']) {
                 switch ($searchData['search_clientType']) {
@@ -750,6 +758,7 @@ class ClientController extends Controller {
 
         $clients['list_name'] = '搜索结果客户信息';
         $clients['bg'] = 'bg-danger';
+       
         $clients['clients'] = $clientList;
 
 
@@ -776,6 +785,41 @@ class ClientController extends Controller {
             }
 
         }
+
+        return $clients;
+
+    }
+
+    protected function searchCompanyClientList($staffId, $staffLevel, Request $request = null){
+        $clientList = array();
+
+        $clientIds=array();
+        $companyData = Company::where('company_name','like',"%".$request->post('companySearchCompanyName')."%")->get();
+       
+        
+        foreach($companyData as $company){
+            array_push($clientIds,$company->company_client_id);
+        }
+
+
+        switch ($staffLevel) {
+            case "0": //普通员工
+                $clientList = Client::where('clients.client_assign_to', '=', $staffId)
+                    ->where('clients.client_status', '=', '1')
+                    ->whereIn('client_id', $clientIds)
+                    ->paginate($this->_pageSize);
+                break;
+            case "3": //部门经理
+                $clientList = Client::where('clients.client_status', '=', '1')
+                    ->where('clients.client_assign_to', '>=', '0')
+                    ->whereIn('client_id', $clientIds)
+                    ->paginate($this->_pageSize);
+                break;
+        }
+
+        $clients['list_name'] = '公司搜索结果';
+        $clients['bg'] = 'bg-success';
+        $clients['clients'] = $clientList;
 
         return $clients;
 
