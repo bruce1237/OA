@@ -72,6 +72,7 @@ abstract class FileProcessor {
         
         if (!$this->_csvArray) { //check if there is any data in the _csvArray, while holds the converted file data
             return false;
+            
         }
 
         foreach($this->_csvArray as $row=>$arr){
