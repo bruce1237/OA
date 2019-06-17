@@ -45,12 +45,20 @@ class xlsxProcessor extends FileProcessor {
         for ($row = $this->headerLine + 1; $row <= $highestRow; $row++) { //go throught the xlsx file row by row start from the row next to the header
             foreach ($this->_csvStructure as $col => $field) { //walk through the structure array to map out each value
                 $value = (string)$worksheet->getCell($col . $row)->getValue(); // only get the xlsx col value which corresponding the database
+               
+             
+               
                 if ($field == "enquiry_date") { // as the stupid wps date format, now have to convert to timestamp
-                    $value = $this->newDate($value - 1, "1900-01-0"); // convert wps dataTime into timestamp Y-m-d H:i:s format
+                    $value = $this->newDate((int)$value - 1, "1900-01-0"); // convert wps dataTime into timestamp Y-m-d H:i:s format
                 }
-                $this->_csvArray[$row][$field] = $value; //assign each value into csvArray
-            }
+               
+            
 
+                    $this->_csvArray[$row][$field] = $value; //assign each value into csvArray
+            
+               
+            }
+           
             //add some extra field for the database
             $this->_csvArray[$row]['client_assign_to'] = -1; //-1:indicate new unassigned client
             $this->_csvArray[$row]['client_belongs_company'] = $this->firmId; //firmId
@@ -62,7 +70,11 @@ class xlsxProcessor extends FileProcessor {
         if (!$this->_csvArray) {
             return false;
         }
+
+        // unset($this->_csvArray[$row-1]);
+        // dd($this->_csvArray);
         return true;
+
     }
 
 }

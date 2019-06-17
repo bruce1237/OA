@@ -58,6 +58,8 @@ abstract class FileProcessor {
         if (!$processor->readFile()) { //read the file
             return false;
         }
+
+      
         return $processor->writeToDatabase(); //return the result of write to database
     }
 
@@ -66,9 +68,20 @@ abstract class FileProcessor {
      * Used For: write data into database
      */
     protected function writeToDatabase(): bool {
+
+        
         if (!$this->_csvArray) { //check if there is any data in the _csvArray, while holds the converted file data
             return false;
         }
+
+        foreach($this->_csvArray as $row=>$arr){
+            if(!$arr['client_mobile']){
+                unset($this->_csvArray[$row]);
+            }
+        }
+
+
+
         $clientObj = new ClientController(); //instant the clientController
         $count = 0;
         foreach ($this->_csvArray as $client) {

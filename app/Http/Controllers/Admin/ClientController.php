@@ -39,7 +39,7 @@ class ClientController extends Controller {
 
 //        $staffLevel=3; //部门经理级别 测试用
         $departments = array();
-        if ($staffLevel == '3') {
+        if ($staffLevel == '3' || $staffLevel == '900') {
             $departments = Department::where('assignable', '=', '1')->get();
         }
         $clientSource = InfoSource::all(); //get infoSource data
@@ -463,6 +463,7 @@ class ClientController extends Controller {
                     ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
+            case "900": //部门经理
                 $clientList = Client::where('clients.client_status', '=', '1')
                     ->where('clients.client_assign_to', '>', '0')
                     ->where('client_next_date', '=', date("Y-m-d"))
@@ -488,6 +489,7 @@ class ClientController extends Controller {
                     ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
+            case "900": //部门经理
                 $clientList = Client::where('clients.client_status', '=', '1')
                     ->where('clients.client_assign_to', '>', '0')
                     ->where('client_next_date', '<=', date("Y-m-d"))
@@ -670,12 +672,14 @@ class ClientController extends Controller {
                     ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
+            case "900": //部门经理
                 $clientList = Client::where('clients.client_status', '=', '1')
                     ->where('clients.client_new_enquiries', '=', '1')
                     ->paginate($this->_pageSize);
                 break;
         }
 
+        
         foreach ($clientList as $key => $client) {
             $visitNextDate = Visit::where('visit_client_id', '=', $client->client_id)->orderBy('visit_next_date', 'desc')->first();
             $clientList[$key]['visit_next_date'] = $visitNextDate ? $visitNextDate->visit_next_date : '';
@@ -705,9 +709,12 @@ class ClientController extends Controller {
             if (key_exists('client_visit_status', $searchData) && $searchData['client_visit_status']) {
                 $query->where('client_visit_status', '=', $searchData['client_visit_status']);
             }
-            if (key_exists('client_created_from', $searchData) && $searchData['client_created_from'] && $searchData['client_created_to']) {
+            if (key_exists('client_created_from', $searchData) && $searchData['client_created_from'] ) {
                 $query->where('created_at', '>=', $searchData['client_created_from']);
-                $query->where('created_at', '<=', $searchData['client_created_to']);
+                if(key_exists('client_created_to',$searchData) && $searchData['client_created_to']){
+
+                    $query->where('created_at', '<=', $searchData['client_created_to']);
+                }
             }
             if (key_exists('client_visit_from', $searchData) && $searchData['client_visit_from'] && $searchData['client_visit_to']) {
                 $query->where('client_next_date', '>=', $searchData['client_visit_from']);
@@ -810,6 +817,7 @@ class ClientController extends Controller {
                     ->paginate($this->_pageSize);
                 break;
             case "3": //部门经理
+            case "900": //部门经理
                 $clientList = Client::where('clients.client_status', '=', '1')
                     ->where('clients.client_assign_to', '>=', '0')
                     ->whereIn('client_id', $clientIds)
